@@ -1,0 +1,81 @@
+{
+  "results": [
+    {
+      "id": "page-1234",
+      "title": "Kundmöte med ABC AB",
+      "version": {
+        "when": "2025-09-18T09:00:00Z",
+        "by": {
+          "displayName": "Anna Andersson",
+          "accountId": "confluence-user1"
+        }
+      }
+    },
+    {
+      "id": "page-5678",
+      "title": "Onboarding för nyanställda",
+      "version": {
+        "when": "2025-09-17T11:30:00Z",
+        "by": {
+          "displayName": "Erik Johansson",
+          "accountId": "confluence-user2"
+        }
+      }
+    },
+    {
+      "id": "page-9012",
+      "title": "Tekniska krav - API",
+      "version": {
+        "when": "2025-09-17T14:15:00Z",
+        "by": {
+          "displayName": "Clara Sjöberg",
+          "accountId": "confluence-user3"
+        }
+      }
+    },
+    {
+      "id": "page-3456",
+      "title": "Utvecklarguide för API",
+      "version": {
+        "when": "2025-09-16T18:00:00Z",
+        "by": {
+          "displayName": "Anna Andersson",
+          "accountId": "confluence-user1"
+        }
+      }
+    },
+    {
+      "id": "page-7890",
+      "title": "Handbok för systemadministration",
+      "version": {
+        "when": "2025-09-16T10:00:00Z",
+        "by": {
+          "displayName": "Johan Lindgren",
+          "accountId": "confluence-user4"
+        }
+      }
+    },
+    {
+      "id": "page-1122",
+      "title": "Protokoll från kvartalsmöte",
+      "version": {
+        "when": "2025-09-15T09:30:00Z",
+        "by": {
+          "displayName": "Erik Johansson",
+          "accountId": "confluence-user2"
+        }
+      }
+    },
+    {
+      "id": "page-3344",
+      "title": "Företagets vision 2026",
+      "version": {
+        "when": "2025-09-15T16:00:00Z",
+        "by": {
+          "displayName": "Clara Sjöberg",
+          "accountId": "confluence-user3"
+        }
+      }
+    }
+  ]
+}

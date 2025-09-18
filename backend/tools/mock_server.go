@@ -1,81 +1,50 @@
 package main
 
 import (
+	"io/ioutil"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Ett exempel på data som simulerar ett svar från SharePoints API (Microsoft Graph)
-func getSharePointMockData() gin.H {
-	return gin.H{
-		"value": []gin.H{
-			{
-				"id":                   "doc_a1b2c3d4",
-				"name":                 "Projektplan v1.0.docx",
-				"lastModifiedDateTime": "2025-09-17T14:30:00Z",
-				"lastModifiedBy": gin.H{
-					"user": gin.H{
-						"id":          "sharepoint-user1",
-						"displayName": "Anna Andersson",
-					},
-				},
-			},
-			{
-				"id":                   "doc_e5f6g7h8",
-				"name":                 "Mötesanteckningar Q3.docx",
-				"lastModifiedDateTime": "2025-09-16T10:00:00Z",
-				"lastModifiedBy": gin.H{
-					"user": gin.H{
-						"id":          "sharepoint-user2",
-						"displayName": "Erik Johansson",
-					},
-				},
-			},
-		},
-	}
-}
+// Globala variabler för att hålla vår JSON-data i minnet
+var sharepointData []byte
+var confluenceData []byte
 
-// Ett exempel på data som simulerar ett svar från Confluences API
-func getConfluenceMockData() gin.H {
-	return gin.H{
-		"results": []gin.H{
-			{
-				"id":    "page-1234",
-				"title": "Kundmöte med ABC AB",
-				"version": gin.H{
-					"when": "2025-09-17T15:00:00Z",
-					"by": gin.H{
-						"displayName": "Anna Andersson",
-						"accountId":   "confluence-user1",
-					},
-				},
-			},
-			{
-				"id":    "page-5678",
-				"title": "Onboarding för nyanställda",
-				"version": gin.H{
-					"when": "2025-09-16T11:00:00Z",
-					"by": gin.H{
-						"displayName": "Erik Johansson",
-						"accountId":   "confluence-user2",
-					},
-				},
-			},
-		},
+// init-funktionen körs automatiskt när programmet startar
+func init() {
+	var err error
+
+	// Sökvägen till filen
+	sharepointFilePath := filepath.Join("tools", "sharepoint_mock_data.json")
+	confluenceFilePath := filepath.Join("tools", "confluence_mock_data.json")
+
+	// Läs in datan från SharePoints JSON-fil
+	sharepointData, err = ioutil.ReadFile(sharepointFilePath)
+	if err != nil {
+		log.Fatalf("Kunde inte läsa filen %s: %v", sharepointFilePath, err)
+	}
+
+	// Läs in datan från Confluences JSON-fil
+	confluenceData, err = ioutil.ReadFile(confluenceFilePath)
+	if err != nil {
+		log.Fatalf("Kunde inte läsa filen %s: %v", confluenceFilePath, err)
 	}
 }
 
 func main() {
 	router := gin.Default()
 
-	// Simulerar SharePoint "delta query"-endpoint
+	// Simulerar SharePoints API genom att returnera innehållet i JSON-filen
 	router.GET("/mock/sharepoint/documents", func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, getSharePointMockData())
+		c.Data(http.StatusOK, "application/json", sharepointData)
 	})
-	// Simulerar Confluences API-endpoint för senaste sidor
+
+	// Simulerar Confluences API genom att returnera innehållet i JSON-filen
 	router.GET("/mock/confluence/pages", func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, getConfluenceMockData())
+		c.Data(http.StatusOK, "application/json", confluenceData)
 	})
 
 	router.Run(":8081")

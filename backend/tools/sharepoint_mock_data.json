@@ -1,0 +1,70 @@
+{
+  "value": [
+    {
+      "id": "doc_a1b2c3d4",
+      "name": "Projektplan v1.0.docx",
+      "lastModifiedDateTime": "2025-09-17T14:30:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user1",
+          "displayName": "Anna Andersson"
+        }
+      }
+    },
+    {
+      "id": "doc_e5f6g7h8",
+      "name": "Mötesanteckningar Q3.docx",
+      "lastModifiedDateTime": "2025-09-16T10:00:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user2",
+          "displayName": "Erik Johansson"
+        }
+      }
+    },
+    {
+      "id": "doc_i9j1k2l3",
+      "name": "Marknadsanalys 2025.pptx",
+      "lastModifiedDateTime": "2025-09-15T18:00:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user3",
+          "displayName": "Sara Bengtsson"
+        }
+      }
+    },
+    {
+      "id": "doc_m4n5o6p7",
+      "name": "Kvartalsrapport.xlsx",
+      "lastModifiedDateTime": "2025-09-14T09:00:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user1",
+          "displayName": "Anna Andersson"
+        }
+      }
+    },
+    {
+      "id": "doc_q8r9s0t1",
+      "name": "Utvecklarmanual.md",
+      "lastModifiedDateTime": "2025-09-13T12:00:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user2",
+          "displayName": "Erik Johansson"
+        }
+      }
+    },
+    {
+      "id": "doc_u2v3w4x5",
+      "name": "Onboarding-guide för nyanställda.docx",
+      "lastModifiedDateTime": "2025-09-12T15:00:00Z",
+      "lastModifiedBy": {
+        "user": {
+          "id": "sharepoint-user3",
+          "displayName": "Sara Bengtsson"
+        }
+      }
+    }
+  ]
+}
