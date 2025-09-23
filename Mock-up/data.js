@@ -2,7 +2,7 @@
 // /data.js  (ES module)
 
 // === INDIVIDUAL LEADERBOARD (10 st) ===
-// Poäng satta så att "You" hamnar på plats 8 efter sortering (desc)
+// Poäng satta så att "You" hamnar på plats 8 efter sortering (desc) för att testa UI
 const _leaderboard = [
   { name: 'Bruce Wayne',   points: 5000 },
   { name: 'Clark Kent',    points: 4200 },
@@ -11,7 +11,7 @@ const _leaderboard = [
   { name: 'Hal Jordan',    points: 2100 },
   { name: 'Arthur Curry',  points: 1700 },
   { name: 'Oliver Queen',  points: 1300 },
-  { name: 'You',           points: 1250 }, // ← plats 8
+  { name: 'You',           points: 1250 },
   { name: 'Billy Batson',  points: 900  },
   { name: 'Victor Stone',  points: 600  },
 ];
@@ -35,7 +35,7 @@ const _teamMembers = {
   'Team Epsilon': ['Billy Batson', 'Victor Stone'],
 };
 
-// === ÖVRIGA DATA (oförändrat) ===
+// === ÖVRIGA DATA ===
 const _documents = [
   { name: 'API Documentation',     lastEdited: new Date('2025-08-20') },
   { name: 'User Guide',            lastEdited: new Date('2025-08-01') },
@@ -103,6 +103,7 @@ export async function getUserAchievements(username) {
   await _delay();
   const fallback = { commits: 0, timeHours: 0, earned: [] };
   return _playerAchievements[username] || fallback;
+
 }
 
 export function daysSince(date) {

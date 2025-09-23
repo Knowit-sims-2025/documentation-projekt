@@ -148,20 +148,26 @@ async function populateLeaderboard() {
     meRank = rows.reduce((acc, r) => acc + (r.points > myPoints ? 1 : 0), 0) + 1;
   }
 
-  const makeLi = (player, absoluteRank) => {
-    const userKey = player.name; // canonical (behåll "You")
-    const isMe = userKey === 'You' || (currentUser && norm(userKey) === norm(currentUser));
-    const displayName = (userKey === 'You' && currentUser) ? currentUser : userKey;
+const makeLi = (player, absoluteRank) => {
+  const userKey = player.name;
 
-    const li = document.createElement('li');
-    li.className = 'lb-item' + (isMe ? ' is-current-user' : '');
-    li.dataset.user = userKey;
-    li.innerHTML = `
-      <span class="lb-user">${absoluteRank}. ${displayName}</span>
-      <span>${player.points} points</span>
-    `;
-    return li;
-  };
+  // Är detta jag?
+  const isMe = userKey === 'You' || (_lbCurrentUserCache && userKey.toLowerCase() === _lbCurrentUserCache.toLowerCase());
+
+  // Visa alltid "You" för min rad (display) och använd "You" som canonical key
+  const displayName  = isMe ? 'You' : userKey;
+  const datasetKey   = isMe ? 'You' : userKey;  // så overlay öppnar user_profile.html?user=You
+
+  const li = document.createElement('li');
+  li.className = 'lb-item' + (isMe ? ' is-current-user' : '');
+  li.dataset.user = datasetKey;
+  li.tabIndex = 0; // (a11y: öppna med Enter/Space också)
+  li.innerHTML = `
+    <span class="lb-user">${absoluteRank}. ${displayName}</span>
+    <span>${player.points} points</span>
+  `;
+  return li;
+};
 
   if (_lbExpanded) {
     // Visa hela listan
