@@ -1,32 +1,41 @@
-
 // Här ligger all mock-data + asynkrona "fetchers" som simulerar API-anrop.
-// Här kan vi byta till andra dataflöden (mock-filer, eller riktig API (fetch('/api/...')).
 // /data.js  (ES module)
 
+// === INDIVIDUAL LEADERBOARD (10 st) ===
+// Poäng satta så att "You" hamnar på plats 8 efter sortering (desc)
 const _leaderboard = [
-  { name: 'Alice',   points: 2530 },
-  { name: 'You',     points: 1250 },
-  { name: 'Bob',     points: 1100 },
-  { name: 'Charlie', points: 980  },
-  { name: 'Diana',   points: 760  },
+  { name: 'Bruce Wayne',   points: 5000 },
+  { name: 'Clark Kent',    points: 4200 },
+  { name: 'Diana Prince',  points: 3800 },
+  { name: 'Barry Allen',   points: 2900 },
+  { name: 'Hal Jordan',    points: 2100 },
+  { name: 'Arthur Curry',  points: 1700 },
+  { name: 'Oliver Queen',  points: 1300 },
+  { name: 'You',           points: 1250 }, // ← plats 8
+  { name: 'Billy Batson',  points: 900  },
+  { name: 'Victor Stone',  points: 600  },
 ];
 
+// === TEAMS ===
+// Poängen här är summan av respektive medlems poäng (mock)
 const _teams = [
-  { name: 'Team Alpha',   points: 5200 },
-  { name: 'Team Beta',    points: 4800 },
-  { name: 'Team Gamma',   points: 3900 },
-  { name: 'Team Delta',   points: 3100 },
-  { name: 'Team Epsilon', points: 2500 },
+  { name: 'Team Alpha',   points: 5000 + 4200 }, // Bruce + Clark = 9200
+  { name: 'Team Beta',    points: 3800 + 2900 }, // Diana + Barry = 6700
+  { name: 'Team Gamma',   points: 2100 + 1700 }, // Hal + Arthur = 3800
+  { name: 'Team Delta',   points: 1300 + 1250 }, // Oliver + You  = 2550
+  { name: 'Team Epsilon', points: 900  + 600  }, // Billy + Victor= 1500
 ];
 
+// Team → medlemmar
 const _teamMembers = {
-  'Team Alpha':   ['Alice', 'You'],
-  'Team Beta':    ['Bob', 'Charlie'],
-  'Team Gamma':   ['Diana'],
-  'Team Delta':   [],
-  'Team Epsilon': [],
+  'Team Alpha':   ['Bruce Wayne', 'Clark Kent'],
+  'Team Beta':    ['Diana Prince', 'Barry Allen'],
+  'Team Gamma':   ['Hal Jordan', 'Arthur Curry'],
+  'Team Delta':   ['Oliver Queen', 'You'],
+  'Team Epsilon': ['Billy Batson', 'Victor Stone'],
 };
 
+// === ÖVRIGA DATA (oförändrat) ===
 const _documents = [
   { name: 'API Documentation',     lastEdited: new Date('2025-08-20') },
   { name: 'User Guide',            lastEdited: new Date('2025-08-01') },
@@ -35,12 +44,18 @@ const _documents = [
   { name: 'Archived Projects',     lastEdited: new Date('2025-03-10') },
 ];
 
+// Achievements per spelare (enkla mockar)
 const _playerAchievements = {
-  'Alice':   { commits: 432, timeHours: 250, earned: ['First Commit','Reviewer','First of the Day', 'Team Contributor'] },
-  'You':     { commits: 22,  timeHours: 6,   earned: ['First Commit','Reviewer','First of the Day'] },
-  'Bob':     { commits: 12,  timeHours: 4,   earned: ['First Commit'] },
-  'Charlie': { commits: 10,  timeHours: 3,   earned: ['First Commit'] },
-  'Diana':   { commits: 5,   timeHours: 2,   earned: [] },
+  'Bruce Wayne':  { commits: 510, timeHours: 300, earned: ['First Commit','Reviewer','First of the Day','Team Contributor','Commit Milestone: 100','Commit Milestone: 200','Commit Milestone: 500'] },
+  'Clark Kent':   { commits: 480, timeHours: 260, earned: ['First Commit','Reviewer','Team Contributor','Commit Milestone: 100','Commit Milestone: 200','Commit Milestone: 500'] },
+  'Diana Prince': { commits: 405, timeHours: 240, earned: ['First Commit','Reviewer','First of the Day','Team Contributor','Commit Milestone: 100','Commit Milestone: 200'] },
+  'Barry Allen':  { commits: 220, timeHours: 150, earned: ['First Commit','Reviewer','Commit Milestone: 100','Commit Milestone: 200'] },
+  'Hal Jordan':   { commits: 160, timeHours: 120, earned: ['First Commit','Reviewer','Commit Milestone: 100'] },
+  'Arthur Curry': { commits: 130, timeHours:  90, earned: ['First Commit','Reviewer','Commit Milestone: 100'] },
+  'Oliver Queen': { commits:  80, timeHours:  40, earned: ['First Commit','Reviewer','Commit Milestone: 50'] },
+  'You':          { commits:  22, timeHours:   6, earned: ['First Commit','Reviewer','First of the Day'] },
+  'Billy Batson': { commits:  50, timeHours:  25, earned: ['First Commit','Commit Milestone: 50'] },
+  'Victor Stone': { commits:  35, timeHours:  20, earned: ['First Commit'] },
 };
 
 function _delay(ms=200){ return new Promise(r=>setTimeout(r,ms)); }

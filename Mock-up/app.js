@@ -37,6 +37,19 @@ if (window.__APP_MOUNTED__) {
   const copyDocBtn            = $('copy-doc-btn');
   const generatedDocContent   = $('generated-doc-content');
   const logoutBtn             = $('logout-btn');
+  const TOP_N                 = 5;
+  let _lbExpanded = false;
+  let _lbRowsCache = null;
+  let _lbCurrentUserCache = null;
+
+  function invalidateLeaderboardCache() {
+  _lbRowsCache = null;
+  _lbCurrentUserCache = null;
+}
+
+function setLeaderboardExpanded(v) {
+  _lbExpanded = !!v;
+}
 
   // ========== Tema ==========
   function applyTheme(theme) {
@@ -96,34 +109,95 @@ if (window.__APP_MOUNTED__) {
     await showDashboard(username);
   });
 
-  logoutBtn?.addEventListener('click', () => {
-    try { localStorage.removeItem('loggedInUser'); } catch {}
-    showLogin();
-  });
+logoutBtn?.addEventListener('click', () => {
+  try { localStorage.removeItem('loggedInUser'); } catch {}
+  setLeaderboardExpanded(false);
+  invalidateLeaderboardCache();
+  showLogin();
+});
 
   // ========== Listor ==========
+
 async function populateLeaderboard() {
   if (!leaderboardList) return;
   leaderboardList.innerHTML = '';
 
-  const [rows, currentUser] = await Promise.all([getLeaderboard(), getCurrentUser()]);
+  // Hämta och cacha
+  if (!_lbRowsCache || !_lbCurrentUserCache) {
+    const [rows, currentUser] = await Promise.all([getLeaderboard(), getCurrentUser()]);
+    _lbRowsCache = rows;
+    _lbCurrentUserCache = currentUser;
+  }
+  const rows = _lbRowsCache;
+  const currentUser = _lbCurrentUserCache;
+  const norm = (s) => (s || '').toLowerCase();
 
-  rows.forEach((player, i) => {
-    const userKey = player.name;                                   // kanoniskt (t.ex. "You", "Alice")
+  // Hitta "jag"
+  let meIdx = rows.findIndex(r => r.name === 'You');
+  if (meIdx === -1 && currentUser) meIdx = rows.findIndex(r => norm(r.name) === norm(currentUser));
+
+  let meRow = null;
+  let meRank = null;
+  if (meIdx >= 0) {
+    meRow = rows[meIdx];
+    meRank = meIdx + 1;
+  } else {
+    const pointsEl = document.getElementById('user-points');
+    const myPoints = pointsEl ? parseInt(pointsEl.textContent, 10) || 0 : 0;
+    meRow = { name: 'You', points: myPoints };
+    meRank = rows.reduce((acc, r) => acc + (r.points > myPoints ? 1 : 0), 0) + 1;
+  }
+
+  const makeLi = (player, absoluteRank) => {
+    const userKey = player.name; // canonical (behåll "You")
+    const isMe = userKey === 'You' || (currentUser && norm(userKey) === norm(currentUser));
     const displayName = (userKey === 'You' && currentUser) ? currentUser : userKey;
 
     const li = document.createElement('li');
-    li.classList.add('lb-item');
-    li.dataset.user = userKey;                                     // behåll "You" som KEY
-    if (userKey === 'You') li.classList.add('is-current-user');    // highlight funkar som förr
-
+    li.className = 'lb-item' + (isMe ? ' is-current-user' : '');
+    li.dataset.user = userKey;
     li.innerHTML = `
-      <span class="lb-user">${i + 1}. ${displayName}</span>
+      <span class="lb-user">${absoluteRank}. ${displayName}</span>
       <span>${player.points} points</span>
     `;
-    leaderboardList.appendChild(li);
-  });
+    return li;
+  };
+
+  if (_lbExpanded) {
+    // Visa hela listan
+    rows.forEach((p, i) => leaderboardList.appendChild(makeLi(p, i + 1)));
+
+    // Lägg till "Show less"
+    const collapse = document.createElement('li');
+    collapse.className = 'lb-sep lb-collapse';
+    collapse.setAttribute('role', 'button');
+    collapse.setAttribute('tabindex', '0');
+    collapse.setAttribute('aria-label', 'Visa färre placeringar');
+    collapse.textContent = 'Show less';
+    leaderboardList.appendChild(collapse);
+
+    return;
+  }
+
+  // Kompakt vy: Top 5
+  const TOP_N = 5;
+  rows.slice(0, TOP_N).forEach((p, i) => leaderboardList.appendChild(makeLi(p, i + 1)));
+
+  // Separator + min rad om jag är utanför top 5
+  if (meRank > TOP_N && meRow) {
+    const sep = document.createElement('li');
+    sep.className = 'lb-sep';
+    sep.setAttribute('role', 'button');
+    sep.setAttribute('tabindex', '0');
+    sep.setAttribute('aria-expanded', 'false'); // NYTT
+    sep.setAttribute('aria-label', 'Visa hela leaderboarden');
+    sep.innerHTML = `<span aria-hidden="true">…</span>`;
+    leaderboardList.appendChild(sep);
+
+    leaderboardList.appendChild(makeLi(meRow, meRank));
+  }
 }
+
 
 
 async function populateTeamLeaderboard() {
@@ -293,28 +367,97 @@ if (myProgress) {
 }
 
   // Hook: klick på leaderboard-rad → overlay user_profile?user=...
-  if (leaderboardList) {
-    leaderboardList.addEventListener('click', (e) => {
-      const li = e.target instanceof Element ? e.target.closest('li.lb-item') : null;
-      if (!li) return;
-      const user = li.dataset.user || '';
-      if (!user) return;
-      e.preventDefault();
-      openOverlay(`user_profile.html?user=${encodeURIComponent(user)}`);
-    });
-  }
+if (leaderboardList) {
+  leaderboardList.addEventListener('click', (e) => {
+    const el = e.target instanceof Element ? e.target : null;
+    if (!el) return;
 
-// Klick på team-rad → öppna teamprofil i overlay
-  if (teamLeaderboardList) {
+    // 1) Separator / Show less
+    const sep = el.closest('.lb-sep');
+    if (sep) {
+      if (sep.classList.contains('lb-collapse')) {
+        // Kollaps
+        setLeaderboardExpanded(false);
+        populateLeaderboard();
+        requestAnimationFrame(() => leaderboardList.querySelector('.lb-sep')?.focus());
+      } else {
+        // Expand
+        setLeaderboardExpanded(true);
+        sep.setAttribute('aria-expanded', 'true');
+        populateLeaderboard();
+        requestAnimationFrame(() => {
+          leaderboardList.querySelector('.is-current-user')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        });
+      }
+      return; // <-- viktig! hindra att profil-öppning körs på sep
+    }
+
+    // 2) Klick på en rad i listan (öppna profil)
+    const li = el.closest('li.lb-item');
+    if (!li) return;
+    const user = li.dataset.user || '';
+    if (!user) return;
+    e.preventDefault();
+    openOverlay(`user_profile.html?user=${encodeURIComponent(user)}`);
+  });
+
+  // Tangentbord: Enter/Space för sep & rad
+  leaderboardList.addEventListener('keydown', (e) => {
+    const el = e.target instanceof Element ? e.target : null;
+    if (!el) return;
+
+    // Separator
+    if (el.closest('.lb-sep') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      const isCollapse = el.classList.contains('lb-collapse');
+      setLeaderboardExpanded(!isCollapse);
+      populateLeaderboard();
+      requestAnimationFrame(() => {
+        if (isCollapse) {
+          leaderboardList.querySelector('.lb-sep')?.focus();
+        } else {
+          leaderboardList.querySelector('.is-current-user')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      });
+      return;
+    }
+
+    // Rad (öppna profil via Enter/Space)
+    if (el.closest('li.lb-item') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      const li = el.closest('li.lb-item');
+      const user = li?.dataset.user || '';
+      if (user) openOverlay(`user_profile.html?user=${encodeURIComponent(user)}`);
+    }
+  });
+}
+
+
+// Team: klick/Enter/Space => öppna teamprofil i overlay
+if (teamLeaderboardList) {
   teamLeaderboardList.addEventListener('click', (e) => {
-    const li = e.target instanceof Element ? e.target.closest('li.lb-item') : null;
+    const el = e.target instanceof Element ? e.target : null;
+    if (!el) return;
+    const li = el.closest('li.lb-item');
     if (!li) return;
     const team = li.dataset.team || '';
     if (!team) return;
     e.preventDefault();
     openOverlay(`team_profile.html?team=${encodeURIComponent(team)}`);
   });
+
+  teamLeaderboardList.addEventListener('keydown', (e) => {
+    const el = e.target instanceof Element ? e.target : null;
+    if (!el) return;
+    if ((e.key === 'Enter' || e.key === ' ') && el.closest('li.lb-item')) {
+      e.preventDefault();
+      const li = el.closest('li.lb-item');
+      const team = li?.dataset.team || '';
+      if (team) openOverlay(`team_profile.html?team=${encodeURIComponent(team)}`);
+    }
+  });
 }
+
 
   // Init
   checkLogin();

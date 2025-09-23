@@ -1,7 +1,7 @@
 /* =========================
    THEME TOKENS
    ========================= */
-   
+
 :root {
   --primary-color: #4a90e2;
   --secondary-color: #50e3c2;
@@ -604,4 +604,25 @@ footer {
   height: 100%;
   border: 0;
   display: block;
+}
+
+/* Separator mellan Top N och min rad (klickbar för expand) */
+.lb-sep {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.35rem 0;
+  color: #999;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+}
+.lb-sep:focus {
+  outline: 2px solid color-mix(in srgb, var(--primary-color) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* "Show less"-rad ser ut som separator men med text */
+.lb-collapse {
+  font-weight: 600;
 }
