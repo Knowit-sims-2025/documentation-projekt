@@ -47,7 +47,7 @@ const _documents = [
 // Achievements per spelare (enkla mockar)
 const _playerAchievements = {
   'Bruce Wayne':  { commits: 510, timeHours: 300, earned: ['First Commit','Reviewer','First of the Day','Team Contributor','Commit Milestone: 100','Commit Milestone: 200','Commit Milestone: 500'] },
-  'Clark Kent':   { commits: 480, timeHours: 260, earned: ['First Commit','Reviewer','Team Contributor','Commit Milestone: 100','Commit Milestone: 200','Commit Milestone: 500'] },
+  'Clark Kent':   { commits: 480, timeHours: 260, earned: ['First Commit','Reviewer','Team Contributor','Commit Milestone: 100','Commit Milestone: 200'] },
   'Diana Prince': { commits: 405, timeHours: 240, earned: ['First Commit','Reviewer','First of the Day','Team Contributor','Commit Milestone: 100','Commit Milestone: 200'] },
   'Barry Allen':  { commits: 220, timeHours: 150, earned: ['First Commit','Reviewer','Commit Milestone: 100','Commit Milestone: 200'] },
   'Hal Jordan':   { commits: 160, timeHours: 120, earned: ['First Commit','Reviewer','Commit Milestone: 100'] },

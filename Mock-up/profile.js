@@ -51,19 +51,22 @@ async function render() {
   container.innerHTML = '';
 
   // Overall progress
-  const allBadges = [
-    'First Commit','Reviewer','First of the Day','Team Contributor',
-    'Commit Milestone: 25','Commit Milestone: 50','Commit Milestone: 100',
-    'Commit Milestone: 200','Commit Milestone: 500','Documentation Time'
-  ];
-  const earnedCount = allBadges.filter(b =>
+    const allBadges = [
+        'First Commit','Reviewer','First of the Day','Team Contributor',
+        'Commit Milestone: 10',
+        'Commit Milestone: 25','Commit Milestone: 50','Commit Milestone: 100',
+        'Commit Milestone: 200','Commit Milestone: 500','Documentation Time'
+    ];
+    const earnedCount = allBadges.filter(b =>
     data.earned.includes(b) ||
-    (b==='Commit Milestone: 25'  && data.commits >= 25)  ||
-    (b==='Commit Milestone: 50'  && data.commits >= 50)  ||
-    (b==='Commit Milestone: 100' && data.commits >= 100) ||
-    (b==='Commit Milestone: 200' && data.commits >= 200) ||
-    (b==='Commit Milestone: 500' && data.commits >= 500)
-  ).length;
+        (b === 'Commit Milestone: 10'  && data.commits >= 10)  ||
+        (b === 'Commit Milestone: 25'  && data.commits >= 25)  ||
+        (b === 'Commit Milestone: 50'  && data.commits >= 50)  ||
+        (b === 'Commit Milestone: 100' && data.commits >= 100) ||
+        (b === 'Commit Milestone: 200' && data.commits >= 200) ||
+        (b === 'Commit Milestone: 500' && data.commits >= 500) ||
+        (b === 'Documentation Time'    && data.timeHours >= 10)
+    ).length;
   const overallPct = Math.round((earnedCount / allBadges.length) * 100);
 
   const overall = document.createElement('div');
