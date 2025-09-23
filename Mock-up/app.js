@@ -126,19 +126,21 @@ async function populateLeaderboard() {
 }
 
 
-  async function populateTeamLeaderboard() {
-    if (!teamLeaderboardList) return;
-    teamLeaderboardList.innerHTML = '';
-    const data = await getTeamLeaderboard();
-    data.forEach((team, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${i + 1}. ${team.name}</span>
-        <span>${team.points} points</span>
-      `;
-      teamLeaderboardList.appendChild(li);
-    });
-  }
+async function populateTeamLeaderboard() {
+  if (!teamLeaderboardList) return;
+  teamLeaderboardList.innerHTML = '';
+  const data = await getTeamLeaderboard();
+  data.forEach((team, i) => {
+    const li = document.createElement('li');
+    li.classList.add('lb-item');           // klickbar stil
+    li.dataset.team = team.name;           // viktigt för click-hook
+    li.innerHTML = `
+      <span class="lb-user">${i + 1}. ${team.name}</span>
+      <span>${team.points} points</span>
+    `;
+    teamLeaderboardList.appendChild(li);
+  });
+}
 
   async function populateStaleDocuments() {
     if (!staleFilter || !staleDocumentsList) return;
@@ -197,7 +199,10 @@ async function populateLeaderboard() {
       body.overlay-lock{overflow:hidden}
       #leaderboard-list .lb-item{cursor:pointer}
       #leaderboard-list .lb-item .lb-user{text-decoration:underline;color:inherit}
-    `;
+      /* ↓ gör team-listan visuellt klickbar också */
+      #team-leaderboard-list .lb-item{cursor:pointer}
+      #team-leaderboard-list .lb-item .lb-user{text-decoration:underline;color:inherit}
+      `;
     document.head.appendChild(s);
   })();
 
@@ -298,6 +303,18 @@ if (myProgress) {
       openOverlay(`user_profile.html?user=${encodeURIComponent(user)}`);
     });
   }
+
+// Klick på team-rad → öppna teamprofil i overlay
+  if (teamLeaderboardList) {
+  teamLeaderboardList.addEventListener('click', (e) => {
+    const li = e.target instanceof Element ? e.target.closest('li.lb-item') : null;
+    if (!li) return;
+    const team = li.dataset.team || '';
+    if (!team) return;
+    e.preventDefault();
+    openOverlay(`team_profile.html?team=${encodeURIComponent(team)}`);
+  });
+}
 
   // Init
   checkLogin();
