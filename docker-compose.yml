@@ -1,0 +1,31 @@
+# Denna fil definierar de tjänster (containers) som behövs för backend.
+version: '3.8'
+
+services:
+  # Definierar vår PostgreSQL-databastjänst
+  db:
+    image: postgres:15-alpine  # Använder en officiell, lättviktig version av PostgreSQL
+    container_name: gamification_db
+    restart: always # Startar om databasen automatiskt om den skulle krascha
+    environment:
+      # Ställer in databasens användarnamn och lösenord.
+      # Ändra lösenordet till något säkert!
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gamification_db
+    ports:
+      # Mappar port 5432 inuti containern till port 5432 på er dator.
+      # Detta låter er Go-app ansluta till databasen.
+      - "5432:5432"
+    volumes:
+      # Sparar databasens data på er hårddisk.
+      # Detta säkerställer att datan finns kvar även om ni stänger av/tar bort containern.
+      - ./postgres-data:/var/lib/postgresql/data
+
+  # (Valfritt men REKOMMENDERAS) Adminer: Ett enkelt webbgränssnitt för databasen
+  adminer:
+    image: adminer
+    container_name: gamification_db_admin
+    restart: always
+    ports:
+      - "8080:8080" # Gör Adminer tillgänglig på http://localhost:8080
