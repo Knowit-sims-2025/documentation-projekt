@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Team Profile</title>
+
+  <!-- Sätt tema tidigt så CSS-variabler funkar i iframen -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h2 id="team-profile-header">Team</h2>
+    <div class="card" id="team-summary"></div>
+
+    <h3>Members</h3>
+    <div id="team-roster-container" class="card">
+      <!-- roster renderas här -->
+    </div>
+  </main>
+
+  <script type="module" src="team.js"></script>
+</body>
+</html>

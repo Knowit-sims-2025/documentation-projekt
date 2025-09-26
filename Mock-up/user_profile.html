@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <title>User Profile</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h2 id="user-profile-header">User's Profile</h2>
+    <h3 id="user-achievements-header">Achievements</h3>
+    <div id="user-achievements-container">
+      <!-- Dynamiskt innehåll injiceras av profile.js -->
+    </div>
+  </main>
+  <script type="module" src="profile.js"></script>
+</body>
+</html>
