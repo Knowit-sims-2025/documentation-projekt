@@ -1,10 +1,8 @@
 package database
 
-
-
 import (
 	"database/sql"
-	""
+	"gamification-api/backend/models"
 	"log"
 )
 
@@ -14,31 +12,31 @@ type BadgeRepository struct {
 }
 
 // Skapar en helt ny BadgeRepo
-func NewBadgeRepository(db *sql.DB) *BadgeRepository {
+/*func NewBadgeRepository(db *sql.DB) *BadgeRepository {
 	return &BadgeRepository{db}
-}
+}*/
 
 // Hämtar alla badges från db
-func (r *BadgeRepository) getAllBadges() ([]Badge, error) {
-	query := `SELECT id, name, description, icon_url, criteria_value FROM badges`
-
+func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
+	query := `SELECT id, name, description, icon_url, criteria_value FROM badges ORDER BY name DESC` //ordern är just nu by name
 	rows, err := r.DB.Query(query)
+
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var badges []Badge
+	var badges []models.Badge
 
 	for rows.Next() {
-		var badge Badge
+		var badge models.Badge
 		err := rows.Scan(
 			&badge.ID,
 			&badge.Name,
 			&badge.Description,
 			&badge.IconUrl,
-			&badge.CriteriaValue
-			)
+			&badge.CriteriaValue,
+		)
 		if err != nil {
 			log.Println("Error scanning badge:", err)
 			continue
