@@ -17,18 +17,21 @@ func main() {
 	}
 	defer db.Close()
 
-	// Steg 2: Skapa en instans av er UserRepository
+	// Steg 2: Skapa en instans av er UserRepository/BadgeRepository
 	// Denna struct kommer från er database/user_repository.go fil
 	userRepo := &database.UserRepository{DB: db}
+	badgeRepo := &database.BadgeRepository{DB: db}
 
-	// Steg 3: Skapa en instans av er UserHandler
+	// Steg 3: Skapa en instans av er UserHandler/BadgeHandler
 	// Denna struct kommer från er handlers/user_handlers.go fil
 	userHandler := &handlers.UserHandler{Repo: userRepo}
+	badgeHandler := &handlers.BadgeHandler{Repo: badgeRepo}
 
 	// Steg 4: Sätt upp en router och koppla er handler till en URL
 	// Detta är "hovmästaren" som dirigerar trafik
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/users", userHandler.GetAllUsersHandler)
+	mux.HandleFunc("/api/v1/badges", badgeHandler.GetAllBadgesHandler)
 
 	// Steg 5: Starta webbservern
 	port := "8081" // Använder 8081 för att inte krocka med Adminer på 8080
