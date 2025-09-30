@@ -21,14 +21,12 @@ func main() {
 	// Denna struct kommer från er database/user_repository.go fil
 	userRepo := &database.UserRepository{DB: db}
 	badgeRepo := &database.BadgeRepository{DB: db}
-
 	userBadgeRepo := &database.UserBadgeRepository{DB: db}
 
 	// Steg 3: Skapa en instans av er UserHandler/BadgeHandler
 	// Denna struct kommer från er handlers/user_handlers.go fil
 	userHandler := &handlers.UserHandler{Repo: userRepo}
 	badgeHandler := &handlers.BadgeHandler{Repo: badgeRepo}
-
 	userBadgeHandler := &handlers.UserBadgeHandler{Repo: userBadgeRepo}
 
 	// Steg 4: Sätt upp en router och koppla er handler till en URL
@@ -36,7 +34,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/users", userHandler.GetAllUsersHandler)
 	mux.HandleFunc("/api/v1/badges", badgeHandler.GetAllBadgesHandler)
-
 	mux.HandleFunc("/api/v1/userBadges", userBadgeHandler.GetAllUserBadgesHandler)
 
 	// Steg 5: Starta webbservern
