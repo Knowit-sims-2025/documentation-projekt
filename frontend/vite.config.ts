@@ -1,8 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-})
+  plugins: [react()],
+  server: {
+    proxy: {
+      // Proxy alla förfrågningar som börjar med '/api' till din Go-backend
+      '/api': {
+        target: 'http://localhost:8081', // GO-backend adress
+        changeOrigin: true, // Ändrar 'Origin' headern till target URL:en. Viktigt för att undvika CORS-problem.
+      },
+    },
+  },
+});

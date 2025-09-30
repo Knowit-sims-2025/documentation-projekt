@@ -2,55 +2,118 @@
    Bas & tokens + teman
    ========================= */
 :root {
-  /* layout */
+  /* Layout */
   --header-h: 72px;
   --gap: 8px;
-  --container-w: clamp(960px, 90vw, 1200px);
+  --container-w: clamp(960px, 90vw, 1800px);
+  --container-px: 16px;
 
-  /* färg-API (använd alltid dessa i UI:t) */
-  --bg: #0b0b0b;
-  --text: #f5f5f5;
-  --muted: #b5b5b5;
-  --card-bg: rgba(255,255,255,0.06);
-  --card-border: rgba(255,255,255,0.12);
-  --card-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  /* Färgton för blå accent (delad mellan teman) */
+  --h: 220;
 
-  /* demo-färger (kan bytas mot “card”-stil senare) */
-  /* --c-header: #ffe800;
-  --c-profile: #ff7a00;
-  --c-individual: #7a0ca0;
-  --c-teams: #10b3a3;
-  --c-competition: #d11a5f;
-  --c-achievements: #f5e3b3; */
+  /* ===== DARK (default) – djupare navy-blå svart ===== */
+  --bg: hsl(220 25% 10%);             /* djup navy-svart */
+  --text: hsl(210 20% 92%);            /* varm ljusgrå – bättre läsbarhet */
+  --muted: hsl(215 12% 62%);           /* dämpad sekundär */
 
-  color-scheme: dark; /* default dark */
+  /* Accent (knappar, länkar, fokus) */
+  --accent: hsl(var(--h) 70% 56%);     /* royal blue */
+  --accent-contrast: #fff;
+
+  /* Ytor/komponenter (elevations) */
+  --card-bg: hsl(220 22% 14% / 0.88);  /* ett snäpp ljusare än bg */
+  --card-border: hsl(220 30% 90% / 0.10);
+  --card-shadow: 0 8px 24px hsl(220 50% 2% / 0.55);
+
+  /* Header/default-lager */
+  --c-header: hsl(220 24% 12% / 0.95); /* mörk banderoll, separerad från bg */
+  --c-profile: var(--card-bg);
+  --c-individual: var(--card-bg);
+  --c-teams: var(--card-bg);
+  --c-competition: var(--card-bg);
+  --c-achievements: var(--card-bg);
+
+  /* Extra ytnivåer */
+  --surface-1: var(--card-bg);                 /* kort */
+  --surface-2: hsl(220 22% 16% / 0.92);        /* modaler, paneler */
+  --surface-3: hsl(220 22% 18% / 0.96);        /* topp-overlays */
+
+  /* Statusfärger (dämpade för dark) */
+  --ok:    hsl(150 45% 45%);
+  --warn:  hsl(40 85% 55%);
+  --err:   hsl(355 70% 60%);
+
+  /* Z-index */
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-toast: 300;
+
+  color-scheme: dark;
 }
 
-/* Light theme (aktiveras med <html data-theme="light">) */
+/* ===== LIGHT (mörkare blå variant) – aktiveras med <html data-theme="light"> ===== */
 :root[data-theme="light"] {
-  --bg: #ffffff;
-  --text: #111111;
-  --muted: #474747;
-  --card-bg: rgba(0,0,0,0.03);
-  --card-border: rgba(0,0,0,0.12);
-  --card-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  /* Palettparametrar för enkel justering */
+  --s-bg: 40%;        /* mättnad bakgrund */
+  --s-surface: 42%;   /* mättnad kort */
+  --s-accent: 70%;    /* mättnad accent */
+  --l-bg: 93%;        /* ljushet bakgrund (mörkare än “vanlig” light) */
+  --l-surface: 90%;   /* ljushet kort */
+  --l-header: 85%;    /* ljushet header */
 
-  /* valfritt: ljusare header */
-  --c-header: #fff6a0;
+  /* Basfärger */
+  --bg: hsl(var(--h) var(--s-bg) var(--l-bg));           /* dämpat ljusblå bakgrund */
+  --text: hsl(220 28% 15%);                              /* mörkblå text */
+  --muted: hsl(220 15% 45%);                             /* sekundär text */
+
+  /* Ytor */
+  --card-bg: hsl(var(--h) var(--s-surface) var(--l-surface));
+  --card-border: hsl(220 25% 25% / 0.25);
+  --card-shadow: 0 4px 16px hsl(220 50% 10% / 0.25);
+
+  /* Header */
+  --c-header: hsl(var(--h) 50% var(--l-header));         /* djupare blå block */
+
+  /* Sektioner */
+  --c-profile: var(--card-bg);
+  --c-individual: var(--card-bg);
+  --c-teams: var(--card-bg);
+  --c-competition: var(--card-bg);
+  --c-achievements: var(--card-bg);
+
+  /* Accent (delar hue/”--h” med dark) */
+  --accent: hsl(var(--h) var(--s-accent) 40%);
+  --accent-contrast: #fff;
 
   color-scheme: light;
 }
 
-/* Fallback till systemets preferenser om inget tema satts */
+/* ===== Fallback till systemets preferenser om inget tema satts (LIGHT) =====
+   Uppdaterad till samma blåa familj som ovan – inte vitt. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg: #ffffff;
-    --text: #111111;
-    --muted: #474747;
-    --card-bg: rgba(0,0,0,0.03);
-    --card-border: rgba(0,0,0,0.12);
-    --card-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    --c-header: #fff6a0;
+    --s-bg: 40%;
+    --s-surface: 42%;
+    --s-accent: 70%;
+    --l-bg: 93%;
+    --l-surface: 90%;
+    --l-header: 85%;
+
+    --bg: hsl(var(--h) var(--s-bg) var(--l-bg));
+    --text: hsl(220 28% 15%);
+    --muted: hsl(220 15% 45%);
+    --card-bg: hsl(var(--h) var(--s-surface) var(--l-surface));
+    --card-border: hsl(220 25% 25% / 0.25);
+    --card-shadow: 0 4px 16px hsl(220 50% 10% / 0.25);
+    --c-header: hsl(var(--h) 50% var(--l-header));
+    --c-profile: var(--card-bg);
+    --c-individual: var(--card-bg);
+    --c-teams: var(--card-bg);
+    --c-competition: var(--card-bg);
+    --c-achievements: var(--card-bg);
+    --accent: hsl(var(--h) var(--s-accent) 40%);
+    --accent-contrast: #fff;
+
     color-scheme: light;
   }
 }
@@ -62,18 +125,36 @@
 html, body { height: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
+
+  /* Liten bakgrundsglow i dark för djup (neutralt i light) */
+  background:
+    radial-gradient(1200px 800px at 70% -10%,
+      hsl(220 30% 12% / 0.5),
+      transparent 60%
+    ),
+    var(--bg);
+
   color: var(--text);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* mjuka övergångar när man byter tema */
-  transition: background-color 180ms ease, color 180ms ease;
+  /* mjuka övergångar vid temabyte */
+  transition: background-color 180ms ease, color 180ms ease, background-image 180ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
   body { transition: none; }
 }
+
+/* Fokusring för tillgänglighet (endast tangentbord) – UPPD: använd accent */
+:focus-visible {
+  outline: 2px solid var(--accent);   /* ändrad från currentColor */
+  outline-offset: 2px;
+}
+
+/* Länkar */
+a { color: var(--accent); }
+a:hover { text-decoration: underline; }
 
 /* =========================
    Layout: app
@@ -83,92 +164,134 @@ body {
   inset: env(safe-area-inset-top) 0 auto 0;
   height: var(--header-h);
   background: var(--c-header);
-  color: #000;
-  border-bottom: 1px solid rgba(0,0,0,.2);
+  color: var(--text);                            /* UPPD: ärv textfärg */
+  border-bottom: 1px solid var(--card-border);   /* UPPD: konsekvent border */
   display: flex;
   align-items: center;
-  z-index: 100;
+  z-index: var(--z-header);
+  backdrop-filter: saturate(1.05) blur(6px);     /* liten polish i dark */
 }
 .app__header .container {
   width: 100%;
   max-width: var(--container-w);
   margin: 0 auto;
-  padding: 0 16px;
+  padding-inline: var(--container-px);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .app__main {
-  /* fyll hela höjden under headern */
   min-height: calc(100vh - var(--header-h));
-  padding-top: var(--header-h); /* knuffa ner innehållet */
+  padding-top: var(--header-h);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* =========================
-   Grid: 2 rader × 4 kolumner
+   Grid med areas (läsbarhet)
    ========================= */
 .dashboard {
   width: 100%;
   max-width: var(--container-w);
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px var(--container-px);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* två lika höga rader som fyller viewport-höjd under header */
-  grid-template-rows: 1fr 1fr;
+
+  grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
+  grid-template-rows: 1.5fr 1fr;
+  grid-template-areas:
+    "profile individual individual achievements"
+    "profile teams      competition achievements";
+
   gap: var(--gap);
   min-height: calc(100vh - var(--header-h) - 24px);
 }
 
 /* =========================
-   Placering enligt skissen
+   Placering via areas
    ========================= */
-.profile {
-  grid-column: 1 / 2;      /* kolumn 1 */
-  grid-row: 1 / span 2;    /* två rader hög */
-  background: var(--c-profile);
-}
-.individual {
-  grid-column: 2 / span 2; /* två kolumner bred (2–3) */
-  grid-row: 1 / 2;         /* rad 1 */
-  background: var(--c-individual);
-}
-.teams {
-  grid-column: 2 / 3;      /* kolumn 2 */
-  grid-row: 2 / 3;         /* rad 2 */
-  background: var(--c-teams);
-}
-.competition {
-  grid-column: 3 / 4;      /* kolumn 3 */
-  grid-row: 2 / 3;         /* rad 2 */
-  background: var(--c-competition);
-}
-.achievements {
-  grid-column: 4 / 5;      /* kolumn 4 */
-  grid-row: 1 / span 2;    /* två rader hög */
-  background: var(--c-achievements);
-  color: #000;
-}
+.profile      { grid-area: profile;      background: var(--c-profile); }
+.individual   { grid-area: individual;   background: var(--c-individual); }
+.teams        { grid-area: teams;        background: var(--c-teams); }
+.competition  { grid-area: competition;  background: var(--c-competition); }
+.achievements { grid-area: achievements; background: var(--c-achievements); }
 
 /* =========================
-   Kort-stil (byt när ni vill)
+   Kort-stil
    ========================= */
 .card {
-  display: block;
-  font-weight: 400;
-  align-items: center;flex
+  display: flex;
+  align-items: center;
   justify-content: center;
+
   font-weight: 600;
   border-radius: 12px;
   padding: 12px;
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow);
-  /* växla till “glassig” card-look genom att kommentera ut demo-färgerna ovan
-     och använda dessa:
-     background: var(--card-bg);
-     border: 1px solid var(--card-border);
-     color: var(--text);
-  */
+
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease; /* UPPD */
+}
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px hsl(220 60% 2% / 0.6);
+  border-color: hsl(220 30% 90% / 0.18);
+}
+.card:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px hsl(220 60% 2% / 0.5);
+}
+
+/* =========================
+   Leaderboard-stil
+   ========================= */
+.leaderboard-container {
+  width: 100%;
+  padding: 0 16px;
+  text-align: left;
+}
+.leaderboard-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 120ms ease; /* UPPD */
+}
+.leaderboard-item:last-child { border-bottom: none; }
+.leaderboard-item.is-current-user {
+  background-color: hsl(50 100% 50% / 0.12); /* gulmarkering men subtil */
+  font-weight: bold;
+}
+.leaderboard-item.is-separator {
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: bold;
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--card-border);
+}
+.leaderboard-item.is-separator:hover {
+  background-color: hsl(220 20% 20% / 0.10); /* UPPD: neutral hover */
+}
+.leaderboard-name { flex-grow: 1; margin-left: 12px; }
+.leaderboard-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  margin-left: 8px;
+  object-fit: cover;
 }
 
 /* Små hjälparklasser */
@@ -180,34 +303,100 @@ body {
 @media (max-width: 1024px) {
   :root { --header-h: 64px; }
 }
-
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    grid-template-areas:
+      "profile"
+      "individual"
+      "teams"
+      "competition"
+      "achievements";
     min-height: auto;
-  }
-  .profile,
-  .individual,
-  .teams,
-  .competition,
-  .achievements {
-    grid-column: 1 / -1;
-    grid-row: auto;
   }
 }
 
 /* =========================
-   (Valfritt) Grid-areas för läsbarhet
-   - Om ni vill, kan ni byta till areas:
-   .dashboard {
-     grid-template-areas:
-       "profile individual individual achievements"
-       "profile teams      competition achievements";
-   }
-   .profile      { grid-area: profile; }
-   .individual   { grid-area: individual; }
-   .teams        { grid-area: teams; }
-   .competition  { grid-area: competition; }
-   .achievements { grid-area: achievements; }
+   Overlay-lager
    ========================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  /* UPPD: blåtonad dim som funkar i båda teman */
+  background: linear-gradient(
+    to bottom,
+    hsl(220 40% 2% / 0.70),
+    hsl(220 40% 2% / 0.55)
+  );
+
+  display: grid;
+  place-items: center;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(2px);
+}
+.overlay__card {
+  background: var(--surface-2);
+  border: 1px solid hsl(220 30% 90% / 0.14);
+  box-shadow: 0 12px 36px hsl(220 70% 2% / 0.65);
+  border-radius: 16px;
+  padding: 16px;
+  max-width: min(960px, 90vw);
+}
+
+/* =========================
+   (Valfritt) Grundknapp som nyttjar accent
+   ========================= */
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: 1px solid color-mix(in lab, var(--accent) 60%, black);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+/* =========================
+   Extra polish: divider, scrollbar, selection
+   ========================= */
+.hr,
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    hsl(220 30% 90% / 0.14),
+    transparent
+  );
+  border: 0;
+}
+
+/* Scrollbar (webkit) – diskret blågrå */
+*::-webkit-scrollbar { height: 10px; width: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: hsl(220 20% 35% / 0.6);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: hsl(220 20% 45% / 0.7); }
+
+/* Text selection – mild blå highlight */
+::selection {
+  background: hsl(220 70% 56% / 0.35);
+  color: #fff;
+}
+
+/* High-contrast preferens */
+@media (prefers-contrast: more) {
+  :root {
+    --card-border: hsl(220 30% 90% / 0.22);
+    --muted: hsl(215 12% 72%);
+  }
+  .card { border-width: 1.5px; }
+}
