@@ -58,7 +58,15 @@ export default function SimpleUserList() {
       <h2>Användare</h2>
       <ul className="leaderboard-list">
         {users.map((user) => (
-          <li key={user.id} className="leaderboard-item">
+          <li
+            key={user.id}
+            className="leaderboard-item"
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              console.log(`Klickade på användare med ID: ${user.displayName}`); // Placeholder för framtida funktionalitet
+            }}
+          >
             <span className="leaderboard-rank">{user.rank}.</span>
             {user.avatarUrl && (
               <img
