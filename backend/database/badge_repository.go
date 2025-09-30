@@ -15,11 +15,6 @@ type UserBadgeRepository struct {
 	DB *sql.DB
 }
 
-// Skapar en helt ny BadgeRepo
-/*func NewBadgeRepository(db *sql.DB) *BadgeRepository {
-	return &BadgeRepository{db}
-}*/
-
 // Hämtar alla badges från db
 func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 	query := `SELECT id, name, description, icon_url, criteria_value FROM badges ORDER BY name DESC` //ordern är just nu by name
@@ -55,7 +50,7 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 
 // Hämta alla user_badges från db
 func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
-	query := `SELECT id, user_id, badge_id, awarded_at FROM user_badges ORDER BY awarded_at DESC`
+	query := `SELECT user_id, badge_id, awarded_at FROM user_badges ORDER BY awarded_at DESC`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -67,7 +62,6 @@ func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
 	for rows.Next() {
 		var ub models.UserBadge
 		err := rows.Scan(
-			&ub.ID,
 			&ub.UserID,
 			&ub.BadgeID,
 			&ub.AwardedAt,

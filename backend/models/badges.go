@@ -14,7 +14,6 @@ type Badge struct {
 }
 
 type UserBadge struct {
-	ID        int64     `json:"id"`
 	UserID    int64     `json:"user_id"`
 	BadgeID   int64     `json:"badge_id"`
 	AwardedAt time.Time `json:"awarded_at"`
