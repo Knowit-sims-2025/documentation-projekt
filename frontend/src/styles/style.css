@@ -1,0 +1,213 @@
+/* =========================
+   Bas & tokens + teman
+   ========================= */
+:root {
+  /* layout */
+  --header-h: 72px;
+  --gap: 8px;
+  --container-w: clamp(960px, 90vw, 1200px);
+
+  /* färg-API (använd alltid dessa i UI:t) */
+  --bg: #0b0b0b;
+  --text: #f5f5f5;
+  --muted: #b5b5b5;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --card-shadow: 0 4px 16px rgba(0,0,0,0.3);
+
+  /* demo-färger (kan bytas mot “card”-stil senare) */
+  /* --c-header: #ffe800;
+  --c-profile: #ff7a00;
+  --c-individual: #7a0ca0;
+  --c-teams: #10b3a3;
+  --c-competition: #d11a5f;
+  --c-achievements: #f5e3b3; */
+
+  color-scheme: dark; /* default dark */
+}
+
+/* Light theme (aktiveras med <html data-theme="light">) */
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #474747;
+  --card-bg: rgba(0,0,0,0.03);
+  --card-border: rgba(0,0,0,0.12);
+  --card-shadow: 0 4px 16px rgba(0,0,0,0.08);
+
+  /* valfritt: ljusare header */
+  --c-header: #fff6a0;
+
+  color-scheme: light;
+}
+
+/* Fallback till systemets preferenser om inget tema satts */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #ffffff;
+    --text: #111111;
+    --muted: #474747;
+    --card-bg: rgba(0,0,0,0.03);
+    --card-border: rgba(0,0,0,0.12);
+    --card-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --c-header: #fff6a0;
+    color-scheme: light;
+  }
+}
+
+/* =========================
+   Reset/typografi
+   ========================= */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* mjuka övergångar när man byter tema */
+  transition: background-color 180ms ease, color 180ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+}
+
+/* =========================
+   Layout: app
+   ========================= */
+.app__header {
+  position: fixed;
+  inset: env(safe-area-inset-top) 0 auto 0;
+  height: var(--header-h);
+  background: var(--c-header);
+  color: #000;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+.app__header .container {
+  width: 100%;
+  max-width: var(--container-w);
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app__main {
+  /* fyll hela höjden under headern */
+  min-height: calc(100vh - var(--header-h));
+  padding-top: var(--header-h); /* knuffa ner innehållet */
+}
+
+/* =========================
+   Grid: 2 rader × 4 kolumner
+   ========================= */
+.dashboard {
+  width: 100%;
+  max-width: var(--container-w);
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* två lika höga rader som fyller viewport-höjd under header */
+  grid-template-rows: 1fr 1fr;
+  gap: var(--gap);
+  min-height: calc(100vh - var(--header-h) - 24px);
+}
+
+/* =========================
+   Placering enligt skissen
+   ========================= */
+.profile {
+  grid-column: 1 / 2;      /* kolumn 1 */
+  grid-row: 1 / span 2;    /* två rader hög */
+  background: var(--c-profile);
+}
+.individual {
+  grid-column: 2 / span 2; /* två kolumner bred (2–3) */
+  grid-row: 1 / 2;         /* rad 1 */
+  background: var(--c-individual);
+}
+.teams {
+  grid-column: 2 / 3;      /* kolumn 2 */
+  grid-row: 2 / 3;         /* rad 2 */
+  background: var(--c-teams);
+}
+.competition {
+  grid-column: 3 / 4;      /* kolumn 3 */
+  grid-row: 2 / 3;         /* rad 2 */
+  background: var(--c-competition);
+}
+.achievements {
+  grid-column: 4 / 5;      /* kolumn 4 */
+  grid-row: 1 / span 2;    /* två rader hög */
+  background: var(--c-achievements);
+  color: #000;
+}
+
+/* =========================
+   Kort-stil (byt när ni vill)
+   ========================= */
+.card {
+  display: block;
+  font-weight: 400;
+  align-items: center;flex
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--card-shadow);
+  /* växla till “glassig” card-look genom att kommentera ut demo-färgerna ovan
+     och använda dessa:
+     background: var(--card-bg);
+     border: 1px solid var(--card-border);
+     color: var(--text);
+  */
+}
+
+/* Små hjälparklasser */
+.muted { color: var(--muted); }
+
+/* =========================
+   Responsivitet
+   ========================= */
+@media (max-width: 1024px) {
+  :root { --header-h: 64px; }
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    min-height: auto;
+  }
+  .profile,
+  .individual,
+  .teams,
+  .competition,
+  .achievements {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
+/* =========================
+   (Valfritt) Grid-areas för läsbarhet
+   - Om ni vill, kan ni byta till areas:
+   .dashboard {
+     grid-template-areas:
+       "profile individual individual achievements"
+       "profile teams      competition achievements";
+   }
+   .profile      { grid-area: profile; }
+   .individual   { grid-area: individual; }
+   .teams        { grid-area: teams; }
+   .competition  { grid-area: competition; }
+   .achievements { grid-area: achievements; }
+   ========================= */

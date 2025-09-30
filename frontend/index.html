@@ -2,14 +2,22 @@
 <html lang="sv">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
-    <title>DocFlow Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Min React-sida</title>
+
+    <!-- Sätt initialt tema mycket tidigt (innan CSS/JS) -->
+    <script>
+      (function () {
+        const saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        } // annars låter vi din CSS falla tillbaka på prefers-color-scheme
+      })();
+    </script>
   </head>
-  <body class="min-h-screen bg-neutral-950 text-neutral-100 antialiased">
+  <body>
     <div id="root"></div>
+    <!-- Vite mountar React här -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

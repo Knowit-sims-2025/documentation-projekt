@@ -1,41 +1,70 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
+/**
+ * Lärar-kommentar:
+ * - Denna komponent ansvarar för toppen av sidan (header + innehåll).
+ * - Temat lagras i state och synkas till <html data-theme="..."> + localStorage.
+ */
 export default function App() {
-  // ungefärlig headerhöjd ~64–72px (vi ger main motsvarande padding)
+  // 1) Läs starttema från DOM (sattes tidigt i index.html) eller default 'dark'
+  const initialTheme =
+    document.documentElement.getAttribute("data-theme") || "dark";
+
+  // 2) State för tema
+  const [theme, setTheme] = useState<"light" | "dark">(
+    initialTheme === "light" ? "light" : "dark"
+  );
+
+  // 3) Synka state -> DOM + localStorage
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  // 4) UI: header + 2x4 grid enligt dina klasser
   return (
-    <div className="min-h-screen">
-      {/* FIXED HEADER */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-yellow-500/40 bg-yellow-400 text-black">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <h1 className="text-lg font-bold">header</h1>
-          <nav className="text-sm">/* meny / ikoner här senare */</nav>
+    <>
+      <header className="app__header">
+        <div className="container">
+          <h1 className="muted" style={{ margin: 0 }}>
+            Min Dashboard
+          </h1>
+
+          {/* Liten temaväljare – pedagogisk och lätt att ta bort */}
+          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span className="muted">Theme</span>
+            <select
+              aria-label="Välj tema"
+              value={theme}
+              onChange={(e) =>
+                setTheme(e.target.value === "light" ? "light" : "dark")
+              }
+            >
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </label>
         </div>
       </header>
 
-      {/* GRID 2×4 (md och uppåt) — padding-top kompenserar för fixed header */}
-      <main className="pt-20">
-        <div className="grid h-[calc(100vh-5rem)] gap-2 md:grid-cols-4 md:grid-rows-2">
-          <section className="bg-orange-500 md:col-start-1 md:row-span-2 h-full w-full flex items-center justify-center">
-            Profil
-          </section>
+      <main className="app__main">
+        <section className="dashboard">
+          {/* Kolumn 1, två rader hög */}
+          <div className="profile card">Profile</div>
 
-          <section className="bg-fuchsia-700 md:col-start-2 md:col-span-2 md:row-start-1 h-full w-full flex items-center justify-center">
-            Individual leaderboard
-          </section>
+          {/* Kolumn 2–3, rad 1 */}
+          <div className="individual card">Individual</div>
 
-          <section className="bg-teal-500 md:col-start-2 md:row-start-2 h-full w-full flex items-center justify-center">
-            Teams
-          </section>
+          {/* Kolumn 2, rad 2 */}
+          <div className="teams card">Teams</div>
 
-          <section className="bg-rose-600 md:col-start-3 md:row-start-2 h-full w-full flex items-center justify-center">
-            Competition
-          </section>
+          {/* Kolumn 3, rad 2 */}
+          <div className="competition card">Competition</div>
 
-          <aside className="bg-amber-200 text-black md:col-start-4 md:row-span-2 h-full w-full flex items-center justify-center">
-            Achievements
-          </aside>
-        </div>
+          {/* Kolumn 4, två rader hög */}
+          <div className="achievements card">Achievements</div>
+        </section>
       </main>
-    </div>
+    </>
   );
 }
