@@ -1,4 +1,5 @@
 import React from "react";
+import SimpleUserList from "./SimpleUserList";
 
 export default function Dashboard() {
   return (
@@ -8,7 +9,9 @@ export default function Dashboard() {
         <div className="profile card">Profile</div>
 
         {/* Kolumn 2–3, rad 1 */}
-        <div className="individual card">Individual</div>
+        <div className="individual card">
+          <SimpleUserList />
+        </div>
 
         {/* Kolumn 2, rad 2 */}
         <div className="teams card">Teams</div>
