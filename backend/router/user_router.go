@@ -5,13 +5,6 @@ import (
 	"net/http"
 )
 
-package router
-
-import (
-"gamification-api/backend/handlers" // Byt ut mot ert modulnamn
-"net/http"
-)
-
 // RegisterUserRoutes tar emot en router och en userHandler,
 // och registrerar alla vägar som har med användare att göra.
 func RegisterUserRoutes(mux *http.ServeMux, h *handlers.UserHandler) {
