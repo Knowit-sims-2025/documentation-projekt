@@ -22,12 +22,20 @@ func main() {
 	userRepo := &database.UserRepository{DB: db}
 	badgeRepo := &database.BadgeRepository{DB: db}
 	userBadgeRepo := &database.UserBadgeRepository{DB: db}
+	activityRepo := &database.ActivityRepository{DB: db}
+	competitionRepo := &database.CompetitionRepository{DB: db}
+	teamRepo := &database.TeamRepository{DB: db}
+	userTeamRepo := &database.UserTeamRepository{DB: db}
 
 	// Steg 3: Skapa en instans av er UserHandler/BadgeHandler
 	// Denna struct kommer från er handlers/user_handlers.go fil
 	userHandler := &handlers.UserHandler{Repo: userRepo}
 	badgeHandler := &handlers.BadgeHandler{Repo: badgeRepo}
 	userBadgeHandler := &handlers.UserBadgeHandler{Repo: userBadgeRepo}
+	activityHandler := &handlers.ActivityHandler{Repo: activityRepo}
+	competitionHandler := &handlers.CompetitionHandler{Repo: competitionRepo}
+	teamHandler := &handlers.TeamHandler{Repo: teamRepo}
+	userTeamHandler := &handlers.UserTeamHandler{Repo: userTeamRepo}
 
 	// Steg 4: Sätt upp en router och koppla er handler till en URL
 	// Detta är "hovmästaren" som dirigerar trafik
@@ -35,6 +43,10 @@ func main() {
 	mux.HandleFunc("/api/v1/users", userHandler.GetAllUsersHandler)
 	mux.HandleFunc("/api/v1/badges", badgeHandler.GetAllBadgesHandler)
 	mux.HandleFunc("/api/v1/userBadges", userBadgeHandler.GetAllUserBadgesHandler)
+	mux.HandleFunc("/api/v1/activities", activityHandler.GetAllActivitiesHandler)
+	mux.HandleFunc("/api/v1/competitions", competitionHandler.GetAllCompetitionsHandler)
+	mux.HandleFunc("/api/v1/teams", teamHandler.GetAllTeamsHandler)
+	mux.HandleFunc("/api/v1/userTeams", userTeamHandler.GetAllUserTeamsHandler)
 
 	// Steg 5: Starta webbservern
 	port := "8081" // Använder 8081 för att inte krocka med Adminer på 8080
