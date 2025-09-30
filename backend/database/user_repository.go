@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"gamification-api/backend/models"
-	"time"
 )
 
 // UserRepository hanterar all databaskommunikation för User-modellen.
@@ -41,8 +40,8 @@ func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func (repo *UserRepository) GetUserByID(id int) (*models.User, error) {
-	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE id = ?", id)
+func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
+	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE id = $1", id)
 	var user models.User
 	err := row.Scan(
 		&user.ID,
@@ -74,9 +73,9 @@ func (repo *UserRepository) CreateUser(user *models.User) (int64, error) {
 
 // UpdateUser uppdaterar en befintlig användares information.
 func (repo *UserRepository) UpdateUser(id int64, user *models.User) error {
-	query := `UPDATE users SET display_name = $1, avatar_url = $2, is_admin = $3, updated_at = $4 WHERE id = $5`
+	query := `UPDATE users SET display_name = $1, avatar_url = $2, is_admin = $3, updated_at = NOW() WHERE id = $4`
 
-	_, err := repo.DB.Exec(query, user.DisplayName, user.AvatarURL, user.IsAdmin, time.Now(), id)
+	_, err := repo.DB.Exec(query, user.DisplayName, user.AvatarURL, user.IsAdmin, id)
 	return err
 }
 
