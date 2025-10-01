@@ -1,5 +1,6 @@
 import React from "react";
 import type { Theme } from "../hooks/useTheme";
+import ThemeToggle from "./ThemeToggle"; // Importera den nya komponenten
 
 interface HeaderProps {
   theme: Theme;
@@ -7,24 +8,14 @@ interface HeaderProps {
 }
 
 export default function Header({ theme, setTheme }: HeaderProps) {
+  // Inga ändringar här, bara för kontext
   return (
     <header className="app__header">
       <div className="container">
         <h1 className="muted" style={{ margin: 0 }}>
           Dashboard
         </h1>
-
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span className="muted">Theme</span>
-          <select
-            aria-label="Välj tema"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as Theme)}
-          >
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-          </select>
-        </label>
+        <ThemeToggle theme={theme} setTheme={setTheme} />
       </div>
     </header>
   );

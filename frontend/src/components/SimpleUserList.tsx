@@ -7,6 +7,7 @@ interface User {
   avatarUrl?: string; // Valfri
   totalPoints: number;
   rank: number; // Vi lägger till rank i frontend
+  rankTier: string; // Exempel: "Gold", "Silver", etc.
   isAdmin: boolean;
 }
 
@@ -67,7 +68,12 @@ export default function SimpleUserList() {
               console.log(`Klickade på användare med ID: ${user.displayName}`); // Placeholder för framtida funktionalitet
             }}
           >
-            <span className="leaderboard-rank">{user.rank}.</span>
+            <span
+              className="leaderboard-rank"
+              title={`${user.displayName} is rank ${user.rank}`}
+            >
+              {user.rank}.
+            </span>
             {user.avatarUrl && (
               <img
                 src={user.avatarUrl}
@@ -75,7 +81,15 @@ export default function SimpleUserList() {
                 className="leaderboard-avatar"
               />
             )}
-            <span className="leaderboard-name">{user.displayName}</span>
+            <span
+              className="leaderboard-name"
+              title="Click on user for more info"
+            >
+              {user.displayName}
+            </span>
+            <span className="leaderboard-admin" title="Administratör">
+              {user.isAdmin ? "⭐" : ""}
+            </span>
             <span className="leaderboard-points">{user.totalPoints} p</span>
           </li>
         ))}
