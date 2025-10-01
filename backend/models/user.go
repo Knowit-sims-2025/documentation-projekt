@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	ID                 int            `json:"id"`
+	ID                 int64          `json:"id"`
 	ConfluenceAuthorID string         `json:"-"`
 	DisplayName        string         `json:"displayName"`
 	AvatarURL          sql.NullString `json:"avatarUrl"`

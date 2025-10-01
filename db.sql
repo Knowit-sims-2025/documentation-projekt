@@ -22,6 +22,7 @@ CREATE TABLE teams (
 CREATE TABLE user_teams (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     PRIMARY KEY (user_id, team_id)
 );
 

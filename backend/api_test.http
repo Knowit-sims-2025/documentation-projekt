@@ -1,0 +1,40 @@
+###
+# Hämta alla användare
+# Svarar med en lista av alla användare i databasen.
+GET http://localhost:8081/api/v1/users
+
+###
+# Skapa en ny användare
+# Svarar med den nyskapade användaren, inklusive dess nya ID.
+POST http://localhost:8081/api/v1/users
+Content-Type: application/json
+
+{
+    "confluenceAuthorId": "kalle.anka.id",
+    "displayName": "Kalle Anka",
+    "avatarUrl": "https://example.com/kalle.png"
+}
+
+###
+# Hämta en specifik användare
+# Byt ut '1' i URL:en mot ID:t på den användare du vill hämta.
+GET http://localhost:8081/api/v1/users/8
+
+###
+# Uppdatera en användare
+# Byt ut '1' i URL:en. Skickar med den nya informationen.
+# Svarar med status 200 OK om det lyckades.
+PUT http://localhost:8081/api/v1/users/8
+Content-Type: application/json
+
+{
+    "displayName": "Kalle Anka (Uppdaterad)",
+    "isAdmin": true
+}
+
+
+###
+# Ta bort en användare
+# Byt ut '1' i URL:en mot ID:t på den användare du vill ta bort.
+# Svarar med status 204 No Content om det lyckades.
+DELETE http://localhost:8081/api/v1/users/7
