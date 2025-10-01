@@ -10,7 +10,7 @@ POST http://localhost:8081/api/v1/users
 Content-Type: application/json
 
 {
-    "confluenceAuthorId": "kalle.anka.id",
+    "confluenceAuthorId": "Taha.khudher.id",
     "displayName": "Kalle Anka",
     "avatarUrl": "https://example.com/kalle.png"
 }
@@ -37,4 +37,4 @@ Content-Type: application/json
 # Ta bort en användare
 # Byt ut '1' i URL:en mot ID:t på den användare du vill ta bort.
 # Svarar med status 204 No Content om det lyckades.
-DELETE http://localhost:8081/api/v1/users/7
+DELETE http://localhost:8081/api/v1/users/8
