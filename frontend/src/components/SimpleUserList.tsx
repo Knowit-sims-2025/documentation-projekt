@@ -1,97 +1,22 @@
-import React, { useState, useEffect } from "react";
-
-// Definierar typen för en användare baserat på din API.md och Go-modellen
-interface User {
-  id: number;
-  displayName: string;
-  avatarUrl?: string; // Valfri
-  totalPoints: number;
-  rank: number; // Vi lägger till rank i frontend
-  rankTier: string; // Exempel: "Gold", "Silver", etc.
-  isAdmin: boolean;
-}
+// src/features/leaderboard/SimpleUserList.tsx
+import React from "react";
+import { useUsers } from "../hooks/useUsers";
+import { Loading } from "./Loading";
+import { ErrorMessage } from "./ErrorMessage";
+import { IndividualRank } from "../features/leaderboard/IndividualRank";
 
 export default function SimpleUserList() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: users, loading, error } = useUsers();
 
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        // Anropar endpointen för att hämta alla användare
-        const response = await fetch("/api/v1/users");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        // Lägg till rankning till varje användare. Listan är redan sorterad från backend.
-        const rankedUsers = data.map((user: any, index: number) => ({
-          ...user,
-          rank: index + 1,
-        }));
-        setUsers(rankedUsers);
-      } catch (e) {
-        if (e instanceof Error) {
-          setError(e.message);
-        } else {
-          setError("Ett okänt fel inträffade vid hämtning av användare.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUsers();
-  }, []); // Tom array betyder att effekten bara körs en gång när komponenten monteras
-
-  if (loading) {
-    return <p className="muted">Laddar användare...</p>;
-  }
-
-  if (error) {
-    return <p style={{ color: "var(--err)" }}>Fel: {error}</p>;
-  }
+  if (loading) return <Loading text="Laddar användare..." />;
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="leaderboard-container">
       <h2>Användare</h2>
       <ul className="leaderboard-list">
         {users.map((user) => (
-          <li
-            key={user.id}
-            className="leaderboard-item"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              console.log(`Klickade på användare med ID: ${user.displayName}`); // Placeholder för framtida funktionalitet
-            }}
-          >
-            <span
-              className="leaderboard-rank"
-              title={`${user.displayName} is rank ${user.rank}`}
-            >
-              {user.rank}.
-            </span>
-            {user.avatarUrl && (
-              <img
-                src={user.avatarUrl}
-                alt={user.displayName}
-                className="leaderboard-avatar"
-              />
-            )}
-            <span
-              className="leaderboard-name"
-              title="Click on user for more info"
-            >
-              {user.displayName}
-            </span>
-            <span className="leaderboard-admin" title="Administratör">
-              {user.isAdmin ? "⭐" : ""}
-            </span>
-            <span className="leaderboard-points">{user.totalPoints} p</span>
-          </li>
+          <IndividualRank key={user.id} user={user} />
         ))}
       </ul>
     </div>

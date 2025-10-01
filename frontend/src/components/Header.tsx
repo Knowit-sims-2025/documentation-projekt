@@ -1,6 +1,6 @@
 import React from "react";
 import type { Theme } from "../hooks/useTheme";
-import ThemeToggle from "./ThemeToggle"; // Importera den nya komponenten
+import ThemeToggle from "./ThemeToggle";
 
 interface HeaderProps {
   theme: Theme;
@@ -8,7 +8,6 @@ interface HeaderProps {
 }
 
 export default function Header({ theme, setTheme }: HeaderProps) {
-  // Inga ändringar här, bara för kontext
   return (
     <header className="app__header">
       <div className="container">
