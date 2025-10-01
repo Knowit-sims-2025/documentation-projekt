@@ -19,10 +19,16 @@ func main() {
 
 	// Steg 2: Skapa era repositories
 	userRepo := &database.UserRepository{DB: db}
+	badgeRepo := &database.BadgeRepository{DB: db}
+	userBadgeRepo := &database.UserBadgeRepository{DB: db}
+	activityRepo := &database.ActivityRepository{DB: db}
 	// competitionRepo := &database.CompetitionRepository{DB: db} // (läggs till senare)
 
 	// Steg 3: Skapa era handlers
 	userHandler := &handlers.UserHandler{Repo: userRepo}
+	badgeHandler := &handlers.BadgeHandler{Repo: badgeRepo}
+	userBadgeHandler := &handlers.UserBadgeHandler{Repo: userBadgeRepo}
+	activityHandler := &handlers.ActivityHandler{Repo: activityRepo}
 	// competitionHandler := &handlers.CompetitionHandler{Repo: competitionRepo} // (läggs till senare)
 
 	// Steg 4: Skapa en ny, tom router
@@ -31,6 +37,9 @@ func main() {
 	// Steg 5: Anropa er registreringsfunktion för att konfigurera routern
 	// Detta är nyckeln! main.go behöver inte känna till de specifika URL:erna.
 	router.RegisterUserRoutes(mux, userHandler)
+	router.RegisterBadgeRoutes(mux, badgeHandler)
+	router.RegisterUserBadgeRoutes(mux, userBadgeHandler)
+	router.RegisterActivityRoutes(mux, activityHandler)
 
 	// När ni skapar fler delar, anropar ni bara deras registreringsfunktioner här:
 	// router.RegisterCompetitionRoutes(mux, competitionHandler)
