@@ -1,5 +1,5 @@
 import React from "react";
-import SimpleUserList from "./SimpleUserList";
+import UserLeaderBoard from "./UserLeaderBoard";
 
 export default function Dashboard() {
   return (
@@ -10,7 +10,7 @@ export default function Dashboard() {
 
         {/* Kolumn 2–3, rad 1 */}
         <div className="individual card">
-          <SimpleUserList />
+          <UserLeaderBoard />
         </div>
 
         {/* Kolumn 2, rad 2 */}

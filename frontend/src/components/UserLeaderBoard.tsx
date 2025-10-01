@@ -5,7 +5,7 @@ import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage";
 import { IndividualRank } from "../features/leaderboard/IndividualRank";
 
-export default function SimpleUserList() {
+export default function UserLeaderBoard() {
   const { data: users, loading, error } = useUsers();
 
   if (loading) return <Loading text="Laddar användare..." />;
