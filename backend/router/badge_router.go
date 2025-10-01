@@ -32,3 +32,31 @@ func RegisterBadgeRoutes(mux *http.ServeMux, h *handlers.BadgeHandler) {
 		}
 	})
 }
+
+func RegisterUserBadgeRoutes(mux *http.ServeMux, h *handlers.UserBadgeHandler) {
+	// /api/v1/userBadges hanterar GET (alla) och POST (skapa ny)
+	mux.HandleFunc("/api/v1/userBadges", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			h.GetAllUserBadgesHandler(w, r)
+		case http.MethodPost:
+			h.CreateUserBadgeHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// /api/v1/userBadges/{user id}/{badge id} hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
+	mux.HandleFunc("/api/v1/userBadges/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			h.GetUserBadgeHandler(w, r)
+		case http.MethodPut:
+			h.UpdateUserBadgeHandler(w, r)
+		case http.MethodDelete:
+			h.DeleteUserBadgeHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+}
