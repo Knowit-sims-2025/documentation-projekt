@@ -30,25 +30,26 @@ func main() {
 		DisplayName        string
 		ConfluenceAuthorID string
 		AvatarURL          string
+		IsAdmin            bool
 	}{
-		{"Tony Stark", "iron-man", "https://i.pravatar.cc/150?u=iron-man"},
-		{"Steve Rogers", "captain-america", "https://i.pravatar.cc/150?u=captain-america"},
-		{"Natasha Romanoff", "black-widow", "https://i.pravatar.cc/150?u=black-widow"},
-		{"Thor Odinson", "thor", "https://i.pravatar.cc/150?u=thor"},
-		{"Bruce Banner", "hulk", "https://i.pravatar.cc/150?u=hulk"},
-		{"Clint Barton", "hawkeye", "https://i.pravatar.cc/150?u=hawkeye"},
-		{"Peter Parker", "spider-man", "https://i.pravatar.cc/150?u=spider-man"},
-		{"Wanda Maximoff", "scarlet-witch", "https://i.pravatar.cc/150?u=scarlet-witch"},
-		{"Stephen Strange", "dr-strange", "https://i.pravatar.cc/150?u=dr-strange"},
-		{"T'Challa", "black-panther", "https://i.pravatar.cc/150?u=black-panther"},
-		{"Carol Danvers", "captain-marvel", "https://i.pravatar.cc/150?u=captain-marvel"},
-		{"Scott Lang", "ant-man", "https://i.pravatar.cc/150?u=ant-man"},
+		{"Tony Stark", "iron-man", "https://i.pravatar.cc/150?u=iron-man", true},
+		{"Steve Rogers", "captain-america", "https://i.pravatar.cc/150?u=captain-america", false},
+		{"Natasha Romanoff", "black-widow", "https://i.pravatar.cc/150?u=black-widow", false},
+		{"Thor Odinson", "thor", "https://i.pravatar.cc/150?u=thor", false},
+		{"Bruce Banner", "hulk", "https://i.pravatar.cc/150?u=hulk", false},
+		{"Clint Barton", "hawkeye", "https://i.pravatar.cc/150?u=hawkeye", false},
+		{"Peter Parker", "spider-man", "https://i.pravatar.cc/150?u=spider-man", false},
+		{"Wanda Maximoff", "scarlet-witch", "https://i.pravatar.cc/150?u=scarlet-witch", false},
+		{"Stephen Strange", "dr-strange", "https://i.pravatar.cc/150?u=dr-strange", false},
+		{"T'Challa", "black-panther", "https://i.pravatar.cc/150?u=black-panther", false},
+		{"Carol Danvers", "captain-marvel", "https://i.pravatar.cc/150?u=captain-marvel", false},
+		{"Scott Lang", "ant-man", "https://i.pravatar.cc/150?u=ant-man", false},
 	}
 
 	// Förbered SQL-frågan för att infoga användare
 	stmt, err := db.Prepare(`
-		INSERT INTO users (display_name, confluence_author_id, avatar_url, total_points)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO users (display_name, confluence_author_id, avatar_url, total_points, is_admin)
+		VALUES ($1, $2, $3, $4, $5)
 	`)
 	if err != nil {
 		log.Fatalf("Kunde inte förbereda SQL-statement: %v", err)
@@ -60,7 +61,7 @@ func main() {
 		// Generera slumpmässiga poäng för variation
 		points := rand.Intn(5000) + 500 // Poäng mellan 500 och 5499
 
-		_, err := stmt.Exec(user.DisplayName, user.ConfluenceAuthorID, user.AvatarURL, points)
+		_, err := stmt.Exec(user.DisplayName, user.ConfluenceAuthorID, user.AvatarURL, points, user.IsAdmin)
 		if err != nil {
 			log.Printf("Kunde inte infoga användare %s: %v\n", user.DisplayName, err)
 		} else {
