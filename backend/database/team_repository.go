@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"gamification-api/backend/models"
 	"log"
+	"time"
 )
 
 type TeamRepository struct {
@@ -16,7 +17,7 @@ type UserTeamRepository struct {
 
 // Hämta alla teams
 func (r *TeamRepository) GetAllTeams() ([]models.Team, error) {
-	query := `SELECT id, name, created_at FROM teams ORDER BY name ASC`
+	query := `SELECT id, name, created_at FROM teams ORDER BY ID ASC`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -40,6 +41,51 @@ func (r *TeamRepository) GetAllTeams() ([]models.Team, error) {
 	}
 
 	return teams, nil
+}
+
+// Hämta ett specifikt team efter ID
+func (r *TeamRepository) GetTeamByID(id int64) (*models.Team, error) {
+	row := r.DB.QueryRow(`SELECT id, name, created_at FROM teams WHERE id = $1`, id)
+
+	var t models.Team
+	err := row.Scan(&t.ID, &t.Name, &t.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+// Skapa ett nytt team
+func (r *TeamRepository) CreateTeam(t *models.Team) (int64, error) {
+	var id int64
+	err := r.DB.QueryRow(`
+		INSERT INTO teams (name, created_at)
+		VALUES ($1, $2)
+		RETURNING id`,
+		t.Name, time.Now().UTC(),
+	).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+// Uppdatera ett team
+func (r *TeamRepository) UpdateTeam(t *models.Team) error {
+	_, err := r.DB.Exec(`
+		UPDATE teams
+		SET name = $1
+		WHERE id = $2`,
+		t.Name, t.ID,
+	)
+	return err
+}
+
+// Ta bort ett team
+func (r *TeamRepository) DeleteTeam(id int64) error {
+	_, err := r.DB.Exec(`DELETE FROM teams WHERE id = $1`, id)
+	return err
 }
 
 // Hämta alla user_teams
