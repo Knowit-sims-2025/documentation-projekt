@@ -13,7 +13,7 @@ export default function UserLeaderBoard() {
 
   return (
     <div className="leaderboard-container">
-      <h2>Användare</h2>
+      <h2>Individual ranking</h2>
       <ul className="leaderboard-list">
         {users.map((user) => (
           <IndividualRank key={user.id} user={user} />
