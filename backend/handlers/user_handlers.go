@@ -3,8 +3,8 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"gamification-api/backend/database" // Byt ut 'gamification-api' mot ert Go-modulnamn
-	"gamification-api/backend/models"   // Byt ut 'gamification-api' mot ert Go-modulnamn
+	"gamification-api/backend/database" 
+	"gamification-api/backend/models"  	
 	"net/http"
 	"strconv"
 	"strings"
@@ -38,7 +38,6 @@ func (h *UserHandler) GetUserByIDHandler(w http.ResponseWriter, r *http.Request)
 
 	user, err := h.Repo.GetUserByID(id)
 	if err != nil {
-		// Om repositoryt returnerar ett tekniskt fel
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -55,8 +54,6 @@ func (h *UserHandler) GetUserByIDHandler(w http.ResponseWriter, r *http.Request)
 
 // CreateUserHandler hanterar förfrågningar till POST /api/v1/users
 func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	// FÖRBÄTTRING: Vi använder en temporär struct för att läsa in JSON.
-	// Detta krävs eftersom er `models.User` har `json:"-"` på ConfluenceAuthorID.
 	var requestBody struct {
 		ConfluenceAuthorID string `json:"confluenceAuthorId"`
 		DisplayName        string `json:"displayName"`
@@ -68,7 +65,6 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Skapa den riktiga modellen och fyll i datan.
 	user := &models.User{
 		ConfluenceAuthorID: requestBody.ConfluenceAuthorID,
 		DisplayName:        requestBody.DisplayName,
@@ -81,7 +77,6 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Hämta den fullständiga användaren för att returnera den.
 	createdUser, err := h.Repo.GetUserByID(newID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,8 +107,6 @@ func (h *UserHandler) UpdateUserHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	// FÖRBÄTTRING: Returnerar 200 OK istället för 204 No Content.
-	// Ofta vill frontend veta att det gick bra.
 	w.WriteHeader(http.StatusOK)
 }
 
