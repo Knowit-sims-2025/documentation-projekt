@@ -10,5 +10,5 @@ type Activity struct {
 	ConfluenceVersionNumber int       `json:"-"` // Internal use, hide from JSON
 	ActivityType            string    `json:"activityType"`
 	PointsAwarded           int       `json:"pointsAwarded"`
-	CreatedAt               time.Time `json:"timestamp"`
+	CreatedAt               time.Time `json:"createdAt"`
 }
