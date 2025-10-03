@@ -11,6 +11,7 @@ export function IndividualRank({ user }: { user: User }) {
         {user.rank}.
       </span>
       <Avatar name={user.displayName} src={user.avatarUrl} />
+
       <span
         className="leaderboard-name"
         title="Click on username to view profile"
