@@ -1,7 +1,7 @@
 ###
 # Hämta alla användare
 # Svarar med en lista av alla användare i databasen.
-GET http://localhost:8081/api/v1/users
+GET http://localhost:8081/api/v1/userTeams
 
 ###
 # Skapa en ny användare
@@ -18,7 +18,7 @@ Content-Type: application/json
 ###
 # Hämta en specifik användare
 # Byt ut '1' i URL:en mot ID:t på den användare du vill hämta.
-GET http://localhost:8081/api/v1/users/8
+GET http://localhost:8081/api/v1/userTeams/1
 
 ###
 # Uppdatera en användare
@@ -37,4 +37,17 @@ Content-Type: application/json
 # Ta bort en användare
 # Byt ut '1' i URL:en mot ID:t på den användare du vill ta bort.
 # Svarar med status 204 No Content om det lyckades.
-DELETE http://localhost:8081/api/v1/users/8
+DELETE http://localhost:8081/api/v1/userTeams/user/2/3
+
+###
+POST http://localhost:8081/api/v1/userTeams
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "team_id": 3
+}
+
+
+
+

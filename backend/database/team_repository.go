@@ -130,3 +130,51 @@ func (r *UserTeamRepository) RemoveUserFromTeam(userID, teamID int64) error {
 	_, err := r.DB.Exec(query, userID, teamID)
 	return err
 }
+
+// Hämta alla team för en viss user
+func (r *UserTeamRepository) GetUserTeamsByUserID(userID int64) ([]models.UserTeam, error) {
+	query := `SELECT user_id, team_id, joined_at FROM user_teams WHERE user_id = $1 ORDER BY joined_at DESC`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var userTeams []models.UserTeam
+	for rows.Next() {
+		var ut models.UserTeam
+		if err := rows.Scan(&ut.UserID, &ut.TeamID, &ut.JoinedAt); err != nil {
+			return nil, err
+		}
+		userTeams = append(userTeams, ut)
+	}
+
+	return userTeams, rows.Err()
+}
+
+// GetUsersByTeamID hämtar alla users som är med i ett specifikt team
+func (r *UserTeamRepository) GetUsersByTeamID(teamID int64) ([]models.User, error) {
+	query := `
+        SELECT u.id, u.display_name, u.created_at
+        FROM users u
+        INNER JOIN user_teams ut ON u.id = ut.user_id
+        WHERE ut.team_id = $1
+        ORDER BY ut.joined_at ASC
+    `
+	rows, err := r.DB.Query(query, teamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var u models.User
+		if err := rows.Scan(&u.ID, &u.DisplayName, &u.CreatedAt); err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+
+	return users, rows.Err()
+}
