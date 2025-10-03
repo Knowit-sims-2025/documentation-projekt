@@ -1,3 +1,8 @@
+/* Importerar grundläggande stilar för react-grid-layout */ 
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
+
 /* =========================
    Bas & tokens + teman
    ========================= */
@@ -188,8 +193,10 @@ a:hover { text-decoration: underline; }
   padding-right: env(safe-area-inset-right);
 }
 
+
 /* =========================
    Grid med areas (läsbarhet)
+   Dashboard Container
    ========================= */
 .dashboard {
   width: 100%;
@@ -206,6 +213,9 @@ a:hover { text-decoration: underline; }
 
   gap: var(--gap);
   min-height: calc(100vh - var(--header-h) - 24px);
+  /* All positionering hanteras nu av react-grid-layout.
+     Denna klass sätter bara de yttre ramarna för containern.
+     Vi behöver inte längre display: grid, grid-template-areas, etc. */
 }
 
 /* =========================

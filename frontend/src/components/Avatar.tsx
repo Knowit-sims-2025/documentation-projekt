@@ -11,6 +11,7 @@ export function Avatar({
 }) {
   const [imgError, setImgError] = useState(false);
 
+  //splittar namnet på space och sätter sedan Initialerna.
   const initials = name
     .split(" ")
     .map((p) => p[0])
