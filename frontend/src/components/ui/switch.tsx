@@ -1,6 +1,11 @@
 import React from "react";
-// import "./switch.css";
+import "./switch.css";
 
+/**
+ * Kontrollerad switch-komponent.
+ * - "checked" styrs utifrån (parent state).
+ * - "onChange" anropas med nästa boolean när användaren togglar.
+ */
 type Props = {
   checked: boolean;
   onChange: (next: boolean) => void;
@@ -24,6 +29,7 @@ export default function Switch({
     }
   }
 
+  // Sätt bas-klass + ev. extra klasser från prop
   const classes = ["ui-switch", className].filter(Boolean).join(" ");
 
   return (

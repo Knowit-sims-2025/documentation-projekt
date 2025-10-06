@@ -11,7 +11,14 @@ export function Avatar({
 }) {
   const [imgError, setImgError] = useState(false);
 
-  //splittar namnet på space och sätter sedan Initialerna.
+  /**
+   * Beräkna initialer:
+   * - trimma whitespace
+   * - splitta på mellanrum
+   * - ta första bokstaven från upp till två ord
+   * - fallback till "?" om namnet är tomt
+   * Memoiserad för att inte räkna om i onödan.
+   */
   const initials = name
     .split(" ")
     .map((p) => p[0])
@@ -19,6 +26,14 @@ export function Avatar({
     .join("")
     .toUpperCase();
 
+  /**
+   * Om vi har en bildkälla och den inte felat → rendera <img>.
+   * onError: om bilden inte går att ladda växlar vi till initialer.
+   *
+   * Tillgänglighet (alt):
+   * - alt={name} är rimligt om namnet inte finns precis bredvid i UI:t.
+
+   */
   if (src && !imgError) {
     return (
       <img
@@ -26,17 +41,18 @@ export function Avatar({
         alt={name}
         className={className}
         onError={() => setImgError(true)}
-        title="User avatar or initials if no avatar is set"
       />
     );
   }
 
+  /**
+   * Fallback: visa initialer.
+   * role="img" + aria-label: låter skärmläsare behandla denna som en bild med namn.
+   * Om namnet redan läses upp någon annanstans intill: sätt aria-hidden istället.
+   */
+
   return (
-    <div
-      className={className}
-      aria-label={name}
-      title="User avatar or initials if no avatar is set"
-    >
+    <div className={className} aria-label={name}>
       {initials}
     </div>
   );

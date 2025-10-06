@@ -1,6 +1,3 @@
-/* Importerar grundläggande stilar för react-grid-layout */ 
-
-
 
 /* =========================
    Bas & tokens + teman
@@ -425,7 +422,6 @@ a:hover { text-decoration: underline; }
 
 
 
-
 /* =========================
    Individual Leaderboard Layout-fix
    ========================= */
@@ -444,7 +440,6 @@ a:hover { text-decoration: underline; }
   overflow-y: auto;
   overflow-x: hidden;
 
-  /* snygg padding + konsekvent bakgrund */
   padding: 16px;
   box-sizing: border-box;
 }
@@ -454,7 +449,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   flex-direction: column;
   flex: 1;          /* fyller kortets höjd */
-  min-height: 0;    /* krävs för korrekt overflow i flexbox */
+  min-height: 0;    /* viktigt för flexbox overflow att fungera */
   text-align: left;
 }
 
@@ -473,3 +468,5 @@ a:hover { text-decoration: underline; }
 .leaderboard-item {
   align-items: flex-start;
 }
+
+
