@@ -141,3 +141,4 @@ func (h *ActivityHandler) DeleteActivityHandler(w http.ResponseWriter, r *http.R
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
