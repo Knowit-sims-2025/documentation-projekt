@@ -18,8 +18,8 @@ func main() {
 
 	fmt.Println("Ansluten till databasen. Börjar seeda...")
 
-	// Rensa befintliga användare för att undvika dubbletter vid omkörning
-	_, err = db.Exec("DELETE FROM users")
+	// Rensa befintliga användare och återställ ID-räknaren för att säkerställa konsekventa ID:n
+	_, err = db.Exec("TRUNCATE TABLE users RESTART IDENTITY CASCADE")
 	if err != nil {
 		log.Fatalf("Kunde inte rensa users-tabellen: %v", err)
 	}

@@ -8,6 +8,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Header theme={theme} setTheme={setTheme} />
+
       <Dashboard />
     </AuthProvider>
   );
