@@ -1,9 +1,18 @@
 import type { User } from "../types/user";
 import { getRankTier } from "./config/rank";
 
+// Typalias för råa JSON-objekt från backend (okända fält och format)
 type RawUser = Record<string, any>;
 
-// Hämta sträng från ev. sql.NullString-liknande objekt
+/* ==========================================================================
+   pickString(v)
+   --------------------------------------------------------------------------
+   Hanterar Go:s `sql.NullString`-objekt som backend kan returnera.
+   Exempel:
+     { String: "iron-man", Valid: true } → "iron-man"
+   Om värdet redan är en vanlig sträng returneras det direkt.
+   Om `Valid` = false eller fältet saknas → undefined.
+   ========================================================================== */
 function pickString(v: any): string | undefined {
   if (typeof v === "string") return v;
   if (v && typeof v.String === "string" && (v.Valid === undefined || v.Valid === true)) {
@@ -12,64 +21,63 @@ function pickString(v: any): string | undefined {
   return undefined;
 }
 
-// Försök härleda slug från avatarUrl (ex: .../captain-america.png?size=150x150 -> "captain-america")
-// eller från query-parametern ?u=iron-man
-function deriveSlugFromAvatar(url?: string): string | null {
-  if (!url) return null;
-  try {
-    // 1) Query-param ?u=
-    const u = new URL(url, window.location.origin);
-    const qp = u.searchParams.get("u");
-    if (qp) return qp;
 
-    // 2) Sista path-segmentet utan filändelse
-    const last = u.pathname.split("/").filter(Boolean).pop();
-    if (last) {
-      const base = last.split(".")[0];       // "captain-america.png" -> "captain-america"
-      if (base) return base;
-    }
-  } catch {
-    // Om URL-konstruktorn inte klarar absolut/relativ blandning, gör enkel fallback:
-    const m = url.match(/\/([^\/?#]+)(?:\?.*)?$/); // sista segmentet
-    if (m?.[1]) return m[1].split(".")[0];
-  }
-  return null;
-}
+/* ==========================================================================
+   normalize(u)
+   --------------------------------------------------------------------------
+   Gör om ett "rått" användarobjekt från backend till ett konsekvent
+   frontend-format som följer typen `User`.
 
+   Hanterar:
+     - snake_case, PascalCase och camelCase-fältnamn
+     - Go:s NullString-objekt
+     - fallback för confluenceAuthorId om det saknas
+   ========================================================================== */
 function normalize(u: RawUser) {
+  // id kan komma som "id" eller "ID"
   const id = Number(u.id ?? u.ID);
+
+  // displayName i flera varianter
   const displayName =
     u.displayName ?? u.DisplayName ?? u.display_name ?? "(unknown)";
 
-  // 1) avatarUrl kan vara sträng ELLER {String, Valid}
+  // avatarUrl kan vara sträng eller {String, Valid}
   const avatarUrl =
     pickString(u.avatarUrl) ??
     pickString(u.AvatarURL) ??
     pickString(u.avatar_url);
 
-  // 2) confluenceAuthorId: testa alla vanliga varianter
-  let confluenceAuthorId: string | null =
-    u.confluenceAuthorId ??
-    u.ConfluenceAuthorID ??
-    u.confluence_author_id ??
-    null;
+  // confluenceAuthorId – vi läser bara det backend faktiskt skickar
+  const confluenceAuthorId: string | null =
+    (u.confluenceAuthorId ??
+      u.ConfluenceAuthorID ??
+      u.confluence_author_id ??
+      null) ?? null;
 
-  // 3) Om fortfarande tom/null: härled från avatarUrl (matchar dina seed-slugs)
-  if (!confluenceAuthorId) {
-    confluenceAuthorId = deriveSlugFromAvatar(avatarUrl) ?? null;
-  }
-
+  // poäng och admin-stöd med fallback
   const totalPoints = Number(u.totalPoints ?? u.TotalPoints ?? u.total_points ?? 0);
   const isAdmin = Boolean(u.isAdmin ?? u.IsAdmin ?? u.is_admin ?? false);
 
   return { id, displayName, confluenceAuthorId, avatarUrl, totalPoints, isAdmin };
 }
 
+/* ==========================================================================
+   getUsers()
+   --------------------------------------------------------------------------
+   Hämtar användardata från backendens /api/v1/users-endpoint.
+
+   Flöde:
+     1) Hämta data via fetch()
+     2) Hantera både { users: [...] } och bara [...]
+     3) Normalisera varje användare med normalize()
+     4) Sortera efter totalPoints (högst först)
+     5) Lägg till rank och rankTier (via getRankTier)
+   ========================================================================== */
 export async function getUsers(): Promise<User[]> {
   const res = await fetch("/api/v1/users");
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+  
   const data = await res.json();
-
   const raw: RawUser[] = Array.isArray(data?.users) ? data.users : data;
 
   const list = raw.map(normalize).sort((a, b) => b.totalPoints - a.totalPoints);
