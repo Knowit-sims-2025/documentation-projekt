@@ -422,22 +422,54 @@ a:hover { text-decoration: underline; }
   .card { border-width: 1.5px; }
 }
 
+
+
+
+
 /* =========================
-   Theme Toggle Switch
+   Individual Leaderboard Layout-fix
    ========================= */
 
+/* Själva kortet ska börja uppifrån och kunna scrolla om listan blir lång */
+.individual.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+  /* låt kortet fylla höjd i griden */
+  height: 100%;
+
+  /* gör hela sektionen scrollbar om innehållet blir långt */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* snygg padding + konsekvent bakgrund */
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-.theme-toggle img {
-  height: 18px;
-  width: 18px;
+/* Container inuti kortet ska också sträcka sig och kunna hantera flex */
+.leaderboard-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;          /* fyller kortets höjd */
+  min-height: 0;    /* krävs för korrekt overflow i flexbox */
+  text-align: left;
+}
+
+/* Listan blir scrollbar om det finns många rader */
+.leaderboard-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 0; /* viktigt för flexbox overflow att fungera */
+}
+
+/* Varje item tar bara sin egen höjd, ingen centrerings-offset */
+.leaderboard-item {
+  align-items: flex-start;
 }

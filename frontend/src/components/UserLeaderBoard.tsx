@@ -4,23 +4,20 @@ import { useAuth } from "../features/AuthContext";
 import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage";
 import { IndividualRank } from "../features/leaderboard/IndividualRank";
+import Switch from "../components/ui/switch"; // ⬅️ lägg till
 
 export default function UserLeaderBoard() {
-  // 1) Hooks: MÅSTE alltid kallas i samma ordning, varje render
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
 
-  // 2) Härled värden för filtrering (säkert även om currentUser saknas)
   const myTier = currentUser?.rankTier ?? null;
 
-  // 3) Sortera alltid (hook kallas alltid)
   const sortedUsers = useMemo(
     () => [...users].sort((a, b) => b.totalPoints - a.totalPoints),
     [users]
   );
 
-  // 4) Filtrera alltid (hook kallas alltid). Om myTier saknas, visa sortedUsers.
   const visibleUsers = useMemo(
     () =>
       showMyTierOnly && myTier
@@ -29,13 +26,17 @@ export default function UserLeaderBoard() {
     [sortedUsers, showMyTierOnly, myTier]
   );
 
-  // 5) Små UI-hjälpare (ej hooks)
   const totalCount = users.length;
   const tierCount = myTier
     ? users.filter((u) => u.rankTier === myTier).length
     : 0;
 
-  // 6) Ingen tidig return före hooks. Gör villkorlig rendering i JSX.
+  // Tillgänglighetsvänlig label för switchen
+  const switchAria = `Filtrera till min tier: ${showMyTierOnly ? "på" : "av"}`;
+  const switchHint = showMyTierOnly
+    ? `Visa alla (${totalCount})`
+    : `Visa bara ${myTier ?? "min tier"} (${tierCount})`;
+
   return (
     <div className="leaderboard-container">
       {/* Header */}
@@ -46,32 +47,42 @@ export default function UserLeaderBoard() {
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: "0.75rem",
+          gap: "12px",
         }}
       >
         <h2 style={{ margin: 0 }}>
           Individual ranking{" "}
           <span style={{ color: "var(--muted)" }}>
-            ({showMyTierOnly ? myTier ?? "—" : "Alla"})
+            ({showMyTierOnly ? myTier ?? "—" : "All"})
           </span>
         </h2>
 
-        <button
-          className="btn"
-          onClick={() => setShowMyTierOnly((v) => !v)}
+        {/* Filter med etikett + switch */}
+        <div
+          title="Filter all users by tier"
+          className="leaderboard-filter"
           style={{
-            padding: "6px 12px",
-            borderRadius: "6px",
-            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: "0.85rem",
           }}
-          disabled={loading || authLoading}
         >
-          {showMyTierOnly
-            ? `Visa alla (${totalCount})`
-            : `Visa bara ${myTier ?? "min tier"} (${tierCount})`}
-        </button>
+          {/* Visar text beroende på state */}
+          <span className="muted" style={{ minWidth: 60, textAlign: "right" }}>
+            {showMyTierOnly ? "Show All" : "Show my tier"}
+          </span>
+
+          <Switch
+            checked={showMyTierOnly}
+            onChange={(next) => setShowMyTierOnly(next)}
+            ariaLabel="Filtrera till min tier"
+            disabled={loading || authLoading}
+          />
+        </div>
       </div>
 
-      {/* Innehåll: villkorligt i JSX i stället för tidig return */}
+      {/* Innehåll */}
       {loading || authLoading ? (
         <Loading text="Laddar användare..." />
       ) : error ? (
