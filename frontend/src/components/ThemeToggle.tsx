@@ -1,6 +1,5 @@
 import React from "react";
 import Switch from "./ui/switch";
-// 1. Importera dina SVG-ikoner
 import darkModeIcon from "../assets/dark_mode.svg";
 import lightModeIcon from "../assets/light_mode.svg";
 
@@ -14,17 +13,31 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
   const label = `Byt till ${checked ? "ljust" : "mörkt"} läge`;
 
   return (
-    <Switch
-      checked={checked}
-      onChange={(next) => setTheme(next ? "dark" : "light")}
-      ariaLabel={label}
-      onLabel="🌙"
-      offLabel="☀️"
-      // 2. Använd ikonerna istället för emojis.
-      //    Notera att prop-namnen är onIcon/offIcon.
-      onIcon={<img src={darkModeIcon} alt="Dark mode" />}
-      offIcon={<img src={lightModeIcon} alt="Light mode" />}
-      className="theme-toggle"
-    />
+    <div
+      className="theme-toggle-wrap"
+      title="Change theme light/dark"
+      aria-label={label}
+      role="group"
+    >
+      <img
+        src={lightModeIcon}
+        alt=""
+        aria-hidden="true"
+        className="theme-toggle-wrap__icon"
+        style={{ opacity: checked ? 0.3 : 1 }}
+      />
+      <Switch
+        checked={checked}
+        onChange={(next) => setTheme(next ? "dark" : "light")}
+        ariaLabel={label}
+      />
+      <img
+        src={darkModeIcon}
+        alt=""
+        aria-hidden="true"
+        className="theme-toggle-wrap__icon"
+        style={{ opacity: checked ? 1 : 0.3 }}
+      />
+    </div>
   );
 }

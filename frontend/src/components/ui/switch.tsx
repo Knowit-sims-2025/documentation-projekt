@@ -1,37 +1,43 @@
 import React from "react";
+// import "./switch.css";
 
 type Props = {
-  checked: boolean; // true/false state
-  onChange: (next: boolean) => void; // callback när man togglar
-  onIcon?: React.ReactNode; // ikon/text för ON
-  offIcon?: React.ReactNode; // ikon/text för OFF
-  ariaLabel?: string; // tillgänglighetslabel
-  className?: string; // extra klasser
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  ariaLabel?: string;
+  className?: string;
+  disabled?: boolean;
 };
 
 export default function Switch({
   checked,
   onChange,
-  onIcon = "🌙",
-  offIcon = "☀️",
-  ariaLabel = "toggle",
+  ariaLabel = "switch",
   className = "",
+  disabled = false,
 }: Props) {
+  // Tangentbordsstöd (Space/Enter)
+  function onKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      if (!disabled) onChange(!checked);
+    }
+  }
+
+  const classes = ["ui-switch", className].filter(Boolean).join(" ");
+
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
       aria-label={ariaLabel}
-      onClick={() => onChange(!checked)}
-      className={`ui-switch ${className}`}
+      aria-disabled={disabled || undefined}
+      disabled={disabled}
+      className={classes}
+      onClick={() => !disabled && onChange(!checked)}
+      onKeyDown={onKeyDown}
     >
-      <span className="ui-switch__off" aria-hidden="true">
-        {offIcon}
-      </span>
-      <span className="ui-switch__on" aria-hidden="true">
-        {onIcon}
-      </span>
       <span className="ui-switch__slider" aria-hidden="true" />
     </button>
   );
