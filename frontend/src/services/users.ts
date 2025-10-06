@@ -7,14 +7,18 @@ export async function getUsers(): Promise<User[]> {
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
   const data = await res.json();
 
+  // Bör hantera BÅDE {users: [...]} och [...]
+  // Om 'data.users' finns och är en array, använd den. Annars, anta att 'data' är arrayen.
+  const userList = Array.isArray(data.users) ? data.users : data;
+
   // Hämtar från types(user).ts för att sätta rank och rankTier osv direkt här
-  return (data as any[]).map((u, index) => ({
+  return (userList as any[]).map((u, index) => ({
     id: u.id,
     displayName: u.displayName,
     avatarUrl: u.avatarUrl,
     totalPoints: u.totalPoints,
     isAdmin: Boolean(u.isAdmin),
-    rank: index + 1,               // sätt rank direkt från backend med index
+    rank: index + 1,               // sätter rank direkt från backend med index
     rankTier: getRankTier(u.totalPoints), //beräkna rankTier
   }));
 }
