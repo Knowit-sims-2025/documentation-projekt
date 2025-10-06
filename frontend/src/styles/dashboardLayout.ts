@@ -1,7 +1,7 @@
-// src/styles/dashboardLayouts.ts
-import type { Layout } from "react-grid-layout";
 
-// Desktop (≥1200px), 12 kolumner
+import type { Layout, Layouts } from "react-grid-layout";
+
+// 12 kolumner desktop
 const lg: Layout[] = [
   { i: "profile",      x: 0, y: 0,  w: 3, h: 8 },
   { i: "individual",   x: 3, y: 0,  w: 6, h: 4 },
@@ -10,7 +10,7 @@ const lg: Layout[] = [
   { i: "achievements", x: 9, y: 0,  w: 3, h: 8 },
 ];
 
-// Tablet (≥996px), 10 kolumner – lite tajtare
+// 10 kolumner tablet
 const md: Layout[] = [
   { i: "profile",      x: 0, y: 0, w: 3, h: 7 },
   { i: "individual",   x: 3, y: 0, w: 5, h: 4 },
@@ -19,7 +19,7 @@ const md: Layout[] = [
   { i: "achievements", x: 8, y: 0, w: 2, h: 7 },
 ];
 
-// Mobil/padda stående (≤768px), 6 kolumner – staplat
+// 6 kolumner mobil
 const sm: Layout[] = [
   { i: "profile",      x: 0, y: 0,  w: 6, h: 6 },
   { i: "individual",   x: 0, y: 6,  w: 6, h: 4 },
@@ -28,10 +28,10 @@ const sm: Layout[] = [
   { i: "achievements", x: 0, y: 18, w: 6, h: 6 },
 ];
 
-export const dashboardLayouts = {
-  lg,
-  md,
-  sm,
-  xs: sm,   // placeholder om vi vill ha mindre
-  xxs: sm,  // placeholder om vi vill ha mindre
-};
+export const layouts: Layouts = { lg, md, sm, xs: sm, xxs: sm };
+
+// breakpoint-värden i px: när bredden är <= detta värde används den layouten
+export const breakpoints = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
+
+// antal kolumner per breakpoint
+export const cols = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 };

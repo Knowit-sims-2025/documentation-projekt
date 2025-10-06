@@ -199,13 +199,13 @@ a:hover { text-decoration: underline; }
   max-width: var(--container-w);
   margin: 0 auto;
   padding: 12px var(--container-px);
-  display: grid;
+  /* display: grid;
 
   grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
   grid-template-rows: 1.5fr 1fr;
   grid-template-areas:
     "profile individual individual achievements"
-    "profile teams      competition achievements";
+    "profile teams      competition achievements"; */
 
   gap: var(--gap);
   min-height: calc(100vh - var(--header-h) - 24px);
@@ -217,19 +217,21 @@ a:hover { text-decoration: underline; }
 /* =========================
    Placering via areas
    ========================= */
-.profile      { grid-area: profile;      background: var(--c-profile); }
+/* .profile      { grid-area: profile;      background: var(--c-profile); }
 .individual   { grid-area: individual;   background: var(--c-individual); }
 .teams        { grid-area: teams;        background: var(--c-teams); }
 .competition  { grid-area: competition;  background: var(--c-competition); }
-.achievements { grid-area: achievements; background: var(--c-achievements); }
+.achievements { grid-area: achievements; background: var(--c-achievements); } */
 
 /* =========================
    Kort-stil
    ========================= */
 .card {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;         /* innehåll börjar uppifrån */
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;                       /* lite luft mellan element i kortet */
 
   font-weight: 600;
   border-radius: 12px;
@@ -239,17 +241,23 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow);
 
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease; /* UPPD */
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease;
 }
 .card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px hsl(220 60% 2% / 0.6);
-  border-color: hsl(220 30% 90% / 0.18);
+  box-shadow: 0 10px 28px color-mix(in oklch, black 72%, transparent);
+  border-color: color-mix(in oklch, var(--border) 70%, transparent);
 }
 .card:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px hsl(220 60% 2% / 0.5);
+  box-shadow: 0 6px 16px color-mix(in oklch, black 65%, transparent);
 }
+
+.card__body { flex: 1; min-height: 0; overflow: auto;}
 
 /* =========================
    Leaderboard-stil
@@ -420,53 +428,46 @@ a:hover { text-decoration: underline; }
 }
 
 
-
-
 /* =========================
-   Individual Leaderboard Layout-fix
+   Widgets inom dashboard
    ========================= */
-
-/* Själva kortet ska börja uppifrån och kunna scrolla om listan blir lång */
-.individual.card {
+.widget {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  /* låt kortet fylla höjd i griden */
-  height: 100%;
-
-  /* gör hela sektionen scrollbar om innehållet blir långt */
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  padding: 16px;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* Container inuti kortet ska också sträcka sig och kunna hantera flex */
-.leaderboard-container {
+.widget__header {
   display: flex;
-  flex-direction: column;
-  flex: 1;          /* fyller kortets höjd */
-  min-height: 0;    /* viktigt för flexbox overflow att fungera */
-  text-align: left;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move; /* draggable handle */
+  user-select: none;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 8px;
 }
 
-/* Listan blir scrollbar om det finns många rader */
-.leaderboard-list {
+.widget__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.widget__remove {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.widget__remove:hover {
+  background: hsl(0 70% 50% / 0.12);
+  border-color: hsl(0 70% 50% / 0.4);
+}
+
+.widget__body {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  min-height: 0; /* viktigt för flexbox overflow att fungera */
+  min-height: 0;
 }
-
-/* Varje item tar bara sin egen höjd, ingen centrerings-offset */
-.leaderboard-item {
-  align-items: flex-start;
-}
-
-
