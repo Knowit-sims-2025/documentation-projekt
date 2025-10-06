@@ -5,7 +5,6 @@ import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage";
 import { IndividualRank } from "../features/leaderboard/IndividualRank";
 import type { RankTier } from "../types/user";
-import { useAuth } from "../features/AuthContext";
 
 export default function UserLeaderBoard() {
   const { data: users, loading, error } = useUsers();
