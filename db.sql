@@ -58,7 +58,7 @@ CREATE TABLE user_badges (
 
 -- NYTT: Tabell för att lagra information om tävlingar.
 CREATE TABLE competitions (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     start_date TIMESTAMP WITH TIME ZONE NOT NULL,
