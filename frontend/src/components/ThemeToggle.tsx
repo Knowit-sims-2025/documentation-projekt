@@ -21,7 +21,7 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
     >
       <img
         src={lightModeIcon}
-        alt=""
+        alt="Icon for light mode"
         aria-hidden="true"
         className="theme-toggle-wrap__icon"
         style={{ opacity: checked ? 0.3 : 1 }}
@@ -33,7 +33,7 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
       />
       <img
         src={darkModeIcon}
-        alt=""
+        alt="Icon for dark mode"
         aria-hidden="true"
         className="theme-toggle-wrap__icon"
         style={{ opacity: checked ? 1 : 0.3 }}

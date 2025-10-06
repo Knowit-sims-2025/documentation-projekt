@@ -1,5 +1,7 @@
+@import "../../styles/style.css";
+
 /* =========================
-   UI Switch – minimalistisk variant
+   UI Switch
    ========================= */
 .ui-switch {
   /* Tokens – ändra här om du vill justera storlek/färg globalt */
