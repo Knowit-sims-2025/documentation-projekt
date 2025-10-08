@@ -76,6 +76,13 @@ func (r *BadgeRepository) UpdateBadge(b *models.Badge) error {
 	return err
 }
 
+// UpdateIconURL uppdaterar endast icon_url för en specifik badge.
+func (r *BadgeRepository) UpdateIconURL(id int64, iconURL string) error {
+	query := `UPDATE badges SET icon_url = $1 WHERE id = $2`
+	_, err := r.DB.Exec(query, iconURL, id)
+	return err
+}
+
 // Radera en badge
 func (r *BadgeRepository) DeleteBadge(id int64) error {
 	_, err := r.DB.Exec(`DELETE FROM badges WHERE id = $1`, id)
@@ -98,7 +105,6 @@ func (r *BadgeRepository) GetBadgeByID(id int64) (*models.Badge, error) {
 	return &b, nil
 }
 
-/* Alla UserBadge funktioner */
 
 // Ta bort en badge från en användare
 func (r *UserBadgeRepository) RemoveBadge(userID, badgeID int64) error {

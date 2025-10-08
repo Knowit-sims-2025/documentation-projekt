@@ -2,35 +2,21 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-// RegisterUserRoutes tar emot en router och en userHandler,
-// och registrerar alla vägar som har med användare att göra.
-func RegisterUserRoutes(mux *http.ServeMux, h *handlers.UserHandler) {
-	// Denna väg hanterar både GET (alla) och POST (skapa ny)
-	mux.HandleFunc("/api/v1/users", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllUsersHandler(w, r)
-		case http.MethodPost:
-			h.CreateUserHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterUserRoutes(r *mux.Router, h *handlers.UserHandler) {
+	s := r.PathPrefix("/users").Subrouter()
 
-	// Denna väg hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
-	mux.HandleFunc("/api/v1/users/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetUserByIDHandler(w, r)
-		case http.MethodPut:
-			h.UpdateUserHandler(w, r)
-		case http.MethodDelete:
-			h.DeleteUserHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	// GET /api/v1/users - Hämtar alla användare
+	// POST /api/v1/users - Skapar en ny användare
+	s.HandleFunc("", h.GetAllUsersHandler).Methods("GET")
+	s.HandleFunc("", h.CreateUserHandler).Methods("POST")
+
+	// GET /api/v1/users/{id} - Hämtar en specifik användare
+	// PUT /api/v1/users/{id} - Uppdaterar en användare
+	// DELETE /api/v1/users/{id} - Tar bort en användare
+	s.HandleFunc("/{id:[0-9]+}", h.GetUserByIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}", h.UpdateUserHandler).Methods("PUT")
+	s.HandleFunc("/{id:[0-9]+}", h.DeleteUserHandler).Methods("DELETE")
 }

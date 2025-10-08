@@ -79,6 +79,13 @@ func (repo *UserRepository) UpdateUser(id int64, user *models.User) error {
 	return err
 }
 
+// UpdateAvatarURL uppdaterar endast avatar_url för en specifik användare.
+func (repo *UserRepository) UpdateAvatarURL(id int64, avatarURL string) error {
+	query := `UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2`
+	_, err := repo.DB.Exec(query, avatarURL, id)
+	return err
+}
+
 func (repo *UserRepository) DeleteUser(id int64) error {
 	_, err := repo.DB.Exec("DELETE FROM users WHERE id = $1", id)
 	return err
