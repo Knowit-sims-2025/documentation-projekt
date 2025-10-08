@@ -7,6 +7,7 @@ import {
   breakpoints,
   cols,
 } from "../../styles/dashboardLayout";
+import Widget from "../../components/widget"; // Importera den uppdaterade komponenten
 import { useAuth } from "../AuthContext";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -51,6 +52,19 @@ export default function Dashboard() {
     localStorage.setItem(LS_KEY, JSON.stringify(allLayouts));
   }
 
+  // Funktion för att ta bort en widget från alla layouts
+  function handleRemoveWidget(widgetId: string) {
+    const newLayouts: Layouts = {};
+    // Gå igenom varje breakpoint (lg, md, sm...)
+    for (const breakpoint in layouts) {
+      // Filtrera bort den widget som ska tas bort
+      newLayouts[breakpoint] = layouts[breakpoint].filter(
+        (item) => item.i !== widgetId
+      );
+    }
+    handleLayoutChange([], newLayouts); // Spara den nya layouten
+  }
+
   if (isLoading) {
     return <main className="app__main">Loading user...</main>;
   }
@@ -68,24 +82,14 @@ export default function Dashboard() {
           compactType="vertical"
           onLayoutChange={handleLayoutChange}
           draggableHandle=".widget__header"
+          useCSSTransforms={false}
         >
           {widgets.map((w) => (
-            <div key={w.i} className="card widget">
-              <div className="widget__header">
-                <h3 className="widget__title">{w.title}</h3>
-                <button
-                  className="widget__remove"
-                  onClick={() =>
-                    console.warn(
-                      "Remove-function needs to be updated for responsive layouts"
-                    )
-                  }
-                  title="Ta bort"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="widget__body">{w.content}</div>
+            // Använd den återanvändbara Widget-komponenten
+            <div key={w.i}>
+              <Widget title={w.title} onHide={() => handleRemoveWidget(w.i)}>
+                {w.content}
+              </Widget>
             </div>
           ))}
         </ResponsiveGridLayout>
