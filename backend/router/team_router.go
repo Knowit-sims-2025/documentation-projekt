@@ -2,70 +2,28 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-func RegisterTeamRoutes(mux *http.ServeMux, h *handlers.TeamHandler) {
-	// /api/v1/teams hanterar GET (alla) och POST (skapa nytt team)
-	mux.HandleFunc("/api/v1/teams", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllTeamsHandler(w, r)
-		case http.MethodPost:
-			h.CreateTeamHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterTeamRoutes(r *mux.Router, h *handlers.TeamHandler) {
+	s := r.PathPrefix("/teams").Subrouter()
+	s.HandleFunc("", h.GetAllTeamsHandler).Methods("GET")
+	s.HandleFunc("", h.CreateTeamHandler).Methods("POST")
 
-	// /api/v1/teams/{id} hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
-	mux.HandleFunc("/api/v1/teams/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetTeamByIDHandler(w, r)
-		case http.MethodPut:
-			h.UpdateTeamHandler(w, r)
-		case http.MethodDelete:
-			h.DeleteTeamHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	s.HandleFunc("/{id:[0-9]+}", h.GetTeamByIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}", h.UpdateTeamHandler).Methods("PUT")
+	s.HandleFunc("/{id:[0-9]+}", h.DeleteTeamHandler).Methods("DELETE")
 }
 
-func RegisterUserTeamRoutes(mux *http.ServeMux, h *handlers.UserTeamHandler) {
-	// GET /api/v1/userTeams → alla relationer
-	mux.HandleFunc("/api/v1/userTeams", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/v1/userTeams" {
-			http.NotFound(w, r)
-			return
-		}
+func RegisterUserTeamRoutes(r *mux.Router, h *handlers.UserTeamHandler) {
+	s := r.PathPrefix("/userteams").Subrouter()
 
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllUserTeamsHandler(w, r)
-		case http.MethodPost:
-			h.AddUserToTeamHandler(w, r) // läser JSON-body
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	s.HandleFunc("", h.GetAllUserTeamsHandler).Methods("GET")
+	s.HandleFunc("", h.AddUserToTeamHandler).Methods("POST") // Läser JSON body
 
-	// GET /api/v1/userTeams/{teamId} → alla users i ett team
-	mux.HandleFunc("/api/v1/userTeams/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			h.GetUsersByTeamHandler(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	// GET /api/v1/userteams/team/{teamId} -> alla users i ett team
+	s.HandleFunc("/team/{teamId:[0-9]+}", h.GetUsersByTeamHandler).Methods("GET")
 
-	// DELETE /api/v1/userTeams/user/{userId}/{teamId}
-	mux.HandleFunc("/api/v1/userTeams/user/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodDelete {
-			h.RemoveUserFromTeamHandler(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	// DELETE /api/v1/userteams/user/{userId}/team/{teamId}
+	s.HandleFunc("/user/{userId:[0-9]+}/team/{teamId:[0-9]+}", h.RemoveUserFromTeamHandler).Methods("DELETE")
 }
