@@ -1,15 +1,18 @@
-import React, { useMemo, useState } from "react";
-import { useUsers } from "../hooks/useUsers";
-import { useAuth } from "../features/AuthContext";
-import { Loading } from "./Loading";
-import { ErrorMessage } from "./ErrorMessage";
-import { IndividualRank } from "../features/leaderboard/IndividualRank";
-import Switch from "../components/ui/switch"; // ⬅️ lägg till
+import React, { useMemo, useState, useCallback } from "react";
+import { useUsers } from "../../hooks/useUsers";
+import { useAuth } from "../AuthContext";
+import { Loading } from "../../components/Loading";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { IndividualRank } from "./IndividualRank";
+import Switch from "../../components/ui/switch";
+import { Overlay } from "../../components/Overlay";
+import type { User } from "../../types/user";
 
 export default function UserLeaderBoard() {
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const myTier = currentUser?.rankTier ?? null;
 
@@ -25,6 +28,11 @@ export default function UserLeaderBoard() {
         : sortedUsers,
     [sortedUsers, showMyTierOnly, myTier]
   );
+
+  // Använd useCallback för att undvika onödiga re-renders av list-items
+  const handleUserSelect = useCallback((user: User) => {
+    setSelectedUser(user);
+  }, []);
 
   const totalCount = users.length;
   const tierCount = myTier
@@ -90,11 +98,35 @@ export default function UserLeaderBoard() {
       ) : !currentUser ? (
         <ErrorMessage message="Ingen användare inloggad." />
       ) : (
-        <ul className="leaderboard-list">
-          {visibleUsers.map((user) => (
-            <IndividualRank key={user.id} user={user} />
-          ))}
-        </ul>
+        <>
+          <ul className="leaderboard-list">
+            {visibleUsers.map((user) => (
+              <IndividualRank
+                key={user.id}
+                user={user}
+                onSelect={handleUserSelect}
+              />
+            ))}
+          </ul>
+
+          {/* Visa overlay om en användare är vald */}
+          {selectedUser && (
+            <Overlay
+              onClose={() => setSelectedUser(null)}
+              title={selectedUser.displayName}
+            >
+              <p>
+                Här kan mer information om användaren visas i framtiden.
+                <br />
+                <br />
+                Mer och mer information.
+                <br />
+                Ännu mera text.
+              </p>
+              <p>Poäng: {selectedUser.totalPoints}</p>
+            </Overlay>
+          )}
+        </>
       )}
     </div>
   );

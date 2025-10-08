@@ -44,6 +44,9 @@
   --warn:  hsl(40 85% 55%);
   --err:   hsl(355 70% 60%);
 
+  /* Bakgrunds-glow (endast för dark mode) */
+  --glow-color: hsl(220 30% 12% / 0.5);
+
   /* Z-index */
   --z-header: 100;
   --z-overlay: 200;
@@ -85,6 +88,14 @@
   /* Accent (delar hue/”--h” med dark) */
   --accent: hsl(var(--h) var(--s-accent) 40%);
   --accent-contrast: #fff;
+
+  /* Extra ytnivåer för light theme */
+  --surface-1: var(--card-bg);
+  --surface-2: hsl(var(--h) var(--s-surface) calc(var(--l-surface) - 2%));
+  --surface-3: hsl(var(--h) var(--s-surface) calc(var(--l-surface) - 4%));
+
+  /* Bakgrunds-glow (neutraliserad för light mode) */
+  --glow-color: transparent;
 
   color-scheme: light;
 }
@@ -130,7 +141,7 @@ body {
   /* Liten bakgrundsglow i dark för djup (neutralt i light) */
   background:
     radial-gradient(1200px 800px at 70% -10%,
-      hsl(220 30% 12% / 0.5),
+      var(--glow-color),
       transparent 60%
     ),
     var(--bg);
@@ -165,12 +176,12 @@ a:hover { text-decoration: underline; }
   inset: env(safe-area-inset-top) 0 auto 0;
   height: var(--header-h);
   background: var(--c-header);
-  color: var(--text);                            /* UPPD: ärv textfärg */
-  border-bottom: 1px solid var(--card-border);   /* UPPD: konsekvent border */
+  color: var(--text);                            
+  border-bottom: 1px solid var(--card-border);
   display: flex;
   align-items: center;
   z-index: var(--z-header);
-  backdrop-filter: saturate(1.05) blur(6px);     /* liten polish i dark */
+  backdrop-filter: saturate(1.05) blur(6px);    
 }
 .app__header .container {
   width: 100%;
@@ -307,17 +318,12 @@ a:hover { text-decoration: underline; }
   background-color: hsl(220 20% 20% / 0.05);
 }
 .leaderboard-name {
-  flex-grow: 1; margin-left: 12px;
+  flex-grow: 1;
+  margin-left: 12px;
   transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .leaderboard-item:hover .leaderboard-name {
   transform: translateY(-2px);
-}
-.leaderboard-avatar {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  margin-left: 8px;
-  object-fit: cover;
 }
 
 /* Små hjälparklasser */
@@ -361,14 +367,38 @@ a:hover { text-decoration: underline; }
   place-items: center;
   z-index: var(--z-overlay);
   backdrop-filter: blur(2px);
+  
 }
 .overlay__card {
-  background: var(--surface-2);
-  border: 1px solid hsl(220 30% 90% / 0.14);
-  box-shadow: 0 12px 36px hsl(220 70% 2% / 0.65);
+  background: var(--surface-2); /* Använder redan variabel, bra! */
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
   border-radius: 16px;
   padding: 16px;
   max-width: min(960px, 90vw);
+}
+
+.overlay__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.overlay__title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.overlay__close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
 }
 
 /* =========================
@@ -470,4 +500,14 @@ a:hover { text-decoration: underline; }
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+}
+
+/* =========================
+   Avatar styling
+   ========================= */
+
+.leaderboard-avatar {
+  width: 48px;
+  height: 48px;
+  color: var(--muted);
 }

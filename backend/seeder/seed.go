@@ -33,7 +33,7 @@ func main() {
 		IsAdmin            bool
 	}{
 		// Marvel
-		{"Tony Stark", "iron-man", "https://i.pravatar.cc/150?u=iron-man", true},
+		{"Tony Stark", "iron-man", "", true},
 		{"Steve Rogers", "captain-america", "https://i.pravatar.cc/150?u=captain-america", false},
 		{"Natasha Romanoff", "black-widow", "https://i.pravatar.cc/150?u=black-widow", false},
 		{"Thor Odinson", "thor", "https://i.pravatar.cc/150?u=thor", false},

@@ -1,70 +1,63 @@
-/* ==========================================================================
-   Bas-importer (react-grid-layout / resizable)
-   ========================================================================== */
-@import "react-grid-layout/css/styles.css";
-@import "react-resizable/css/styles.css";
-
-/* ==========================================================================
-   Tokens (OKLCH) — DARK default
-   ========================================================================== */
+/* =========================
+   Bas & tokens + teman (OKLCH)
+   ========================= */
 :root {
-  /* —— Palett (DIN OKLCH) —— */
-  --bg-dark: oklch(0.1 0.025 264);
-  --bg: oklch(0.15 0.025 264);
-  --bg-light: oklch(0.2 0.025 264);
+  /* Layout */
+  --header-h: 72px;
+  --gap: 8px;
+  --container-w: clamp(960px, 90vw, 1800px);
+  --container-px: 16px;
 
-  --text: oklch(0.96 0.05 264);
-  --text-muted: oklch(0.76 0.05 264);
+  /* —— NY PALETT (OKLCH) —— */
+  --bg-dark: oklch(0.10 0.025 264);
+  --bg:      oklch(0.15 0.025 264);
+  --bg-light:oklch(0.20 0.025 264);
 
-  --highlight: oklch(0.5 0.05 264);
-  --border: oklch(0.4 0.05 264);
-  --border-muted: oklch(0.3 0.05 264);
+  --text:        oklch(0.96 0.05 264);
+  --text-muted:  oklch(0.76 0.05 264);
 
-  --primary: oklch(0.76 0.1 264);
-  --secondary: oklch(0.76 0.1 84);
-  --danger: oklch(0.7 0.05 30);
-  --warning: oklch(0.7 0.05 100);
-  --success: oklch(0.7 0.05 160);
-  --info: oklch(0.7 0.05 260);
+  --border:       oklch(0.40 0.05 264);
+  --border-muted: oklch(0.30 0.05 264);
+  --highlight:    oklch(0.50 0.05 264);
 
-  /* —— Layout/token-parametrar —— */
-  --header-h: 4.5rem;
-  --gap: 0.5rem;
-  --container-w: clamp(960px, 90vw, 1680px);
-  --container-px: 1rem;
+  --primary:   oklch(0.76 0.10 264);
+  --secondary: oklch(0.76 0.10 84);
+  --danger:    oklch(0.70 0.05 30);
+  --warning:   oklch(0.70 0.05 100);
+  --success:   oklch(0.70 0.05 160);
+  --info:      oklch(0.70 0.05 260);
 
-  /* —— Semantik/ytor —— */
+  /* Semantik & ytor */
   --accent: var(--primary);
   --accent-contrast: #0b0b0f;
 
-  /* Ytor (lyfta något från bg) */
-  --card-bg: color-mix(in oklch, var(--bg) 86%, white);
-  --surface-1: var(--card-bg);
-  --surface-2: color-mix(in oklch, var(--bg) 76%, white);
-  --surface-3: color-mix(in oklch, var(--bg) 68%, white);
+  /* Ytor/komponenter (elevations) – nu via color-mix i OKLCH */
+  --card-bg:     color-mix(in oklch, var(--bg) 86%, white);
+  --surface-1:   var(--card-bg);
+  --surface-2:   color-mix(in oklch, var(--bg) 76%, white);
+  --surface-3:   color-mix(in oklch, var(--bg) 68%, white);
 
-  /* Kanter & skuggor */
   --card-border: color-mix(in oklch, var(--border) 55%, transparent);
   --card-shadow: 0 8px 24px color-mix(in oklch, black 75%, transparent);
 
-  /* Header/sektioner */
-  --c-header: color-mix(in oklch, var(--bg-dark) 92%, white);
-  --c-profile: var(--surface-1);
-  --c-individual: var(--surface-1);
-  --c-teams: var(--surface-1);
-  --c-competition: var(--surface-1);
+  /* Header/default-lager */
+  --c-header:       color-mix(in oklch, var(--bg-dark) 92%, white);
+  --c-profile:      var(--surface-1);
+  --c-individual:   var(--surface-1);
+  --c-teams:        var(--surface-1);
+  --c-competition:  var(--surface-1);
   --c-achievements: var(--surface-1);
 
-  /* Status (semantik) */
-  --ok: var(--success);
+  /* Statusfärger (semantik) */
+  --ok:   var(--success);
   --warn: var(--warning);
-  --err: var(--danger);
+  --err:  var(--danger);
 
-  /* Panel-gradienter (NY LOGIK) */
-  --gradient: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 95%);
+  /* Gradients för panel/hover */
+  --gradient:       linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 95%);
   --gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
 
-  /* Z-index + schema */
+  /* Z-index */
   --z-header: 100;
   --z-overlay: 200;
   --z-toast: 300;
@@ -72,62 +65,72 @@
   color-scheme: dark;
 }
 
-/* ==========================================================================
-   LIGHT-tema (OKLCH) – mjukare ytor
-   ========================================================================== */
+/* ===== LIGHT – OKLCH ===== */
 :root[data-theme="light"] {
-  /* Ljusare neutrala bakgrunder (samma C,h för sammanhållet uttryck) */
-  --bg-dark: oklch(0.92 0.02 264);
-  --bg: oklch(0.97 0.02 264);
+  --bg-dark:  oklch(0.92 0.02 264);
+  --bg:       oklch(0.97 0.02 264);
   --bg-light: oklch(1 0 0);
 
-  --text: oklch(0.15 0.04 264);
+  --text:       oklch(0.15 0.04 264);
   --text-muted: oklch(0.45 0.03 264);
 
-  --border: oklch(0.82 0.02 264);
+  --border:       oklch(0.82 0.02 264);
   --border-muted: oklch(0.90 0.015 264);
 
-  /* Accent/states kan vara samma eller justeras lätt */
-  --card-bg: oklch(0.94 0.02 264);
-  --surface-1: var(--card-bg);
-  --surface-2: oklch(0.92 0.02 264);
-  --surface-3: oklch(0.90 0.02 264);
+  --card-bg:     oklch(0.94 0.02 264);
+  --surface-1:   var(--card-bg);
+  --surface-2:   oklch(0.92 0.02 264);
+  --surface-3:   oklch(0.90 0.02 264);
 
   --card-border: color-mix(in oklch, var(--border) 65%, transparent);
   --card-shadow: 0 4px 16px color-mix(in oklch, black 18%, transparent);
 
   --c-header: oklch(0.90 0.02 264);
 
-  --gradient: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 95%);
+  --gradient:       linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 95%);
   --gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
 
   color-scheme: light;
 }
 
-/* ==========================================================================
-   Reset & typografi
-   ========================================================================== */
+/* =========================
+   Reset/typografi
+   ========================= */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
   margin: 0;
-  /* NY LOGIK: stor bakgrund på body = bg-dark (inte panelgradienten) */
-  background: var(--bg-dark);
+
+  /* Liten bakgrundsglow i dark för djup (neutralt i light) */
+  background:
+    radial-gradient(1200px 800px at 70% -10%,
+      color-mix(in oklch, black 65%, transparent),
+      transparent 60%
+    ),
+    var(--bg-dark);
+
   color: var(--text);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 180ms ease, color 180ms ease;
+
+  transition: background-color 180ms ease, color 180ms ease, background-image 180ms ease;
 }
 @media (prefers-reduced-motion: reduce) { body { transition: none; } }
 
-:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-a { color: var(--primary); text-decoration: none; }
+/* Fokusring – använd accent/primary */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Länkar */
+a { color: var(--accent); }
 a:hover { text-decoration: underline; }
 
-/* ==========================================================================
-   App-layout (header, main) — oförändrat i sak
-   ========================================================================== */
+/* =========================
+   Layout: app
+   ========================= */
 .app__header {
   position: fixed;
   inset: env(safe-area-inset-top) 0 auto 0;
@@ -157,61 +160,29 @@ a:hover { text-decoration: underline; }
   padding-right: env(safe-area-inset-right);
 }
 
-/* ==========================================================================
-   Dashboard (oförändrad layout)
-   ========================================================================== */
+
+/* =========================
+   Dashboard Container (RGL sköter position)
+   ========================= */
 .dashboard {
   width: 100%;
   max-width: var(--container-w);
   margin: 0 auto;
   padding: 12px var(--container-px);
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
-  grid-template-rows: 1.5fr 1fr;
-  grid-template-areas:
-    "profile individual individual achievements"
-    "profile teams      competition achievements";
+
   gap: var(--gap);
   min-height: calc(100vh - var(--header-h) - 24px);
 }
 
-/* Area-placering */
-.profile      { grid-area: profile;      background: var(--c-profile); }
-.individual   { grid-area: individual;   background: var(--c-individual); }
-.teams        { grid-area: teams;        background: var(--c-teams); }
-.competition  { grid-area: competition;  background: var(--c-competition); }
-.achievements { grid-area: achievements; background: var(--c-achievements); }
-
-/* ==========================================================================
-   Panel-bakgrunder (NY LOGIK på dina element)
-   - Lägg .app-panels på den container där du vill att div/section ska bli paneler.
-   ========================================================================== */
-.app-panels :where(div, section, article, aside):not([data-raw]) {
-  background: var(--bg);                 /* panelbas */
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid var(--border);
-  border-top: 1px solid var(--highlight);
-  box-shadow: var(--card-shadow);
-  transition: background 160ms ease, transform 120ms ease, border-color 120ms ease;
-}
-.app-panels :where(div, section, article, aside):not([data-raw]):hover {
-  background: var(--gradient-hover);     /* panelgradient vid hover */
-  transform: translateY(-1px);
-}
-.app-panels :where(div, section, article, aside):not([data-raw]):active {
-  transform: translateY(0);
-}
-
-/* ==========================================================================
-   Kort-stil (card) — behåll, men OKLCH i mixar
-   ========================================================================== */
+/* =========================
+   Kort-stil
+   ========================= */
 .card {
   display: flex;
-  flex-direction: column;         /* innehåll börjar uppifrån */
+  flex-direction: column;     /* innehåll börjar uppifrån */
   align-items: stretch;
   justify-content: flex-start;
-  gap: 8px;                       /* lite luft mellan element i kortet */
+  gap: 8px;
 
   font-weight: 600;
   border-radius: 12px;
@@ -237,12 +208,20 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 6px 16px color-mix(in oklch, black 65%, transparent);
 }
 
-/* ==========================================================================
-   Leaderboard — endast mixar uppdaterade
-   ========================================================================== */
-.leaderboard-container { width: 100%; padding: 0 16px; text-align: left; }
-.leaderboard-container h2 { font-size: 1.2rem; margin-bottom: 12px; }
+.card__body { flex: 1; min-height: 0; overflow: auto; }
 
+/* =========================
+   Leaderboard-stil
+   ========================= */
+.leaderboard-container {
+  width: 100%;
+  padding: 0 16px;
+  text-align: left;
+}
+.leaderboard-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
 .leaderboard-list { list-style: none; padding: 0; margin: 0; }
 
 .leaderboard-item {
@@ -256,7 +235,7 @@ a:hover { text-decoration: underline; }
 .leaderboard-item:last-child { border-bottom: none; }
 
 .leaderboard-item.is-current-user {
-  background-color: color-mix(in oklch, var(--warning) 20%, transparent);
+  background-color: color-mix(in oklch, var(--warn) 20%, transparent);
   font-weight: 700;
 }
 .leaderboard-item.is-separator {
@@ -281,38 +260,29 @@ a:hover { text-decoration: underline; }
 }
 .leaderboard-item:hover .leaderboard-name { transform: translateY(-2px); }
 
+/* Avatar (img eller inline-SVG med fill="currentColor") */
 .leaderboard-avatar {
   width: 24px; height: 24px;
   border-radius: 50%;
   margin-left: 8px;
   object-fit: cover;
 }
-
+/* Separat färgkontroll för inline-SVG-avatar: */
 .muted { color: var(--text-muted); }
 
-/* ==========================================================================
+/* =========================
    Responsivitet
-   ========================================================================== */
+   ========================= */
 @media (max-width: 1024px) {
   :root { --header-h: 64px; }
 }
 @media (max-width: 900px) {
-  .dashboard {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-      "profile"
-      "individual"
-      "teams"
-      "competition"
-      "achievements";
-    min-height: auto;
-  }
+  .dashboard { min-height: auto; }
 }
 
-/* ==========================================================================
-   Overlay (OKLCH i mixar)
-   ========================================================================== */
+/* =========================
+   Overlay-lager
+   ========================= */
 .overlay {
   position: fixed;
   inset: 0;
@@ -335,35 +305,37 @@ a:hover { text-decoration: underline; }
   max-width: min(960px, 90vw);
 }
 
-/* ==========================================================================
-   Knappar
-   ========================================================================== */
-button, .btn {
-  background: var(--bg-light);
-  padding: 0.5rem 1rem 0.7rem;
-  color: var(--text-muted);
-  font-weight: 700;
-  border-radius: 0.5rem;
-  margin-top: 1.5rem;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  box-shadow: var(--card-shadow);
-  transition: filter 120ms ease, transform 120ms ease, background 160ms ease, color 120ms ease;
+/* =========================
+   Knapp som nyttjar accent
+   ========================= */
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: 1px solid color-mix(in oklch, var(--accent) 60%, black);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+  transition: filter 120ms ease, transform 120ms ease;
 }
-button:hover, .btn:hover { background: var(--gradient-hover); transform: translateY(-1px); }
-button:active, .btn:active { transform: translateY(0); }
-button:focus-visible, .btn:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
 
-/* ==========================================================================
-   Divider, scrollbar, selection (OKLCH)
-   ========================================================================== */
-.hr, .divider {
+/* =========================
+   Divider, scrollbar, selection
+   ========================= */
+.hr,
+.divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--card-border), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--card-border),
+    transparent
+  );
   border: 0;
 }
 
-/* WebKit-scrollbar (diskret) */
+/* Scrollbar (webkit) – diskret, tematisk */
 *::-webkit-scrollbar { height: 10px; width: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
@@ -376,10 +348,13 @@ button:focus-visible, .btn:focus-visible { outline: 2px solid var(--highlight); 
   background: color-mix(in oklch, var(--border) 70%, transparent);
 }
 
-/* Text selection */
-::selection { background: color-mix(in oklch, var(--primary) 35%, transparent); color: #fff; }
+/* Text selection – mild accent */
+::selection {
+  background: color-mix(in oklch, var(--primary) 35%, transparent);
+  color: #fff;
+}
 
-/* Högkontrastpreferens */
+/* High-contrast preferens */
 @media (prefers-contrast: more) {
   :root {
     --card-border: color-mix(in oklch, var(--border) 75%, transparent);
@@ -388,44 +363,41 @@ button:focus-visible, .btn:focus-visible { outline: 2px solid var(--highlight); 
   .card { border-width: 1.5px; }
 }
 
-/* ==========================================================================
-   Theme Toggle / UI Switch (oförändrade, men på OKLCH-ytor)
-   ========================================================================== */
-.theme-toggle,
-.ui-switch {
-  --toggle-w: 50px;
-  --toggle-h: 26px;
-  --slider-d: 20px;
-  --slider-offset: calc((var(--toggle-h) - var(--slider-d)) / 2);
-
-  position: relative;
+/* =========================
+   Widgets inom dashboard
+   ========================= */
+.widget { display: flex; flex-direction: column; overflow: hidden; }
+.widget__header {
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: var(--toggle-w);
-  height: var(--toggle-h);
-  padding: 0;
+  justify-content: space-between;
+  cursor: move; /* draggable handle */
+  user-select: none;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 8px;
+}
+.widget__title { font-size: 1rem; font-weight: 600; margin: 0; }
+
+.widget__remove {
+  background: transparent;
   border: 1px solid var(--card-border);
-  border-radius: 100px;
-  background: var(--surface-2);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 2px 8px;
   cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.widget__remove:hover {
+  background: color-mix(in oklch, var(--danger) 20%, transparent);
+  border-color: color-mix(in oklch, var(--danger) 60%, transparent);
 }
 
-.theme-toggle__sun, .theme-toggle__moon,
-.ui-switch__off, .ui-switch__on { font-size: 12px; line-height: 1; }
+.widget__body { flex: 1; overflow-y: auto; min-height: 0; }
 
-.theme-toggle__slider,
-.ui-switch__slider {
-  position: absolute;
-  top: var(--slider-offset);
-  left: var(--slider-offset);
-  width: var(--slider-d);
-  height: var(--slider-d);
-  border-radius: 50%;
-  background: var(--primary);
-  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+/* =========================
+   Avatar styling (för inline-SVG med currentColor)
+   ========================= */
+.leaderboard-avatar {
+  width: 48px;
+  height: 48px;
+  color: var(--text-muted); /* styr SVG-färg via currentColor */
 }
-
-[data-theme="dark"] .theme-toggle__slider { transform: translateX(calc(var(--toggle-w) - var(--toggle-h))); }
-.ui-switch[aria-checked="true"] .ui-switch__slider { transform: translateX(calc(var(--toggle-w) - var(--toggle-h))); }

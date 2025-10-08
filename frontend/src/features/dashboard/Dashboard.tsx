@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { WidthProvider, Responsive, Layout } from "react-grid-layout";
-import UserLeaderBoard from "../../components/UserLeaderBoard";
+import UserLeaderBoard from "../leaderboard/UserLeaderBoard";
 import { useAuth } from "../AuthContext";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);

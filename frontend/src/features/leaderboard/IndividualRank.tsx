@@ -1,9 +1,13 @@
 import type { User } from "../../types/user";
 import { Avatar } from "../../components/Avatar";
 import { useAuth } from "../AuthContext";
-import type { RankTier } from "../../types/user";
 
-export function IndividualRank({ user }: { user: User }) {
+interface IndividualRankProps {
+  user: User;
+  onSelect: (user: User) => void;
+}
+
+export function IndividualRank({ user, onSelect }: IndividualRankProps) {
   const { currentUser } = useAuth();
   const isCurrentUser = !!currentUser && currentUser.id === user.id;
 
@@ -19,6 +23,8 @@ export function IndividualRank({ user }: { user: User }) {
   return (
     <li
       className={`leaderboard-item ${isCurrentUser ? "is-current-user" : ""}`}
+      onClick={() => onSelect(user)}
+      title={`Visa profil för ${user.displayName}`}
     >
       <span
         className="leaderboard-rank"
