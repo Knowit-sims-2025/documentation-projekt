@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { WidthProvider, Responsive, Layout } from "react-grid-layout";
 import UserLeaderBoard from "../../components/UserLeaderBoard";
 import { useAuth } from "../AuthContext";
+import Profile from "../../components/Profile";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -20,7 +21,7 @@ export default function Dashboard() {
 
   // Dina widgets — motsvarar dina tidigare divar
   const widgets: Widget[] = [
-    { i: "profile", title: "Profile", content: <div>Profile</div> },
+    { i: "profile", title: "Profile", content: <div><Profile/></div> },
     { i: "individual", title: "Individual", content: <UserLeaderBoard /> },
     { i: "teams", title: "Teams", content: <div>Teams</div> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
