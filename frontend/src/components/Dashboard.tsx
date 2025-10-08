@@ -1,12 +1,15 @@
 import React from "react";
 import UserLeaderBoard from "./UserLeaderBoard";
+import Profile from "./Profile";
 
 export default function Dashboard() {
   return (
     <main className="app__main">
       <section className="dashboard">
         {/* Kolumn 1, två rader hög */}
-        <div className="profile card">Profile</div>
+        <div className="profile card">
+          <Profile/>
+        </div>
 
         {/* Kolumn 2–3, rad 1 */}
         <div className="individual card">

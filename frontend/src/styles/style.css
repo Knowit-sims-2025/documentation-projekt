@@ -305,7 +305,6 @@ a:hover { text-decoration: underline; }
   margin-left: 8px;
   object-fit: cover;
 }
-
 /* Små hjälparklasser */
 .muted { color: var(--muted); }
 

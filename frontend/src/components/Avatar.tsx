@@ -20,6 +20,7 @@ export function Avatar({
   // 4. gör om till versaler
   const initials = name
     .split(" ")
+    .filter(Boolean)
     .map((p) => p[0])
     .slice(0, 2)
     .join("")
