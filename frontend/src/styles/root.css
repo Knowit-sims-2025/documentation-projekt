@@ -1,0 +1,147 @@
+
+:root {
+/* Layout (header, gap, container, footer) */
+--header-h: 4.5rem;
+--gap: 0.5rem;
+--container-w: clamp(960px, 90vw, 1800px);
+--container-px: 1rem;
+--footer-h: 3rem;
+
+--border-radius: 1rem;
+
+/* Background colors */
+--bg-dark: oklch(0.1 0.025 264);
+--bg: oklch(0.15 0.025 264);
+--bg-light: oklch(0.2 0.025 264);
+
+/* Text colors */
+--text: oklch(0.96 0.05 264);
+--text-muted: oklch(0.76 0.05 264);
+
+/* Border colors */
+--highlight: oklch(0.5 0.05 264);
+--border: oklch(0.4 0.05 264);
+--border-muted: oklch(0.3 0.05 264);
+
+--border-card: solid 1px var(--border);
+
+ --bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
+
+
+/* tweaka med % */
+--gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+--gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
+
+--shadow: 0px 2px 2px oklch(0 0 0 / 0.07), 0px 4px 4px oklch(0 0 0 / 0.04);
+
+
+/* Accent colors */
+--primary: oklch(0.76 0.1 264);
+--secondary: oklch(0.76 0.1 84);
+--accent: oklch(80.902% 0.19124 119.924);
+
+
+/* Semantic colors */
+--danger: oklch(0.7 0.05 30);
+--warning: oklch(0.7 0.05 100);
+--success: oklch(0.7 0.05 160);
+--info: oklch(0.7 0.05 260);
+
+color-scheme: dark;
+
+}
+
+
+:root[data-theme="light"] {
+
+--bg-dark: oklch(0.92 0.025 264);
+--bg: oklch(0.96 0.025 264);
+--bg-light: oklch(1 0.025 264);
+
+/* Text colors */
+--text: oklch(0.15 0.05 264);
+--text-muted: oklch(0.4 0.05 264);
+
+/* Border colors */
+--highlight: oklch(1 0.05 264);
+--border: oklch(0.6 0.05 264);
+--border-muted: oklch(0.7 0.05 264);
+
+--border-card: solid 1px var(--bg);
+
+--bar-bg: color-mix(in oklch, var(--bg) 92%, transparent);
+
+/* tweaka med % */
+--gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+--gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
+
+/* Accent colors */
+--primary: oklch(0.4 0.1 264);
+--secondary: oklch(0.4 0.1 84);
+--accent: oklch(80.902% 0.19124 119.924);
+
+/* Semantic colors */
+--danger: oklch(0.5 0.05 30);
+--warning: oklch(0.5 0.05 100);
+--success: oklch(0.5 0.05 160);
+--info: oklch(0.5 0.05 260);
+
+/* Z-index */
+--z-header: 100;
+--z-overlay: 200;
+--z-toast: 300;
+
+color-scheme: light;
+
+}
+
+
+/* =========================
+   Reset/typografi
+   ========================= */
+* { 
+    box-sizing: border-box; 
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+
+    background: var(--bg-dark);
+    color: var(--text-muted);
+
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* mjuka övergångar vid temabyte */
+    transition: background-color 180ms ease, color 180ms ease, background-image 180ms ease;
+}
+
+/* mjuka übergångar vid temabyte */
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; } 
+}
+
+/* Fokusring för tillgänglighet (endast tangentbord) – UPPD: använd accent */
+:focus-visible {
+  outline: 2px solid var(--accent);   /* ändrad från currentColor */
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+}
+
+
+/* länkar */
+a { color: var(--accent); }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
+}

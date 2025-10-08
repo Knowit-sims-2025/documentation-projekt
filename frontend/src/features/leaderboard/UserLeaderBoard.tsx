@@ -29,48 +29,19 @@ export default function UserLeaderBoard() {
     setSelectedUser(user);
   }, []);
 
-  const totalCount = users.length;
-  const tierCount = myTier
-    ? users.filter((u) => u.rankTier === myTier).length
-    : 0;
-
-  // Tillgänglighetsvänlig label för switchen
-  const switchAria = `Filtrera till min tier: ${showMyTierOnly ? "på" : "av"}`;
-  const switchHint = showMyTierOnly
-    ? `Visa alla (${totalCount})`
-    : `Visa bara ${myTier ?? "min tier"} (${tierCount})`;
-
   return (
-    <div className="leaderboard-container">
+    <div className="leaderboard">
       {/* Header */}
-      <div
-        className="leaderboard-header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "0.75rem",
-          gap: "12px",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>
+      <div className="leaderboard__title">
+        <h2>
           Individual ranking{" "}
-          <span style={{ color: "var(--muted)" }}>
+          <span style={{ color: "var(--text-muted)" }}>
             ({showMyTierOnly ? myTier ?? "—" : "All"})
           </span>
         </h2>
 
         {/* Filter med etikett + switch */}
-        <div
-          title="Filter all users by tier"
-          className="leaderboard-filter"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            fontSize: "0.85rem",
-          }}
-        >
+        <div title="Filter all users by tier" className="leaderboard-filter">
           {/* Visar text beroende på state */}
           <span className="muted" style={{ minWidth: 60, textAlign: "right" }}>
             {showMyTierOnly ? "Show All" : "Show my tier"}
@@ -94,7 +65,7 @@ export default function UserLeaderBoard() {
         <ErrorMessage message="Ingen användare inloggad." />
       ) : (
         <>
-          <ul className="leaderboard-list">
+          <ul className="leaderboard__list">
             {visibleUsers.map((user) => (
               <IndividualRank
                 key={user.id}

@@ -11,9 +11,7 @@ export default function Header({ theme, setTheme }: HeaderProps) {
   return (
     <header className="app__header">
       <div className="container">
-        <h1 className="muted" style={{ margin: 0 }}>
-          Dashboard
-        </h1>
+        <h1 style={{ margin: 0 }}>Dashboard</h1>
         <ThemeToggle theme={theme} setTheme={setTheme} />
       </div>
     </header>

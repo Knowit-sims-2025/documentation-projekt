@@ -1,6 +1,7 @@
 import type { User } from "../../types/user";
 import { Avatar } from "../../components/Avatar";
 import { useAuth } from "../AuthContext";
+import adminStarUrl from "../../assets/admin_star.svg?url";
 
 interface IndividualRankProps {
   user: User;
@@ -22,12 +23,12 @@ export function IndividualRank({ user, onSelect }: IndividualRankProps) {
 
   return (
     <li
-      className={`leaderboard-item ${isCurrentUser ? "is-current-user" : ""}`}
+      className={`leaderboard__item ${isCurrentUser ? "is-current-user" : ""}`}
       onClick={() => onSelect(user)}
       title={`Visa profil för ${user.displayName}`}
     >
       <span
-        className="leaderboard-rank"
+        className="leaderboard__rank"
         title={`${user.displayName} is rank ${user.rank}`}
       >
         {user.rank}.
@@ -36,19 +37,23 @@ export function IndividualRank({ user, onSelect }: IndividualRankProps) {
       <Avatar name={user.displayName} src={user.avatarUrl} />
 
       <span
-        className="leaderboard-name"
+        className="leaderboard__name"
         title="Click on username to view profile"
       >
         {isCurrentUser ? "You" : user.displayName}
       </span>
 
-      <span className="leaderboard-admin" title="Admin">
-        {user.isAdmin ? "⭐" : ""}
-      </span>
+      {user.isAdmin && (
+        <span
+          className="leaderboard__admin"
+          title="User is admin"
+          aria-label="User is admin"
+        />
+      )}
 
       <span
-        className="leaderboard-points"
-        title={`${user.displayName}: ${user.totalPoints} poäng`}
+        className="leaderboard__points"
+        title={`${user.displayName} is rank: ${user.rankTier} `}
       >
         {user.totalPoints} p
       </span>

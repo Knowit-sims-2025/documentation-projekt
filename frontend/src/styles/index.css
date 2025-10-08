@@ -3,8 +3,18 @@
 @import "react-grid-layout/css/styles.css";
 @import "react-resizable/css/styles.css";
 
-@import "../styles/style.css";
+
+
+/* @import "../styles/style.css"; */
 /* @import "../styles/newstyle.css"; */
+@import "../styles/root.css";
+@import "../styles/newColorStyle.css";
+
+@import "../styles/leaderboards.css";
+
+
 
 
 @import "../components/ui/switch.css";
+
+

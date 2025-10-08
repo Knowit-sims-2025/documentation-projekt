@@ -1,13 +1,5 @@
-// src/components/Widget.tsx
 import React from "react";
-
-/**
- * Widget-komponent:
- * - fungerar både i statiskt CSS-grid och react-grid-layout
- * - använder återanvändbara klasser (.panel, .card)
- * - har en valfri "onHide" callback
- */
-export default function Widget({
+function Widget({
   title,
   children,
   onHide,

@@ -14,7 +14,7 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
 
   return (
     <div
-      className="theme-toggle-wrap"
+      className="theme-toggle"
       title="Change theme light/dark"
       aria-label={label}
       role="group"
@@ -23,8 +23,12 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
         src={lightModeIcon}
         alt="Icon for light mode"
         aria-hidden="true"
-        className="theme-toggle-wrap__icon"
-        style={{ opacity: checked ? 0.3 : 1 }}
+        className="theme-toggle_icon"
+        style={{
+          filter:
+            "invert(84%) sepia(94%) saturate(7489%) hue-rotate(1deg) brightness(105%) contrast(106%)",
+          opacity: checked ? 0.3 : 1,
+        }}
       />
       <Switch
         checked={checked}
@@ -35,8 +39,12 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
         src={darkModeIcon}
         alt="Icon for dark mode"
         aria-hidden="true"
-        className="theme-toggle-wrap__icon"
-        style={{ opacity: checked ? 1 : 0.3 }}
+        className="theme-toggle_icon"
+        style={{
+          filter:
+            "invert(84%) sepia(94%) saturate(7489%) hue-rotate(1deg) brightness(105%) contrast(106%)",
+          opacity: checked ? 1 : 0.3,
+        }}
       />
     </div>
   );

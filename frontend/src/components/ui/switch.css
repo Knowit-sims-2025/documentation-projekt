@@ -8,13 +8,15 @@
   --switch-w: 50px;
   --switch-h: 24px;
   --switch-d: 20px;
+  --switch-bw: 1px;
   --switch-offset: calc((var(--switch-h) - var(--switch-d)) / 2);
 
-  --switch-bg: var(--surface-2);
-  --switch-border: var(--card-border);
-  --switch-bw: 1px;
+
+  --switch-bg: color-mix(in oklch, var(--bg) 85%, var(--bg-light) 15%);
+  --switch-border: var(--border);
   --switch-accent: var(--accent);
   --switch-knob: var(--switch-accent);
+ 
 
   box-sizing: border-box;
   line-height: 0;
@@ -91,16 +93,16 @@
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.2rem;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
 }
 
-.theme-toggle img {
-  height: 18px;
-  width: 18px;
+.theme-toggle_icon {
+  height: 1.5rem;
+  width: 1.5rem;
 }
 
 
@@ -108,7 +110,8 @@
    Leaderboard styling för switchen
    ========================= */
 .leaderboard-filter .muted {
-  color: var(--muted);
+  color: var(--text-muted);
+
 }
 .leaderboard-filter .ui-switch {
   /* lite compaktare än header */

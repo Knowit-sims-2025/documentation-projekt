@@ -1,0 +1,174 @@
+/* =========================
+   Leaderboard (renodlad)
+   ========================= */
+
+.leaderboard {
+  width: 100%;
+  padding: 0 var(--container-px);
+  text-align: left;
+  color: var(--text);
+}
+
+/* Rubrik */
+.leaderboard h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem 0;
+  color: var(--text);
+}
+
+/* Titelrad / filterfält */
+.leaderboard__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.leaderboard__filter_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* =========================
+   Lista / radstruktur
+   ========================= */
+.leaderboard__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Grundrad */
+.leaderboard__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.leaderboard__item:last-child {
+  border-bottom: none;
+}
+
+.leaderboard__item:hover {
+  background-color: color-mix(in oklch, var(--bg-light) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Aktiv användare */
+.leaderboard__item.is-current-user,
+.leaderboard__item--current {
+  background-color: color-mix(in oklch, oklch(0.85 0.12 95) 15%, transparent);
+  font-weight: 600;
+}
+
+/* Separator (t.ex. "Visa mer") */
+.leaderboard__item--separator {
+  justify-content: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid var(--border);
+}
+.leaderboard__item--separator:hover {
+  background-color: color-mix(in oklch, var(--bg-light) 15%, transparent);
+}
+
+/* =========================
+   Element i raden
+   ========================= */
+
+/* Ranknummer */
+.leaderboard__rank {
+  width: 2ch;
+  text-align: right;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* =========================
+   Avatar-stil
+   ========================= */
+.leaderboard__avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  overflow: hidden;
+  background: color-mix(in oklch, var(--bg-light) 20%, transparent);
+  color: var(--text);
+  font-weight: 600;
+  user-select: none;
+
+  flex-shrink: 0;
+  transition: transform 120ms ease;
+}
+
+.leaderboard__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.leaderboard__avatar-initials {
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0.9;
+}
+
+.leaderboard__admin {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: oklch(80.902% 0.19124 119.924); 
+  mask: url("../assets/admin_star.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/admin_star.svg") center / contain no-repeat;
+  display: inline-block;
+  opacity: 0.9;
+  transition: transform 120ms ease, background-color 150ms ease;
+}
+
+
+.leaderboard__item:hover .leaderboard__admin-icon {
+  transform: scale(1.1);
+}
+
+/* Namn */
+.leaderboard__name {
+  flex: 1 1 auto;
+  margin-left: 0.5rem;
+  color: var(--text);
+  font-weight: 500;
+  transition: transform 120ms ease;
+}
+.leaderboard__item:hover .leaderboard__name {
+  transform: translateY(-1px);
+}
+
+/* Adminikon */
+.leaderboard__admin {
+  width: 1.5rem;
+  text-align: center;
+  color: oklch(0.9 0.15 90); /* diskret gul ton */
+}
+
+/* Poäng */
+.leaderboard__points {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 4ch;
+  text-align: right;
+}
