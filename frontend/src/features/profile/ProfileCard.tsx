@@ -10,8 +10,8 @@ export function ProfileCard({ user }: { user: User }) {
         </div>
       </div>
       <div className="profile-info">
-        <h2 className="profile-name">{user.displayName}</h2>
-        {user.isAdmin && <span className="profile-admin" title="Admin">⭐ Admin</span>}
+        <h2 className="profile-name">{user.displayName}
+        {user.isAdmin && <span className="profile-admin" title="Admin">⭐</span>}</h2>
       </div>
     </>
   );

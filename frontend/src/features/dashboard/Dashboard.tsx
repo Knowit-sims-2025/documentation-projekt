@@ -11,6 +11,7 @@ import {
 import Widget from "../../components/Widget";
 import Switch from "../../components/ui/switch";
 import { useAuth } from "../AuthContext";
+import Profile from "../../components/Profile";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
