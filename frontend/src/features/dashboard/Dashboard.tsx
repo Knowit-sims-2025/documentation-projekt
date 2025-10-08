@@ -18,7 +18,7 @@ type Widget = {
   content: React.ReactNode;
 };
 
-// Key för localStorage (om du vill spara layout)
+// Key för localStorage
 const LS_KEY = "user-dashboard-layout";
 
 export default function Dashboard() {
