@@ -63,29 +63,34 @@ func (r *CompetitionRepository) CreateCompetition(c *models.Competition) (int64,
 }
 
 func (r * CompetitionRepository) GetCompetitionByID(id int64) (*models.Competition, error) {
-	row := r.DB.QueryRow(`SELECT id, name, description, start_date, end_date, created_by_user_id, created_at FROM competitions WHERE id = $1`, id)
-	var comp models.Competition
-	err := row.Scan(
-		&comp.ID,
-		&comp.Name,
-		&comp.Description,
-		&comp.StartDate,
-		&comp.EndDate,
-		&comp.CreatedAt,
-		&comp.CreatedByUserID,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // Ingen tävling hittades med det ID:t
-		}
-		return nil, err
+    row := r.DB.QueryRow(`SELECT id, name, description, start_date, end_date, created_by_user_id, created_at FROM competitions WHERE id = $1`, id)
+    var comp models.Competition
+    err := row.Scan(
+        &comp.ID,
+        &comp.Name,
+        &comp.Description,
+        &comp.StartDate,
+        &comp.EndDate,
+        &comp.CreatedByUserID, 
+        &comp.CreatedAt,
+    )
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, nil // 
+        }
+        return nil, err
 
-	}
-	return &comp, nil
+    }
+    return &comp, nil
 }
 
 func (r *CompetitionRepository) UpdateCompetition(c *models.Competition) error {
 	_, err := r.DB.Exec(`UPDATE competitions SET name = $1, description = $2, start_date = $3, end_date = $4 WHERE id = $5`,
 		c.Name, c.Description, c.StartDate, c.EndDate, c.ID)
+	return err
+}
+
+func (r * CompetitionRepository) DeleteCompetition(id int64) error {
+	_, err := r.DB.Exec(`DELETE FROM competitions WHERE id = $1`, id)
 	return err
 }

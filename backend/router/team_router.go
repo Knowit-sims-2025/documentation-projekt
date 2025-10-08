@@ -2,33 +2,28 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-func RegisterTeamRoutes(mux *http.ServeMux, h *handlers.TeamHandler) {
-	// /api/v1/teams hanterar GET (alla) och POST (skapa nytt team)
-	mux.HandleFunc("/api/v1/teams", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllTeamsHandler(w, r)
-		case http.MethodPost:
-			h.CreateTeamHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterTeamRoutes(r *mux.Router, h *handlers.TeamHandler) {
+	s := r.PathPrefix("/teams").Subrouter()
+	s.HandleFunc("", h.GetAllTeamsHandler).Methods("GET")
+	s.HandleFunc("", h.CreateTeamHandler).Methods("POST")
 
-	// /api/v1/teams/{id} hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
-	mux.HandleFunc("/api/v1/teams/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetTeamByIDHandler(w, r)
-		case http.MethodPut:
-			h.UpdateTeamHandler(w, r)
-		case http.MethodDelete:
-			h.DeleteTeamHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	s.HandleFunc("/{id:[0-9]+}", h.GetTeamByIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}", h.UpdateTeamHandler).Methods("PUT")
+	s.HandleFunc("/{id:[0-9]+}", h.DeleteTeamHandler).Methods("DELETE")
+}
+
+func RegisterUserTeamRoutes(r *mux.Router, h *handlers.UserTeamHandler) {
+	s := r.PathPrefix("/userteams").Subrouter()
+
+	s.HandleFunc("", h.GetAllUserTeamsHandler).Methods("GET")
+	s.HandleFunc("", h.AddUserToTeamHandler).Methods("POST") // Läser JSON body
+
+	// GET /api/v1/userteams/team/{teamId} -> alla users i ett team
+	s.HandleFunc("/team/{teamId:[0-9]+}", h.GetUsersByTeamHandler).Methods("GET")
+
+	// DELETE /api/v1/userteams/user/{userId}/team/{teamId}
+	s.HandleFunc("/user/{userId:[0-9]+}/team/{teamId:[0-9]+}", h.RemoveUserFromTeamHandler).Methods("DELETE")
 }

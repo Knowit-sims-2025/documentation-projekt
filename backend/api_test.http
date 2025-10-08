@@ -1,40 +1,285 @@
-###
-# Hämta alla användare
-# Svarar med en lista av alla användare i databasen.
-GET http://localhost:8081/api/v1/users
+# Variabler för att göra testerna enklare.
+@host = http://localhost:8081
+@api_v1 = {{host}}/api/v1
 
 ###
-# Skapa en ny användare
-# Svarar med den nyskapade användaren, inklusive dess nya ID.
-POST http://localhost:8081/api/v1/users
+# ==============================================================================
+# 1. SYSTEM & ROOT
+# ==============================================================================
+
+###
+# [GET] Hämta API-roten
+# Svarar med API-status, tillgängliga resurser och exempelanrop.
+GET {{api_v1}}
+
+###
+# ==============================================================================
+# 2. USERS (Användare)
+# ==============================================================================
+
+###
+# [POST] Skapa en ny användare (Test User 1)
+# Spara ID:t från svaret för senare tester.
+# @name newUser1
+POST {{api_v1}}/users
 Content-Type: application/json
 
 {
-    "confluenceAuthorId": "Taha.khudher.id",
-    "displayName": "Kalle Anka",
-    "avatarUrl": "https://example.com/kalle.png"
+    "confluenceAuthorId": "test.user.one.id",
+    "displayName": "Test User One",
+    "avatarUrl": ""
 }
 
 ###
-# Hämta en specifik användare
-# Byt ut '1' i URL:en mot ID:t på den användare du vill hämta.
-GET http://localhost:8081/api/v1/users/8
-
-###
-# Uppdatera en användare
-# Byt ut '1' i URL:en. Skickar med den nya informationen.
-# Svarar med status 200 OK om det lyckades.
-PUT http://localhost:8081/api/v1/users/8
+# [POST] Skapa en till användare (Test User 2)
+# @name newUser2
+POST {{api_v1}}/users
 Content-Type: application/json
 
 {
-    "displayName": "Kalle Anka (Uppdaterad)",
+    "confluenceAuthorId": "test.user.two.id",
+    "displayName": "Test User Two"
+}
+
+###
+# [GET] Hämta alla användare
+# Verifiera att de två nya användarna finns med i listan.
+GET {{api_v1}}/users
+
+###
+# Spara ID från den första nyskapade användaren i en variabel.
+@userId1 = {{newUser1.response.body.$.id}}
+@userId2 = {11}
+# Hårdkoda det specifika ID du vill testa.
+# Kom ihåg: Detta fungerar BARA om en användare med detta ID finns.
+@specificUserId = 11
+
+###
+# [GET] Hämta den specifika användaren med ID 11
+GET {{api_v1}}/users/{{specificUserId}}
+
+###
+# [PUT] Uppdatera användaren med ID 11
+PUT {{api_v1}}/users/{{specificUserId}}
+Content-Type: application/json
+
+{
+    "displayName": "Specifikt uppdaterad användare 11",
+    "isAdmin": false
+}
+###
+# [POST] Uppdatera (byt ut) avataren för användare 11
+# Kör bara detta anrop igen med en ny bildfil.
+POST {{api_v1}}/upload/avatar
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="userId"
+
+11
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadFile"; filename="en_ny_bild.png"
+Content-Type: image/png
+
+< C:\Users\tahak\Downloads\anka.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+###
+# [GET] Hämta en specifik användare via ID
+GET {{api_v1}}/users/{{userId2}}
+
+###
+# [PUT] Uppdatera en användare
+PUT {{api_v1}}/users/{{userId2}}
+Content-Type: application/json
+
+{
+    "displayName": "Test User One (Updated)",
     "isAdmin": true
 }
 
+###
+# [POST] Ladda upp en ny avatar för användare 1
+# OBS: Du måste ange en korrekt sökväg till en bild på din dator.
+# Detta kräver ett verktyg som kan hantera multipart/form-data.
+###
+# [POST] Ladda upp en ny avatar för användare 1
+POST {{api_v1}}/upload/avatar
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="userId"
+
+11
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadFile"; filename="musse.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\tahak\Downloads\musse.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
-# Ta bort en användare
-# Byt ut '1' i URL:en mot ID:t på den användare du vill ta bort.
-# Svarar med status 204 No Content om det lyckades.
-DELETE http://localhost:8081/api/v1/users/8
+
+POST {{api_v1}}/upload/avatar
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="userId"
+
+{{userId2}}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadFile"; filename="anka.jpg"
+Content-Type: image/png
+
+< C:\Users\tahak\Downloads\anka.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+
+###
+# ==============================================================================
+# 3. BADGES
+# ==============================================================================
+
+###
+# [POST] Skapa en ny badge
+# @name newBadge
+POST {{api_v1}}/badges
+Content-Type: application/json
+
+{
+    "name": "First Commit",
+    "description": "Awarded for the first documentation contribution.",
+    "criteriaValue": 1
+}
+
+###
+# Spara ID från den nyskapade badgen.
+@badgeId = {{newBadge.response.body.$.id}}
+
+###
+# [GET] Hämta alla badges
+GET {{api_v1}}/badges
+
+###
+# [GET] Hämta en specifik badge
+GET {{api_v1}}/badges/{{badgeId}}
+
+###
+# [PUT] Uppdatera en badge
+PUT {{api_v1}}/badges/{{badgeId}}
+Content-Type: application/json
+
+{
+    "name": "First Contribution",
+    "description": "Updated description for the first contribution.",
+    "criteriaValue": 1
+}
+
+###
+# [POST] Ladda upp en ikon för en badge
+# OBS: Ange en korrekt sökväg till en bild.
+POST {{api_v1}}/upload/badge
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="badgeId"
+
+{{badgeId}}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadFile"; filename="badge_icon.png"
+Content-Type: image/png
+
+< ./path/to/your/badge_icon.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+# ==============================================================================
+# 4. TEAMS
+# ==============================================================================
+
+###
+# [POST] Skapa ett nytt team
+# @name newTeam
+POST {{api_v1}}/teams
+Content-Type: application/json
+
+{
+    "name": "The A-Team"
+}
+
+###
+# Spara ID från det nyskapade teamet.
+@teamId = {{newTeam.response.body.$.id}}
+
+###
+# [GET] Hämta alla teams
+GET {{api_v1}}/teams
+
+###
+# [GET] Hämta ett specifikt team
+GET {{api_v1}}/teams/{{teamId}}
+
+###
+# ==============================================================================
+# 5. RELATIONER (UserTeams & UserBadges)
+# ==============================================================================
+
+###
+# [POST] Lägg till User 1 i The A-Team
+POST {{api_v1}}/userteams
+Content-Type: application/json
+
+{
+    "user_id": {{userId1}},
+    "team_id": {{teamId}}
+}
+
+###
+# [GET] Hämta alla användare i The A-Team
+# Verifiera att User 1 finns med.
+GET {{api_v1}}/userteams/team/{{teamId}}
+
+###
+# [POST] Tilldela "First Commit"-badgen till User 1
+POST {{api_v1}}/userbadges
+Content-Type: application/json
+
+{
+    "userId": {{userId1}},
+    "badgeId": {{badgeId}}
+}
+
+###
+# [GET] Verifiera att User 1 har badgen
+GET {{api_v1}}/userbadges/{{userId1}}/{{badgeId}}
+
+###
+# ==============================================================================
+# 6. CLEANUP (Radera det vi skapat)
+# ==============================================================================
+
+###
+# [DELETE] Ta bort User 1 från The A-Team
+DELETE {{api_v1}}/userteams/user/{{userId1}}/team/{{teamId}}
+
+###
+# [DELETE] Ta bort badgen från användaren
+DELETE {{api_v1}}/userbadges/{{userId1}}/{{badgeId}}
+
+###
+# [DELETE] Ta bort User 1
+# Spara ID på den andra användaren för att kunna ta bort den.
+@userId2 = {{newUser2.response.body.$.id}}
+DELETE {{api_v1}}/users/{{userId1}}
+
+###
+# [DELETE] Ta bort User 2
+DELETE {{api_v1}}/users/{{userId2}}
+
+###
+# [DELETE] Ta bort badgen
+DELETE {{api_v1}}/badges/{{badgeId}}
+
+###
+# [DELETE] Ta bort teamet
+DELETE {{api_v1}}/teams/{{teamId}}

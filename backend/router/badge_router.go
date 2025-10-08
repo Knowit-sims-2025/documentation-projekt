@@ -2,61 +2,26 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-func RegisterBadgeRoutes(mux *http.ServeMux, h *handlers.BadgeHandler) {
-	// /api/v1/badges hanterar GET (alla) och POST (skapa ny)
-	mux.HandleFunc("/api/v1/badges", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllBadgesHandler(w, r)
-		case http.MethodPost:
-			h.CreateBadgeHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterBadgeRoutes(r *mux.Router, h *handlers.BadgeHandler) {
+	s := r.PathPrefix("/badges").Subrouter()
+	s.HandleFunc("", h.GetAllBadgesHandler).Methods("GET")
+	s.HandleFunc("", h.CreateBadgeHandler).Methods("POST")
 
-	// /api/v1/badges/{id} hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
-	mux.HandleFunc("/api/v1/badges/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetBadgeByIDHandler(w, r)
-		case http.MethodPut:
-			h.UpdateBadgeHandler(w, r)
-		case http.MethodDelete:
-			h.DeleteBadgeHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	s.HandleFunc("/{id:[0-9]+}", h.GetBadgeByIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}", h.UpdateBadgeHandler).Methods("PUT")
+	s.HandleFunc("/{id:[0-9]+}", h.DeleteBadgeHandler).Methods("DELETE")
 }
 
-func RegisterUserBadgeRoutes(mux *http.ServeMux, h *handlers.UserBadgeHandler) {
-	// /api/v1/userBadges hanterar GET (alla) och POST (skapa ny)
-	mux.HandleFunc("/api/v1/userBadges", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetAllUserBadgesHandler(w, r)
-		case http.MethodPost:
-			h.CreateUserBadgeHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterUserBadgeRoutes(r *mux.Router, h *handlers.UserBadgeHandler) {
+	s := r.PathPrefix("/userbadges").Subrouter()
+	s.HandleFunc("", h.GetAllUserBadgesHandler).Methods("GET")
+	s.HandleFunc("", h.CreateUserBadgeHandler).Methods("POST")
 
-	// /api/v1/userBadges/{user id}/{badge id} hanterar GET (specifik), PUT (uppdatera) och DELETE (ta bort)
-	mux.HandleFunc("/api/v1/userBadges/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			h.GetUserBadgeHandler(w, r)
-		case http.MethodPut:
-			h.UpdateUserBadgeHandler(w, r)
-		case http.MethodDelete:
-			h.DeleteUserBadgeHandler(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	// Notera den mer komplexa URL-strukturen här
+	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.GetUserBadgeHandler).Methods("GET")
+	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.UpdateUserBadgeHandler).Methods("PUT")
+	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.DeleteUserBadgeHandler).Methods("DELETE")
 }
