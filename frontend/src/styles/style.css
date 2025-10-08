@@ -5,9 +5,9 @@
 :root {
   /* Layout */
   --header-h: 72px;
-  --gap: 8px;
+  --gap: 0,5rem;
   --container-w: clamp(960px, 90vw, 1800px);
-  --container-px: 16px;
+  --container-px: 1rem;
 
   /* Färgton för blå accent (delad mellan teman) */
   --h: 220;
