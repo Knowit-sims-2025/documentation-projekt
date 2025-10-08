@@ -1,7 +1,6 @@
 import type { User } from "../../types/user";
 import { Avatar } from "../../components/Avatar";
 import { useAuth } from "../AuthContext";
-import adminStarUrl from "../../assets/admin_star.svg?url";
 
 interface IndividualRankProps {
   user: User;

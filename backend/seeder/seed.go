@@ -18,12 +18,12 @@ func main() {
 
 	fmt.Println("Ansluten till databasen. Börjar seeda...")
 
-	// Rensa befintliga användare och återställ ID-räknaren för att säkerställa konsekventa ID:n
-	_, err = db.Exec("TRUNCATE TABLE users RESTART IDENTITY CASCADE")
+	// Rensa befintliga data för att säkerställa en ren start
+	_, err = db.Exec("TRUNCATE TABLE users, teams, user_teams RESTART IDENTITY CASCADE")
 	if err != nil {
-		log.Fatalf("Kunde inte rensa users-tabellen: %v", err)
+		log.Fatalf("Kunde inte rensa tabeller: %v", err)
 	}
-	fmt.Println("Gamla användare borttagna.")
+	fmt.Println("Gamla data (users, teams, user_teams) borttagna.")
 
 	// Lista med Marvel-hjältar
 	marvelUsers := []struct {
@@ -71,26 +71,73 @@ func main() {
 		{"James Gosling", "james-gosling", "https://i.pravatar.cc/150?u=james-gosling", false},
 	}
 
+	// --- STEG 1: Skapa team och spara deras ID:n ---
+	teamDefinitions := map[string][]string{
+		"Avengers":              {"Tony Stark", "Steve Rogers", "Natasha Romanoff", "Thor Odinson", "Bruce Banner", "Clint Barton", "Peter Parker", "Wanda Maximoff", "Stephen Strange", "T'Challa", "Carol Danvers", "Scott Lang"},
+		"Justice League":        {"Bruce Wayne", "Clark Kent", "Diana Prince", "Barry Allen", "Arthur Curry", "Victor Stone", "Hal Jordan"},
+		"Pioneers of Computing": {"Ada Lovelace", "Alan Turing", "Grace Hopper", "Linus Torvalds", "Guido van Rossum", "Dennis Ritchie", "Margaret Hamilton", "James Gosling"},
+		"Rogues Gallery":        {"Selina Kyle", "Harleen Quinzel", "Lex Luthor", "Slade Wilson"},
+	}
+	teamIDs := make(map[string]int)
+
+	fmt.Println("\nSkapar team...")
+	for teamName := range teamDefinitions {
+		var teamID int
+		err := db.QueryRow("INSERT INTO teams (name) VALUES ($1) RETURNING id", teamName).Scan(&teamID)
+		if err != nil {
+			log.Fatalf("Kunde inte infoga team %s: %v", teamName, err)
+		}
+		teamIDs[teamName] = teamID
+		fmt.Printf("Lade till team: %s (ID: %d)\n", teamName, teamID)
+	}
+
+	// --- STEG 2: Skapa användare och spara deras ID:n ---
+	userIDs := make(map[string]int) // Map för att hålla reda på [DisplayName] -> userID
+	fmt.Println("\nSkapar användare...")
+
 	// Förbered SQL-frågan för att infoga användare
 	stmt, err := db.Prepare(`
 		INSERT INTO users (display_name, confluence_author_id, avatar_url, total_points, is_admin)
-		VALUES ($1, $2, $3, $4, $5)
+		VALUES ($1, $2, $3, $4, $5) RETURNING id
 	`)
 	if err != nil {
 		log.Fatalf("Kunde inte förbereda SQL-statement: %v", err)
 	}
 	defer stmt.Close()
 
-	// Loopa igenom och infoga varje hjälte
 	for _, user := range marvelUsers {
-		// Generera slumpmässiga poäng för variation
 		points := rand.Intn(5000) + 500 // Poäng mellan 500 och 5499
+		var userID int
 
-		_, err := stmt.Exec(user.DisplayName, user.ConfluenceAuthorID, user.AvatarURL, points, user.IsAdmin)
+		err := stmt.QueryRow(user.DisplayName, user.ConfluenceAuthorID, user.AvatarURL, points, user.IsAdmin).Scan(&userID)
 		if err != nil {
 			log.Printf("Kunde inte infoga användare %s: %v\n", user.DisplayName, err)
 		} else {
-			fmt.Printf("Lade till: %s med %d poäng.\n", user.DisplayName, points)
+			userIDs[user.DisplayName] = userID // Spara det returnerade ID:t
+			fmt.Printf("Lade till användare: %s (ID: %d) med %d poäng.\n", user.DisplayName, userID, points)
+		}
+	}
+
+	// --- STEG 3: Koppla användare till team ---
+	fmt.Println("\nKopplar användare till team...")
+	userTeamStmt, err := db.Prepare("INSERT INTO user_teams (user_id, team_id) VALUES ($1, $2)")
+	if err != nil {
+		log.Fatalf("Kunde inte förbereda user_teams statement: %v", err)
+	}
+	defer userTeamStmt.Close()
+
+	for teamName, members := range teamDefinitions {
+		teamID := teamIDs[teamName]
+		for _, memberName := range members {
+			userID, ok := userIDs[memberName]
+			if !ok {
+				log.Printf("VARNING: Användaren '%s' hittades inte för team '%s'", memberName, teamName)
+				continue
+			}
+			_, err := userTeamStmt.Exec(userID, teamID)
+			if err != nil {
+				log.Printf("Kunde inte koppla användare %d till team %d: %v", userID, teamID, err)
+			}
 		}
 	}
 

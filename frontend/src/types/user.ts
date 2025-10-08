@@ -12,10 +12,10 @@ export type RankTier =
 export interface User {
   id: number;
   displayName: string;
-  confluenceAuthorId: string | null;
-  avatarUrl?: string;
+  avatarUrl: string;
   totalPoints: number;
-  rank: number;
-  rankTier: RankTier;
   isAdmin: boolean;
+  createdAt: string;
+  rankTier?: string; 
+  rank?: number;
 }

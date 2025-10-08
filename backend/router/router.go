@@ -40,7 +40,6 @@ func InitializeAndGetRouter() *mux.Router {
 	competitionRepo := &database.CompetitionRepository{DB: db}
 	systemRepo := &database.SystemRepository{DB: db}
 
-
 	// Steg 3: Skapa alla handlers
 	deps := dependencies{
 		UserHandler:        &handlers.UserHandler{Repo: userRepo},
@@ -63,8 +62,6 @@ func newRouter(deps dependencies) *mux.Router {
 	api := r.PathPrefix("/api/v1").Subrouter()
 
 	api.HandleFunc("", deps.SystemHandler.RootHandler).Methods("GET")
-
-
 
 	// Registrera alla modulära vägar
 	if deps.UserHandler != nil {
@@ -99,4 +96,3 @@ func newRouter(deps dependencies) *mux.Router {
 
 	return r
 }
-
