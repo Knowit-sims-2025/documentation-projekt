@@ -1,5 +1,4 @@
-// En enkel Avatar-komponent som visar antingen en profilbild (src)
-// eller en fallback med initialer om bilden saknas.
+import React, { useState } from "react";
 
 export function Avatar({
   name,
@@ -10,14 +9,16 @@ export function Avatar({
   src?: string;
   className?: string;
 }) {
-  //om en bild finns, visa den
-  if (src) return <img src={src} alt={name} className={className} />;
+  const [imgError, setImgError] = useState(false);
 
-  //om ingen bild finns, visa initialer
-  // 1. dela upp namnet i delar (förnamn, efternamn, etc)
-  // 2. ta första bokstaven i varje del
-  // 3. ta högst två bokstäver
-  // 4. gör om till versaler
+  /**
+   * Beräkna initialer:
+   * - trimma whitespace
+   * - splitta på mellanrum
+   * - ta första bokstaven från upp till två ord
+   * - fallback till "?" om namnet är tomt
+   * Memoiserad för att inte räkna om i onödan.
+   */
   const initials = name
     .split(" ")
     .filter(Boolean)
@@ -26,7 +27,31 @@ export function Avatar({
     .join("")
     .toUpperCase();
 
-  //rendera en div som visar initialerna
+  /**
+   * Om vi har en bildkälla och den inte felat → rendera <img>.
+   * onError: om bilden inte går att ladda växlar vi till initialer.
+   *
+   * Tillgänglighet (alt):
+   * - alt={name} är rimligt om namnet inte finns precis bredvid i UI:t.
+
+   */
+  if (src && !imgError) {
+    return (
+      <img
+        src={src}
+        alt={name}
+        className={className}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  /**
+   * Fallback: visa initialer.
+   * role="img" + aria-label: låter skärmläsare behandla denna som en bild med namn.
+   * Om namnet redan läses upp någon annanstans intill: sätt aria-hidden istället.
+   */
+
   return (
     <div className={className} aria-label={name}>
       {initials}

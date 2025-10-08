@@ -1,34 +1,43 @@
 import React from "react";
+import Switch from "./ui/switch";
+import darkModeIcon from "../assets/dark_mode.svg";
+import lightModeIcon from "../assets/light_mode.svg";
 
 interface ThemeToggleProps {
   theme: "light" | "dark";
-  setTheme: (theme: "light" | "dark") => void;
+  setTheme: (t: "light" | "dark") => void;
 }
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, setTheme }) => {
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  };
-
-  const label = `Byt till ${theme === "light" ? "mörkt" : "ljust"} läge`;
+export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
+  const checked = theme === "dark";
+  const label = `Byt till ${checked ? "ljust" : "mörkt"} läge`;
 
   return (
-    <button
-      className="theme-toggle"
-      onClick={toggleTheme}
+    <div
+      className="theme-toggle-wrap"
+      title="Change theme light/dark"
       aria-label={label}
-      title={label}
+      role="group"
     >
-      <span className="theme-toggle__sun" aria-hidden="true">
-        ☀️
-      </span>
-      <span className="theme-toggle__moon" aria-hidden="true">
-        🌙
-      </span>
-      <span className="theme-toggle__slider"></span>
-    </button>
+      <img
+        src={lightModeIcon}
+        alt="Icon for light mode"
+        aria-hidden="true"
+        className="theme-toggle-wrap__icon"
+        style={{ opacity: checked ? 0.3 : 1 }}
+      />
+      <Switch
+        checked={checked}
+        onChange={(next) => setTheme(next ? "dark" : "light")}
+        ariaLabel={label}
+      />
+      <img
+        src={darkModeIcon}
+        alt="Icon for dark mode"
+        aria-hidden="true"
+        className="theme-toggle-wrap__icon"
+        style={{ opacity: checked ? 1 : 0.3 }}
+      />
+    </div>
   );
-};
-
-export default ThemeToggle;
+}

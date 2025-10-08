@@ -1,0 +1,10 @@
+/*ladda in alla stiler i denna fil. lägg dem i ordning */
+
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
+@import "../styles/style.css";
+/* @import "../styles/newstyle.css"; */
+
+
+@import "../components/ui/switch.css";

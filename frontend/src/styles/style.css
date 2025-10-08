@@ -1,3 +1,4 @@
+
 /* =========================
    Bas & tokens + teman
    ========================= */
@@ -188,42 +189,49 @@ a:hover { text-decoration: underline; }
   padding-right: env(safe-area-inset-right);
 }
 
+
 /* =========================
    Grid med areas (läsbarhet)
+   Dashboard Container
    ========================= */
 .dashboard {
   width: 100%;
   max-width: var(--container-w);
   margin: 0 auto;
   padding: 12px var(--container-px);
-  display: grid;
+  /* display: grid;
 
   grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
   grid-template-rows: 1.5fr 1fr;
   grid-template-areas:
     "profile individual individual achievements"
-    "profile teams      competition achievements";
+    "profile teams      competition achievements"; */
 
   gap: var(--gap);
   min-height: calc(100vh - var(--header-h) - 24px);
+  /* All positionering hanteras nu av react-grid-layout.
+     Denna klass sätter bara de yttre ramarna för containern.
+     Vi behöver inte längre display: grid, grid-template-areas, etc. */
 }
 
 /* =========================
    Placering via areas
    ========================= */
-.profile      { grid-area: profile;      background: var(--c-profile); }
+/* .profile      { grid-area: profile;      background: var(--c-profile); }
 .individual   { grid-area: individual;   background: var(--c-individual); }
 .teams        { grid-area: teams;        background: var(--c-teams); }
 .competition  { grid-area: competition;  background: var(--c-competition); }
-.achievements { grid-area: achievements; background: var(--c-achievements); }
+.achievements { grid-area: achievements; background: var(--c-achievements); } */
 
 /* =========================
    Kort-stil
    ========================= */
 .card {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;         /* innehåll börjar uppifrån */
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;                       /* lite luft mellan element i kortet */
 
   font-weight: 600;
   border-radius: 12px;
@@ -233,17 +241,23 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow);
 
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease; /* UPPD */
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease;
 }
 .card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px hsl(220 60% 2% / 0.6);
-  border-color: hsl(220 30% 90% / 0.18);
+  box-shadow: 0 10px 28px color-mix(in oklch, black 72%, transparent);
+  border-color: color-mix(in oklch, var(--border) 70%, transparent);
 }
 .card:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px hsl(220 60% 2% / 0.5);
+  box-shadow: 0 6px 16px color-mix(in oklch, black 65%, transparent);
 }
+
+.card__body { flex: 1; min-height: 0; overflow: auto;}
 
 /* =========================
    Leaderboard-stil
@@ -412,47 +426,47 @@ a:hover { text-decoration: underline; }
   .card { border-width: 1.5px; }
 }
 
-/* =========================
-   Theme Toggle Switch
-   ========================= */
-.theme-toggle {
-  --toggle-w: 50px;
-  --toggle-h: 26px;
-  --slider-d: 20px; /* diametern på cirkeln */
-  --slider-offset: calc((var(--toggle-h) - var(--slider-d)) / 2);
 
-  position: relative;
+/* =========================
+   Widgets inom dashboard
+   ========================= */
+.widget {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.widget__header {
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: var(--toggle-w);
-  height: var(--toggle-h);
-  padding: 0;
+  justify-content: space-between;
+  cursor: move; /* draggable handle */
+  user-select: none;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 8px;
+}
+
+.widget__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.widget__remove {
+  background: transparent;
   border: 1px solid var(--card-border);
-  border-radius: 100px;
-  background: var(--surface-2);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 2px 8px;
   cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.widget__remove:hover {
+  background: hsl(0 70% 50% / 0.12);
+  border-color: hsl(0 70% 50% / 0.4);
 }
 
-.theme-toggle__sun,
-.theme-toggle__moon {
-  font-size: 12px;
-  line-height: 1;
-}
-
-.theme-toggle__slider {
-  position: absolute;
-  top: var(--slider-offset);
-  left: var(--slider-offset);
-  width: var(--slider-d);
-  height: var(--slider-d);
-  border-radius: 50%;
-  background: var(--accent);
-  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Flytta slidern när temat är mörkt */
-[data-theme="dark"] .theme-toggle__slider {
-  transform: translateX(calc(var(--toggle-w) - var(--toggle-h)));
+.widget__body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }

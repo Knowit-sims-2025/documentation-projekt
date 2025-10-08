@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
+import svgr from "vite-plugin-svgr";
 import react from '@vitejs/plugin-react'
 
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [svgr(), react()],
   server: {
     proxy: {
       // Proxy alla förfrågningar som börjar med '/api' till din Go-backend

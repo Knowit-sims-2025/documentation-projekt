@@ -2,13 +2,13 @@ import type { RankTier } from "../../types/user";
 
 // Poängtrösklar, från högst till lägst
 export const RANK_THRESHOLDS: { min: number; tier: RankTier }[] = [
-  { min: 3000, tier: "Grandmaster" },
-  { min: 2000, tier: "Master" },
-  { min: 1500, tier: "Diamond" },
-  { min: 1000, tier: "Platinum" },
-  { min: 500,  tier: "Gold" },
-  { min: 250,  tier: "Silver" },
-  { min: 100,  tier: "Bronze" },
+  { min: 5000, tier: "Grandmaster" },
+  { min: 3000, tier: "Master" },
+  { min: 2500, tier: "Diamond" },
+  { min: 2000, tier: "Platinum" },
+  { min: 1500,  tier: "Gold" },
+  { min: 1000,  tier: "Silver" },
+  { min: 500,  tier: "Bronze" },
   { min: 0,    tier: "Iron" },
 ];
 

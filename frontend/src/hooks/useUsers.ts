@@ -15,7 +15,7 @@ export function useUsers() {
   //funktion för att hämta alla användare
   async function load() {
     try {
-      setLoading(true); // sätt loading till true när vi börjar hämta
+      setLoading(true);
       setError(null); // återställ felmeddelandet innan ny hämtning
       const users = await getUsers(); // hämta användare från API
       setData(users); // sätt den hämtade datan i state
