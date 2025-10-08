@@ -16,17 +16,12 @@ export default function UserLeaderBoard() {
 
   const myTier = currentUser?.rankTier ?? null;
 
-  const sortedUsers = useMemo(
-    () => [...users].sort((a, b) => b.totalPoints - a.totalPoints),
-    [users]
-  );
-
   const visibleUsers = useMemo(
     () =>
       showMyTierOnly && myTier
-        ? sortedUsers.filter((u) => u.rankTier === myTier)
-        : sortedUsers,
-    [sortedUsers, showMyTierOnly, myTier]
+        ? users.filter((u) => u.rankTier === myTier)
+        : users,
+    [users, showMyTierOnly, myTier]
   );
 
   // Använd useCallback för att undvika onödiga re-renders av list-items
