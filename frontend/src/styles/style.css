@@ -326,7 +326,12 @@ a:hover { text-decoration: underline; }
 .leaderboard-item:hover .leaderboard-name {
   transform: translateY(-2px);
 }
-
+.leaderboard-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  margin-left: 8px;
+  object-fit: cover;
+}
 /* Små hjälparklasser */
 .muted { color: var(--muted); }
 
