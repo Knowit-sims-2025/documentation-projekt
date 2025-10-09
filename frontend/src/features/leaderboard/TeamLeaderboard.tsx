@@ -64,7 +64,7 @@ export default function TeamLeaderboard() {
             <li
               key={team.id}
               data-id={team.id}
-              className="leaderboard__item"
+              className="leaderboard__item muted"
               role="button"
               tabIndex={0}
               aria-selected={selectedTeam?.id === team.id || undefined}
