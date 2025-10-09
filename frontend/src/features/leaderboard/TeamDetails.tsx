@@ -34,12 +34,16 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
         setIsLoading(true);
         setError(null);
         const data = await getTeamMembers(teamId, ac.signal);
-        // Sortera medlemmar efter poäng
-        data.sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0));
+        // valfritt: sortera på poäng desc, annars alfabetiskt
+        data.sort(
+          (a, b) =>
+            (b.totalPoints ?? 0) - (a.totalPoints ?? 0) ||
+            a.displayName.localeCompare(b.displayName)
+        );
         setMembers(data);
       } catch (e) {
         if ((e as any)?.name !== "AbortError") {
-          setError(e instanceof Error ? e.message : "Ett okänt fel uppstod");
+          setError(e instanceof Error ? e.message : "Okänt fel");
         }
       } finally {
         setIsLoading(false);
@@ -52,16 +56,31 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
   if (error) return <ErrorMessage message={error} />;
 
   return (
-    <ul className="leaderboard__list">
-      {members.map((member) => (
-        <li key={member.id} className="leaderboard__item">
-          <Avatar name={member.displayName} src={member.avatarUrl} />
-          <span className="leaderboard__name">{member.displayName}</span>
-          <span className="leaderboard__points">
-            {member.totalPoints ?? 0} p
-          </span>
-        </li>
-      ))}
-    </ul>
+    <div>
+      <h4 style={{ marginTop: 0 }}>Medlemmar</h4>
+      <ul className="leaderboard__list" role="list">
+        {members.length > 0 ? (
+          members.map((m) => (
+            <li className="leaderboard__item" key={m.id}>
+              <Avatar
+                name={m.displayName}
+                src={m.avatarUrl}
+                className="leaderboard__avatar"
+              />
+
+              <span className="leaderboard__name">{m.displayName}</span>
+
+              <span className="leaderboard__points">
+                {m.totalPoints ?? 0} p
+              </span>
+            </li>
+          ))
+        ) : (
+          <li className="leaderboard__item" aria-disabled="true">
+            Inga medlemmar i detta team.
+          </li>
+        )}
+      </ul>
+    </div>
   );
 }

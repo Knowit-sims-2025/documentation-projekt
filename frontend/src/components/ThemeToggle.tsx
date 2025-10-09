@@ -19,32 +19,20 @@ export default function ThemeToggle({ theme, setTheme }: ThemeToggleProps) {
       aria-label={label}
       role="group"
     >
-      <img
-        src={lightModeIcon}
-        alt="Icon for light mode"
+      <div
         aria-hidden="true"
-        className="theme-toggle_icon"
-        style={{
-          filter:
-            "invert(84%) sepia(94%) saturate(7489%) hue-rotate(1deg) brightness(105%) contrast(106%)",
-          opacity: checked ? 0.3 : 1,
-        }}
+        className="theme-toggle__icon theme-toggle__icon--sun"
+        style={{ opacity: checked ? 0.3 : 1 }}
       />
       <Switch
         checked={checked}
         onChange={(next) => setTheme(next ? "dark" : "light")}
         ariaLabel={label}
       />
-      <img
-        src={darkModeIcon}
-        alt="Icon for dark mode"
+      <div
         aria-hidden="true"
-        className="theme-toggle_icon"
-        style={{
-          filter:
-            "invert(84%) sepia(94%) saturate(7489%) hue-rotate(1deg) brightness(105%) contrast(106%)",
-          opacity: checked ? 1 : 0.3,
-        }}
+        className="theme-toggle__icon theme-toggle__icon--moon"
+        style={{ opacity: checked ? 1 : 0.3 }}
       />
     </div>
   );

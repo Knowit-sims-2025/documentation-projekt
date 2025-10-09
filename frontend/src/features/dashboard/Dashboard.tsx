@@ -44,9 +44,9 @@ export default function Dashboard() {
   const individualControls = (
     <div
       title="Filter all users by tier"
-      className="leaderboard__filter_button"
+      className="leaderboard-filter leaderboard__filter_button"
     >
-      <span className="muted" style={{ minWidth: 60, textAlign: "right" }}>
+      <span style={{ minWidth: 60, textAlign: "right" }}>
         {showMyTierOnly ? "Show All" : "Show my tier"}
       </span>
       <Switch

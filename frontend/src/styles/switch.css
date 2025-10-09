@@ -98,9 +98,24 @@
   cursor: pointer;
 }
 
-.theme-toggle_icon {
+.theme-toggle__icon {
   height: 1.5rem;
   width: 1.5rem;
+  /* NYTT: Använd CSS-variabel för att färga ikonen */
+  background-color: var(--text-muted);
+  transition: opacity 200ms ease, background-color 150ms ease;
+}
+
+.theme-toggle:hover .theme-toggle__icon {
+  background-color: var(--accent);
+}
+
+.theme-toggle__icon--sun {
+  mask: url("../assets/light_mode.svg") center / contain no-repeat;
+}
+
+.theme-toggle__icon--moon {
+  mask: url("../assets/dark_mode.svg") center / contain no-repeat;
 }
 
 
@@ -109,8 +124,8 @@
    ========================= */
 .leaderboard-filter .muted {
   color: var(--text-muted);
-
 }
+
 .leaderboard-filter .ui-switch {
   /* lite compaktare än header */
   --switch-w: 40px;

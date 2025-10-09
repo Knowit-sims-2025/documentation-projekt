@@ -5,11 +5,13 @@
 
 
 @import "../styles/root.css";
-@import "../styles/newColorStyle.css";
+@import "../styles/layout.css";
+@import "../styles/react_grid_widget.css";
 
 @import "../styles/leaderboards.css";
+@import "../styles/overlay.css";
 
 
-@import "../components/ui/switch.css";
+@import "../styles/switch.css";
 @import "../styles/profile.css";
 @import "../styles/progress-bar.css";

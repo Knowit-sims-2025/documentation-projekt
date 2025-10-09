@@ -1,5 +1,5 @@
 /* =========================
-   Leaderboard (renodlad)
+   Leaderboard
    ========================= */
 
 .leaderboard {
@@ -133,7 +133,7 @@
 .leaderboard__admin {
   width: 1.5rem;
   height: 1.5rem;
-  background-color: oklch(80.902% 0.19124 119.924); 
+  background-color: var(--accent); /* Använd variabel för att stödja teman */
   mask: url("../assets/admin_star.svg") center / contain no-repeat;
   -webkit-mask: url("../assets/admin_star.svg") center / contain no-repeat;
   display: inline-block;
@@ -158,12 +158,6 @@
   transform: translateY(-1px);
 }
 
-/* Adminikon */
-.leaderboard__admin {
-  width: 1.5rem;
-  text-align: center;
-  color: oklch(0.9 0.15 90); /* diskret gul ton */
-}
 
 /* Poäng */
 .leaderboard__points {

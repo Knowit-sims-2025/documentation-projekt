@@ -47,6 +47,11 @@
 --success: oklch(0.7 0.05 160);
 --info: oklch(0.7 0.05 260);
 
+/* Z-index */
+--z-header: 100;
+--z-overlay: 500;
+--z-toast: 300;
+
 color-scheme: dark;
 
 }
@@ -78,7 +83,7 @@ color-scheme: dark;
 /* Accent colors */
 --primary: oklch(0.4 0.1 264);
 --secondary: oklch(0.4 0.1 84);
---accent: oklch(80.902% 0.19124 119.924);
+--accent: oklch(41.996% 0.26579 268.631);
 
 /* Semantic colors */
 --danger: oklch(0.5 0.05 30);
@@ -86,10 +91,6 @@ color-scheme: dark;
 --success: oklch(0.5 0.05 160);
 --info: oklch(0.5 0.05 260);
 
-/* Z-index */
---z-header: 100;
---z-overlay: 200;
---z-toast: 300;
 
 color-scheme: light;
 
