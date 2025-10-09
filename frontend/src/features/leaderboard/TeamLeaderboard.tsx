@@ -1,22 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
-import type { Team } from "../../types/team";
+import type { TeamWithDetails } from "../../types/team";
 import { Loading } from "../../components/Loading";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { Overlay } from "../../components/Overlay";
 import TeamDetails from "./TeamDetails";
-
-async function getTeams(signal?: AbortSignal): Promise<Team[]> {
-  const res = await fetch("/api/v1/teams", { signal });
-  if (!res.ok)
-    throw new Error(`Kunde inte hämta team: ${res.status} ${res.statusText}`);
-  return res.json();
-}
+import { getTeams } from "../../services/teams";
 
 export default function TeamLeaderboard() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<TeamWithDetails | null>(
+    null
+  );
 
   useEffect(() => {
     const ac = new AbortController();
@@ -25,8 +21,6 @@ export default function TeamLeaderboard() {
         setIsLoading(true);
         setError(null);
         const data = await getTeams(ac.signal);
-        // valfritt: sortera alfabetiskt (eller på poäng om du har team.totalPoints)
-        data.sort((a, b) => a.name.localeCompare(b.name));
         setTeams(data);
       } catch (e) {
         if ((e as any)?.name !== "AbortError") {
@@ -39,7 +33,9 @@ export default function TeamLeaderboard() {
     return () => ac.abort();
   }, []);
 
-  const openTeam = useCallback((team: Team) => setSelectedTeam(team), []);
+  const openTeam = useCallback((team: TeamWithDetails) => {
+    setSelectedTeam(team);
+  }, []);
   const onKeyRow: React.KeyboardEventHandler<HTMLLIElement> = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -72,13 +68,10 @@ export default function TeamLeaderboard() {
               onClick={() => openTeam(team)}
               onKeyDown={onKeyRow}
             >
-              <span className="leaderboard__name muted">{team.name}</span>
-              {/* Visa poäng om du har fältet */}
-              {"totalPoints" in team && (
-                <span className="leaderboard__points">
-                  {(team as any).totalPoints} p
-                </span>
-              )}
+              <span className="leaderboard__name">{team.name}</span>
+              <span className="leaderboard__points muted">
+                {team.totalPoints} p
+              </span>
             </li>
           ))
         )}

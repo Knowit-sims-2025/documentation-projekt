@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import type { User } from "../../types/user";
+import { Avatar } from "../../components/Avatar";
 import { Loading } from "../../components/Loading";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { Avatar } from "../../components/Avatar";
+import { useState, useEffect } from "react";
 
 interface TeamDetailsProps {
   teamId: number;
@@ -58,7 +59,7 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
   return (
     <div>
       <h4 style={{ marginTop: 0 }}>Medlemmar</h4>
-      <ul className="leaderboard__list" role="list">
+      <ul className="leaderboard__list muted" role="list">
         {members.length > 0 ? (
           members.map((m) => (
             <li className="leaderboard__item" key={m.id}>
@@ -68,7 +69,7 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
                 className="leaderboard__avatar"
               />
 
-              <span className="leaderboard__name muted">{m.displayName}</span>
+              <span className="leaderboard__name">{m.displayName}</span>
 
               <span className="leaderboard__points">
                 {m.totalPoints ?? 0} p
