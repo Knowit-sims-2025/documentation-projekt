@@ -11,7 +11,7 @@ export function ProfileCard({ user }: { user: User }) {
     <div className="profile-widget card">
       <div className="profile-cover">
         <div className="profile-avatar-wrapper">
-          <Avatar name={user.displayName} src={user.avatarUrl} size={96} />
+          <Avatar name={user.displayName} src={user.avatarUrl} />
         </div>
       </div>
       <div className="profile-info">

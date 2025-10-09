@@ -12,7 +12,7 @@ export function Avatar({
   name,
   src,
   className = "leaderboard__avatar",
-  size = 28,
+  size,
 }: AvatarProps) {
   const [imgError, setImgError] = useState(false);
 
@@ -32,13 +32,15 @@ export function Avatar({
   const handleError = () => setImgError(true);
   const handleLoad = () => setImgError(false);
 
-  // === 3. CSS-stöd för storlek ===
-  const style = { width: size, height: size, fontSize: size * 0.45 };
+  // === 3. Skapa style-objekt BARA om 'size' är angiven ===
+  const style = size
+    ? { width: size, height: size, fontSize: size * 0.45 }
+    : undefined;
 
   return (
     <div
       className={className}
-      title={name}
+      title={`Avatar för ${name}`}
       style={style}
       aria-label={`Avatar för ${name}`}
     >

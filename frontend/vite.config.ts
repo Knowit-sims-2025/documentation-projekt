@@ -12,6 +12,11 @@ export default defineConfig({
         target: 'http://localhost:8081', // GO-backend adress
         changeOrigin: true, // Ändrar 'Origin' headern till target URL:en. Viktigt för att undvika CORS-problem.
       },
+      // Proxy alla förfrågningar som börjar med '/static' till din Go-backend
+      '/static': {
+        target: 'http://localhost:8081', // GO-backend adress
+        changeOrigin: true,
+      },
     },
   },
 });

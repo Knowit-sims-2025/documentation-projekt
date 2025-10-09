@@ -23,15 +23,15 @@
 .profile-avatar-wrapper {
   position: absolute;
   left: 50%;
-  bottom: -48px;
+  bottom: -70px;
   transform: translateX(-50%);
   z-index: 2;
 }
 
 /* Styla själva avataren inuti wrappern */
 .profile-avatar-wrapper .leaderboard__avatar {
-  width: 96px;
-  height: 96px;
+  width: 180px;
+  height: 180px;
   border: 4px solid var(--card-bg);
   box-shadow: var(--card-bg);
 }

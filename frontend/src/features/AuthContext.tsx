@@ -15,6 +15,7 @@ interface AuthContextType {
   currentUser: User | null;
   allUsers: User[];
   isLoading: boolean;
+  updateCurrentUserAvatar: (newAvatarUrl: string) => void;
 }
 
 /**
@@ -78,12 +79,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     init();
   }, []);
 
+  // Funktion för att uppdatera nuvarande användares avatar
+  const updateCurrentUserAvatar = (newAvatarUrl: string) => {
+    setCurrentUser((prevUser) => {
+      if (!prevUser) return null;
+      // Returnera en ny user-objekt med den uppdaterade URL:en
+      return { ...prevUser, avatarUrl: newAvatarUrl };
+    });
+
+    // Uppdatera även användaren i den globala listan `allUsers`
+    setAllUsers((prevAllUsers) =>
+      prevAllUsers.map((user) => {
+        if (currentUser && user.id === currentUser.id) {
+          return { ...user, avatarUrl: newAvatarUrl };
+        }
+        return user;
+      })
+    );
+  };
+
   /**
    * Memoisera context-värdet så att konsumenter inte re-renderar i onödan
    * (bara när någon av dep ändras).
    */
   const value = useMemo(
-    () => ({ currentUser, allUsers, isLoading }),
+    () => ({ currentUser, allUsers, isLoading, updateCurrentUserAvatar }),
     [currentUser, allUsers, isLoading]
   );
 

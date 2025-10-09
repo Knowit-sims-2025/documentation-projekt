@@ -112,6 +112,8 @@
   justify-content: center;
 
   border-radius: 50%;
+  width: 28px; /* <-- Storlek på avatar i listan */
+  height: 28px; /* <-- Storlek på avatar i listan */
   overflow: hidden;
   background: color-mix(in oklch, var(--bg-light) 20%, transparent);
   color: var(--text);
