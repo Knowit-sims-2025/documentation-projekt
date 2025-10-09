@@ -5,10 +5,9 @@
 
 
 .profile-widget {
-  /* Nollställ kantlinjer och skuggor specifikt för denna widget */
   border: none;
   box-shadow: none;
-  padding: 0; /* Nollställ padding från .card, vi hanterar det internt */
+  padding: 0;
   overflow: hidden;
 }
 
@@ -39,7 +38,7 @@
 
 .profile-info {
   padding: 1rem;
-  padding-top: 56px; /* Utrymme för avataren som sticker upp */
+  padding-top: 56px;
   width: 100%;
   text-align: left;
   display: flex;
@@ -52,7 +51,7 @@
   font-size: 1.3rem;
   font-weight: 700;
   text-align: center;
-  display: inline-flex; /* Se till att namn och ikon hamnar på samma rad */
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
