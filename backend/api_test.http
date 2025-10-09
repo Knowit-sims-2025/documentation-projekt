@@ -32,13 +32,13 @@ Content-Type: application/json
 
 ###
 # [POST] Skapa en till användare (Test User 2)
-# @name newUser2
+# @name newUser3
 POST {{api_v1}}/users
 Content-Type: application/json
 
 {
-    "confluenceAuthorId": "test.user.two.id",
-    "displayName": "Test User Two"
+    "confluenceAuthorId": "test.user.id",
+    "displayName": "Test User 3"
 }
 
 ###
@@ -134,6 +134,13 @@ Content-Type: image/png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 
+###
+# [get] hämta avatar för en user
+GET {{api_v1}}/users/15
+
+
+
+###
 
 ###
 # ==============================================================================
