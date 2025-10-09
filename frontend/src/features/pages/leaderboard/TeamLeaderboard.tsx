@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import type { TeamWithDetails } from "../../types/team";
-import { Loading } from "../../components/Loading";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { Overlay } from "../../components/Overlay";
+import type { TeamWithDetails } from "../../../types/team";
+import { Loading } from "../../../components/Loading";
+import { ErrorMessage } from "../../../components/ErrorMessage";
+import { Overlay } from "./Overlay";
 import TeamDetails from "./TeamDetails";
-import { getTeams } from "../../services/teams";
+import { getTeams } from "../../../services/teams";
 
 export default function TeamLeaderboard() {
   const [teams, setTeams] = useState<TeamWithDetails[]>([]);

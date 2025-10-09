@@ -30,11 +30,13 @@
     border: none;
     cursor: pointer;
     font-size: 0.9rem;
+    transition: transform 120ms ease, background-color 150ms ease;
 }
 .settings-menu a:hover,
 .settings-menu button:hover {
     background: color-mix(in oklch, var(--bg-light) 15%, transparent);
     text-decoration: none;
+    transform: translateX(2px);
 }
 
 .settings-menu__separator {

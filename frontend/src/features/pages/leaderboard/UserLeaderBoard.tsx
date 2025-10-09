@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { useUsers } from "../../hooks/useUsers";
-import { useAuth } from "../AuthContext";
-import { Loading } from "../../components/Loading";
-import { ErrorMessage } from "../../components/ErrorMessage";
+import { useUsers } from "../../../hooks/useUsers";
+import { useAuth } from "../../AuthContext";
+import { Loading } from "../../../components/Loading";
+import { ErrorMessage } from "../../../components/ErrorMessage";
 import { IndividualRank } from "./IndividualRank";
-import { Overlay } from "../../components/Overlay";
-import type { User } from "../../types/user";
+import { Overlay } from "./Overlay";
+import type { User } from "../../../types/user";
 
 interface UserLeaderBoardProps {
   showMyTierOnly: boolean;

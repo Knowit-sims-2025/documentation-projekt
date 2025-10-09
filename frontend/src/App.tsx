@@ -1,8 +1,8 @@
 import { useTheme } from "./hooks/useTheme";
-import Header from "./components/Header";
-import Dashboard from "./features/dashboard/Dashboard";
+import Header from "./layout/Header";
+import Dashboard from "./features/pages/Dashboard";
 import { AuthProvider } from "./features/AuthContext";
-import Footer from "./components/Footer";
+import Footer from "./layout/Footer";
 
 export default function App() {
   const { theme, setTheme } = useTheme();

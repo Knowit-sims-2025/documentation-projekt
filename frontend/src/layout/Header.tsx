@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import type { Theme } from "../hooks/useTheme";
-import ThemeToggle from "./ThemeToggle";
-import SettingsButton from "./button/SettingsButton";
-import SettingsMenu from "./SettingsMenu";
+import ThemeToggle from "../components/ThemeToggle";
+import SettingsButton from "../components/buttons/SettingsButton";
+import SettingsMenu from "../components/SettingsMenu";
 import { useAuth } from "../features/AuthContext";
-import { Avatar } from "./Avatar";
+import { Avatar } from "../components/Avatar";
 
 interface HeaderProps {
   theme: Theme;
@@ -83,6 +83,16 @@ export default function Header({ theme, setTheme }: HeaderProps) {
             <div className="settings-menu__separator" />
             <a href="#">Min Profil</a>
             <a href="#">Teaminställningar</a>
+
+            {/* Admin-specifika länkar som bara visas om användaren är admin */}
+            {currentUser?.isAdmin && (
+              <>
+                <div className="settings-menu__separator" />
+                <a href="#/admin/users">Hantera användare</a>
+                <a href="#/admin/system">Systeminställningar</a>
+              </>
+            )}
+
             <button onClick={handleAvatarButtonClick}>Byt avatar</button>
             <div className="settings-menu__separator" />
             <button onClick={handleLogout}>Logga ut</button>

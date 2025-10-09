@@ -1,8 +1,8 @@
 import React from "react";
-import type { User } from "../../types/user";
-import { Avatar } from "../../components/Avatar";
-import { Loading } from "../../components/Loading";
-import { ErrorMessage } from "../../components/ErrorMessage";
+import type { User } from "../../../types/user";
+import { Avatar } from "../../../components/Avatar";
+import { Loading } from "../../../components/Loading";
+import { ErrorMessage } from "../../../components/ErrorMessage";
 import { useState, useEffect } from "react";
 
 interface TeamDetailsProps {
@@ -35,7 +35,6 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
         setIsLoading(true);
         setError(null);
         const data = await getTeamMembers(teamId, ac.signal);
-        // valfritt: sortera på poäng desc, annars alfabetiskt
         data.sort(
           (a, b) =>
             (b.totalPoints ?? 0) - (a.totalPoints ?? 0) ||

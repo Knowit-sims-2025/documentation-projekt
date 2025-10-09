@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
-import UserLeaderBoard from "../leaderboard/UserLeaderBoard";
-import TeamLeaderboard from "../leaderboard/TeamLeaderboard"; // <-- NY: Importera
+import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
+import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
 import {
   layouts as defaultLayouts,
   breakpoints,
   cols,
 } from "../../styles/dashboardLayout";
 import Widget from "../../components/Widget";
-import Switch from "../../components/ui/switch";
+import Switch from "../../components/switch";
 import { useAuth } from "../AuthContext";
 import Profile from "../../components/Profile";
 

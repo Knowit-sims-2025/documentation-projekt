@@ -57,12 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             (u) =>
               u.displayName &&
               u.displayName.trim().toLowerCase() === "tony stark"
+            // u.displayName.trim().toLowerCase() === "linus torvalds"
           ) ??
           users.find(
             (u) =>
               u.displayName &&
               u.displayName.toLowerCase().includes("tony") &&
               u.displayName.toLowerCase().includes("stark")
+            // u.displayName.toLowerCase().includes("linus") &&
+            // u.displayName.toLowerCase().includes("torvalds")
           ) ??
           users[0] ?? // fallback till första användaren om Tony inte hittas
           null;

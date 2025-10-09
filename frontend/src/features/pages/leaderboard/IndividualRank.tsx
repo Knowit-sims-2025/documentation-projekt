@@ -1,6 +1,6 @@
-import type { User } from "../../types/user";
-import { Avatar } from "../../components/Avatar";
-import { useAuth } from "../AuthContext";
+import type { User } from "../../../types/user";
+import { Avatar } from "../../../components/Avatar";
+import { useAuth } from "../../AuthContext";
 
 interface IndividualRankProps {
   user: User;
