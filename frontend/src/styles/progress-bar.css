@@ -1,0 +1,72 @@
+ /* =========================
+   Progress bar
+   ========================= */
+.progress-card {
+  background: var(--bg, #fff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px hsl(220 50% 2% / 0.12);
+  padding: 16px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.progress-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text, #222);
+  margin-bottom: 18px;
+  align-self: flex-start;
+}
+.progress-bar-outer {
+  width: 100%;
+  height: 14px;              
+  background: var(--card-bg, #eee);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  margin: 0;
+  margin-top: 16px;          
+  overflow: hidden;
+}
+.progress-bar {
+   position: relative;
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease-in-out;
+  background: var(--accent, #4a3fd7);
+  color: white;
+}
+.progress-bar span{
+   position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.progress-numbers{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.progress-numbers label{
+  font-size: 0.9rem;
+  color: var(--muted, #666);
+}
+.progress-bar img {
+   position: absolute;
+  right: 16px;      /* instead of left */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
