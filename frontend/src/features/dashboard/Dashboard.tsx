@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
 import UserLeaderBoard from "../leaderboard/UserLeaderBoard";
@@ -8,28 +8,64 @@ import {
   breakpoints,
   cols,
 } from "../../styles/dashboardLayout";
-import Widget from "../../components/widget"; // Importera den uppdaterade komponenten
+import Widget from "../../components/Widget";
+import Switch from "../../components/ui/switch";
 import { useAuth } from "../AuthContext";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 type Widget = {
   i: string;
-  title: string;
+  title: React.ReactNode;
   content: React.ReactNode;
+  headerControls?: React.ReactNode;
 };
 
 // Key för localStorage
 const LS_KEY = "user-dashboard-layout";
 
 export default function Dashboard() {
-  const { isLoading } = useAuth();
+  const { currentUser, isLoading: authLoading } = useAuth();
   const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
+  const [showMyTierOnly, setShowMyTierOnly] = useState(true);
+
+  const myTier = currentUser?.rankTier ?? null;
+
+  const individualTitle = (
+    <>
+      Individual{" "}
+      <span style={{ color: "var(--text-muted)" }}>
+        ({showMyTierOnly ? myTier ?? "—" : "All"})
+      </span>
+    </>
+  );
+
+  const individualControls = (
+    <div
+      title="Filter all users by tier"
+      className="leaderboard__filter_button"
+    >
+      <span className="muted" style={{ minWidth: 60, textAlign: "right" }}>
+        {showMyTierOnly ? "Show All" : "Show my tier"}
+      </span>
+      <Switch
+        checked={showMyTierOnly}
+        onChange={(next) => setShowMyTierOnly(next)}
+        ariaLabel="Filtrera till min tier"
+        disabled={authLoading}
+      />
+    </div>
+  );
 
   // Dina widgets — motsvarar dina tidigare divar
   const widgets: Widget[] = [
     { i: "profile", title: "Profile", content: <div>Profile</div> },
-    { i: "individual", title: "Individual", content: <UserLeaderBoard /> },
+    {
+      i: "individual",
+      title: individualTitle,
+      content: <UserLeaderBoard showMyTierOnly={showMyTierOnly} />,
+      headerControls: individualControls,
+    },
     { i: "teams", title: "Teams", content: <TeamLeaderboard /> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
     {
@@ -66,7 +102,7 @@ export default function Dashboard() {
     handleLayoutChange([], newLayouts); // Spara den nya layouten
   }
 
-  if (isLoading) {
+  if (authLoading) {
     return <main className="app__main">Loading user...</main>;
   }
 
@@ -86,9 +122,12 @@ export default function Dashboard() {
           useCSSTransforms={false}
         >
           {widgets.map((w) => (
-            // Använd den återanvändbara Widget-komponenten
             <div key={w.i}>
-              <Widget title={w.title} onHide={() => handleRemoveWidget(w.i)}>
+              <Widget
+                title={w.title}
+                onHide={() => handleRemoveWidget(w.i)}
+                headerControls={w.headerControls}
+              >
                 {w.content}
               </Widget>
             </div>

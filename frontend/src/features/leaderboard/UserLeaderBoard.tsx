@@ -4,14 +4,18 @@ import { useAuth } from "../AuthContext";
 import { Loading } from "../../components/Loading";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { IndividualRank } from "./IndividualRank";
-import Switch from "../../components/ui/switch";
 import { Overlay } from "../../components/Overlay";
 import type { User } from "../../types/user";
 
-export default function UserLeaderBoard() {
+interface UserLeaderBoardProps {
+  showMyTierOnly: boolean;
+}
+
+export default function UserLeaderBoard({
+  showMyTierOnly,
+}: UserLeaderBoardProps) {
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
-  const [showMyTierOnly, setShowMyTierOnly] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const myTier = currentUser?.rankTier ?? null;
@@ -31,32 +35,6 @@ export default function UserLeaderBoard() {
 
   return (
     <div className="leaderboard">
-      {/* Header */}
-      <div className="leaderboard__title">
-        <h2>
-          Individual ranking{" "}
-          <span style={{ color: "var(--text-muted)" }}>
-            ({showMyTierOnly ? myTier ?? "—" : "All"})
-          </span>
-        </h2>
-
-        {/* Filter med etikett + switch */}
-        <div title="Filter all users by tier" className="leaderboard-filter">
-          {/* Visar text beroende på state */}
-          <span className="muted" style={{ minWidth: 60, textAlign: "right" }}>
-            {showMyTierOnly ? "Show All" : "Show my tier"}
-          </span>
-
-          <Switch
-            checked={showMyTierOnly}
-            onChange={(next) => setShowMyTierOnly(next)}
-            ariaLabel="Filtrera till min tier"
-            disabled={loading || authLoading}
-          />
-        </div>
-      </div>
-
-      {/* Innehåll */}
       {loading || authLoading ? (
         <Loading text="Laddar användare..." />
       ) : error ? (

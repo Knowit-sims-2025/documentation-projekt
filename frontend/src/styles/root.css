@@ -25,7 +25,7 @@
 
 --border-card: solid 1px var(--border);
 
- --bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
+--bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
 
 
 /* tweaka med % */

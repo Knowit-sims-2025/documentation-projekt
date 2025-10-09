@@ -112,7 +112,7 @@
    }
 
    .card:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     background: var(--gradient-hover);
 }
 
@@ -207,6 +207,12 @@
 
   cursor: grab;          /* visa att ytan går att dra */
   user-select: none;     /* undvik textmarkering vid drag */
+}
+
+.widget__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Lite luft mellan filter och stäng-knapp */
 }
 
 

@@ -33,7 +33,7 @@ function pickString(v: any): string | undefined {
      - Go:s NullString-objekt
      - fallback för confluenceAuthorId om det saknas
    ========================================================================== */
-function normalize(u: RawUser) {
+export function normalizeUser(u: RawUser) {
   // id kan komma som "id" eller "ID"
   const id = Number(u.id ?? u.ID);
 
@@ -80,7 +80,9 @@ export async function getUsers(): Promise<User[]> {
   const data = await res.json();
   const raw: RawUser[] = Array.isArray(data?.users) ? data.users : data;
 
-  const list = raw.map(normalize).sort((a, b) => b.totalPoints - a.totalPoints);
+  const list = raw
+    .map(normalizeUser)
+    .sort((a, b) => b.totalPoints - a.totalPoints);
 
   return list.map((u, i) => ({
     ...u,
