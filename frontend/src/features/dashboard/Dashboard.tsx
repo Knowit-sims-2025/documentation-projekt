@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   // Dina widgets — motsvarar dina tidigare divar
   const widgets: Widget[] = [
-    { i: "profile", title: "Profile", content: <div>Profile</div> },
+    { i: "profile", title: "Profile", content: <Profile /> },
     {
       i: "individual",
       title: individualTitle,

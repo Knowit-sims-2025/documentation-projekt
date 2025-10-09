@@ -1,18 +1,16 @@
 import { ProfileCard } from "../features/profile/ProfileCard";
-import { useUsers } from "../hooks/useUsers";
+import { useAuth } from "../features/AuthContext";
 import { Loading } from "./Loading";
-import { ErrorMessage } from "./ErrorMessage"; 
+import { ErrorMessage } from "./ErrorMessage";
 
+export default function Profile() {
+  const { currentUser, isLoading } = useAuth();
 
-export default function profile() {
-    const { data: users, loading, error } = useUsers();
-    
-      if (loading) return <Loading text="Laddar användare..." />;
-      if (error) return <ErrorMessage message={error} />;
-    
-      const user = users && users.length > 0 ? users[4] : null;
+  if (isLoading) return <Loading text="Laddar profil..." />;
 
-      return user
-        ? <ProfileCard user={user} />
-    : <ErrorMessage message="Ingen användare hittades." />;
+  return currentUser ? (
+    <ProfileCard user={currentUser} />
+  ) : (
+    <ErrorMessage message="Ingen användare är inloggad." />
+  );
 }
