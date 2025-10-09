@@ -1,99 +1,138 @@
-
+/* Baseline (sRGB/HSL) – funkar överallt */
 :root {
-/* Layout (header, gap, container, footer) */
---header-h: 4.5rem;
---gap: 0.5rem;
---container-w: clamp(960px, 90vw, 1800px);
---container-px: 1rem;
---footer-h: 3rem;
+  /* Layout */
+  --header-h: 4.5rem;
+  --gap: 0.5rem;
+  --container-w: clamp(960px, 90vw, 1800px);
+  --container-px: 1rem;
+  --footer-h: 3rem;
+  --border-radius: 1rem;
 
---border-radius: 1rem;
-
-/* Background colors */
---bg-dark: oklch(0.1 0.025 264);
---bg: oklch(0.15 0.025 264);
---bg-light: oklch(0.2 0.025 264);
-
-/* Text colors */
---text: oklch(0.96 0.05 264);
---text-muted: oklch(0.76 0.05 264);
-
-/* Border colors */
---highlight: oklch(0.5 0.05 264);
---border: oklch(0.4 0.05 264);
---border-muted: oklch(0.3 0.05 264);
-
---border-card: solid 1px var(--border);
-
---bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
+  /* Z-index */
+  --z-header: 100;
+  --z-overlay: 500;
+  --z-toast: 300;
 
 
-/* tweaka med % */
---gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
---gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
+  /* sRGB/HSL fallback-färger */
+  --bg-dark: hsl(220 25% 10%);
+  --bg:      hsl(220 20% 15%);
+  --bg-light:hsl(220 20% 20%);
 
---shadow: 0px 2px 2px oklch(0 0 0 / 0.07), 0px 4px 4px oklch(0 0 0 / 0.04);
+  --text:        hsl(210 20% 92%);
+  --text-muted:  hsl(215 12% 62%);
+
+  --highlight:   hsl(220 10% 50%);
+  --border:      hsl(220 12% 40%);
+  --border-muted:hsl(220 10% 30%);
+  --border-card: solid 1px var(--border);
+
+  --bar-bg: rgba(0,0,0,0.08);
+
+  --gradient:       linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+  --gradient-hover: linear-gradient(0deg, var(--bg) 0%,  var(--bg-light) 100%);
+
+  --shadow: 0 2px 2px rgba(0,0,0,.07), 0 4px 4px rgba(0,0,0,.04);
+
+  --primary:   hsl(264 70% 70%);
+  --secondary: hsl(84  70% 70%);
+  --accent:    hsl(120 70% 60%);
+
+  --danger:  hsl( 30 60% 60%);
+  --warning: hsl( 50 60% 60%);
+  --success: hsl(160 60% 60%);
+  --info:    hsl(260 60% 60%);
 
 
-/* Accent colors */
---primary: oklch(0.76 0.1 264);
---secondary: oklch(0.76 0.1 84);
---accent: oklch(80.902% 0.19124 119.924);
-
-
-/* Semantic colors */
---danger: oklch(0.7 0.05 30);
---warning: oklch(0.7 0.05 100);
---success: oklch(0.7 0.05 160);
---info: oklch(0.7 0.05 260);
-
-/* Z-index */
---z-header: 100;
---z-overlay: 500;
---z-toast: 300;
-
-color-scheme: dark;
-
+  color-scheme: dark;
 }
 
+/* Modernare uppgradering – RGB + color-mix(in srgb, ...) */
+@supports (color: rgb(0 0 0) and (color-mix(in srgb, red 50%, white))) {
+  :root {
+    --bar-bg: color-mix(in srgb, var(--bg) 90%, transparent);
+  }
+}
+/* Modernare uppgradering – OKLCH + color-mix(in oklch, ...) */
+@supports (color: oklch(0.5 0.1 264)) {
+  :root {
+    --bg-dark:  oklch(0.10 0.025 264);
+    --bg:       oklch(0.15 0.025 264);
+    --bg-light: oklch(0.20 0.025 264);
 
+    --text:        oklch(0.96 0.05 264);
+    --text-muted:  oklch(0.76 0.05 264);
+
+    --highlight:   oklch(0.50 0.05 264);
+    --border:      oklch(0.40 0.05 264);
+    --border-muted:oklch(0.30 0.05 264);
+
+    --primary:   oklch(0.76 0.10 264);
+    --secondary: oklch(0.76 0.10 84);
+    --accent:    oklch(0.81 0.19 120);
+
+    --danger:  oklch(0.70 0.05  30);
+    --warning: oklch(0.70 0.05 100);
+    --success: oklch(0.70 0.05 160);
+    --info:    oklch(0.70 0.05 260);
+
+    --bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
+  }
+}
+
+/* Light mode med hsl och därefter med modernar color-mix */
 :root[data-theme="light"] {
+  --bg-dark:  hsl(220 20% 92%);
+  --bg:       hsl(220 20% 96%);
+  --bg-light: hsl(220 20% 100%);
 
---bg-dark: oklch(0.92 0.025 264);
---bg: oklch(0.96 0.025 264);
---bg-light: oklch(1 0.025 264);
+  --text:       hsl(220 30% 15%);
+  --text-muted: hsl(220 10% 40%);
 
-/* Text colors */
---text: oklch(0.15 0.05 264);
---text-muted: oklch(0.4 0.05 264);
+  --highlight:   hsl(220 20% 98%);
+  --border:      hsl(220 20% 60%);
+  --border-muted:hsl(220 20% 70%);
 
-/* Border colors */
---highlight: oklch(1 0.05 264);
---border: oklch(0.6 0.05 264);
---border-muted: oklch(0.7 0.05 264);
+  --border-card: solid 1px var(--bg);
 
---border-card: solid 1px var(--bg);
+  --bar-bg: color-mix(in srgb, var(--bg) 92%, transparent);
 
---bar-bg: color-mix(in oklch, var(--bg) 92%, transparent);
+  --primary:   hsl(264 60% 40%);
+  --secondary: hsl( 84 60% 40%);
+  --accent:    hsl(269 70% 50%);
 
-/* tweaka med % */
---gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
---gradient-hover: linear-gradient(0deg, var(--bg) 0%, var(--bg-light) 100%);
+  --danger:  hsl( 30 60% 50%);
+  --warning: hsl( 50 60% 50%);
+  --success: hsl(160 60% 50%);
+  --info:    hsl(260 60% 50%);
 
-/* Accent colors */
---primary: oklch(0.4 0.1 264);
---secondary: oklch(0.4 0.1 84);
---accent: oklch(41.996% 0.26579 268.631);
+  color-scheme: light;
+}
 
-/* Semantic colors */
---danger: oklch(0.5 0.05 30);
---warning: oklch(0.5 0.05 100);
---success: oklch(0.5 0.05 160);
---info: oklch(0.5 0.05 260);
+@supports (color: oklch(0.5 0.1 264)) {
+  :root[data-theme="light"] {
+    --bg-dark:  oklch(0.92 0.025 264);
+    --bg:       oklch(0.96 0.025 264);
+    --bg-light: oklch(1    0.025 264);
 
+    --text:       oklch(0.15 0.05 264);
+    --text-muted: oklch(0.40 0.05 264);
 
-color-scheme: light;
+    --highlight:   oklch(1    0.05 264);
+    --border:      oklch(0.60 0.05 264);
+    --border-muted:oklch(0.70 0.05 264);
 
+    --bar-bg: color-mix(in oklch, var(--bg) 92%, transparent);
+
+    --primary:   oklch(0.40 0.10 264);
+    --secondary: oklch(0.40 0.10  84);
+    --accent:    oklch(0.42 0.266 269);
+
+    --danger:  oklch(0.50 0.05  30);
+    --warning: oklch(0.50 0.05 100);
+    --success: oklch(0.50 0.05 160);
+    --info:    oklch(0.50 0.05 260);
+  }
 }
 
 
@@ -123,14 +162,14 @@ body {
     transition: background-color 180ms ease, color 180ms ease, background-image 180ms ease;
 }
 
-/* mjuka übergångar vid temabyte */
+/* mjuka övergångar vid temabyte */
 @media (prefers-reduced-motion: reduce) {
   body { transition: none; } 
 }
 
 /* Fokusring för tillgänglighet (endast tangentbord) – UPPD: använd accent */
 :focus-visible {
-  outline: 2px solid var(--accent);   /* ändrad från currentColor */
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
