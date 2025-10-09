@@ -7,8 +7,8 @@ import (
 	"gamification-api/backend/models"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
+	"github.com/gorilla/mux"
 )
 
 type BadgeHandler struct {
@@ -19,27 +19,21 @@ type UserBadgeHandler struct {
 	Repo *database.UserBadgeRepository
 }
 
-// GetAllUsersHandler hanterar förfrågningar till /api/v1/users
+// GetAllBadgesHandler 
 func (h *BadgeHandler) GetAllBadgesHandler(w http.ResponseWriter, r *http.Request) {
-	// Anropa funktionen ni precis skapade i er repository.
 	badges, err := h.Repo.GetAllBadges()
 	if err != nil {
-		// Om något går fel med databasen, skicka ett serverfel.
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	// Sätt en header för att tala om för webbläsaren att vi skickar JSON.
 	w.Header().Set("Content-Type", "application/json")
-
-	// Omvandla er lista av användare till JSON och skicka den.
 	json.NewEncoder(w).Encode(badges)
 }
 
-// GET /api/v1/badges/{id}
+// GetBadgeByIDHandler 
 func (h *BadgeHandler) GetBadgeByIDHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/badges/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
 		return
@@ -47,7 +41,11 @@ func (h *BadgeHandler) GetBadgeByIDHandler(w http.ResponseWriter, r *http.Reques
 
 	badge, err := h.Repo.GetBadgeByID(id)
 	if err != nil {
-		http.Error(w, "Badge not found", http.StatusNotFound)
+		if err == sql.ErrNoRows {
+			http.Error(w, "Badge not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -55,7 +53,7 @@ func (h *BadgeHandler) GetBadgeByIDHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(badge)
 }
 
-// POST /api/v1/badges
+// CreateBadgeHandler
 func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Name          string `json:"name"`
@@ -81,22 +79,17 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	createdBadge, err := h.Repo.GetBadgeByID(newID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	badge.ID = newID
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdBadge)
+	json.NewEncoder(w).Encode(badge)
 }
 
-// PUT /api/v1/badges/{id}
+// UpdateBadgeHandler 
 func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/badges/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
 		return
@@ -118,7 +111,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 		ID:            id,
 		Name:          requestBody.Name,
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
-		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""}, //
+		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""},
 		CriteriaValue: requestBody.CriteriaValue,
 	}
 
@@ -130,10 +123,10 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 }
 
-// DELETE /api/v1/badges/{id}
+// DeleteBadgeHandler 
 func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/badges/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
 		return
@@ -147,23 +140,18 @@ func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetAllUserBadgesHandler hanterar förfrågningar till /api/v1/userbadges
+// GetAllUserBadgesHandler 
 func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *http.Request) {
-	// Anropa funktionen i repository
 	userBadges, err := h.Repo.GetAllUserBadges()
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	// Sätt header för JSON
 	w.Header().Set("Content-Type", "application/json")
-
-	// Skicka tillbaka resultatet som JSON
 	json.NewEncoder(w).Encode(userBadges)
 }
 
-// CreatUserBadgeHandler
+// CreateUserBadgeHandler 
 func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		UserID    int64      `json:"userId"`
@@ -197,28 +185,24 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(userBadge)
 }
 
-// GET /api/v1/userBadges/{userId}/{badgeId}
+// GetUserBadgeHandler 
 func (h *UserBadgeHandler) GetUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/userBadges/"), "/")
-	if len(parts) != 2 {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
-	}
+	vars := mux.Vars(r)
+	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
+	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 
-	userID, err1 := strconv.ParseInt(parts[0], 10, 64)
-	badgeID, err2 := strconv.ParseInt(parts[1], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid IDs", http.StatusBadRequest)
+		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
 		return
 	}
 
 	ub, err := h.Repo.GetUserBadge(userID, badgeID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "User badge not found", http.StatusNotFound)
+			return
+		}
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if ub == nil {
-		http.NotFound(w, r)
 		return
 	}
 
@@ -226,18 +210,13 @@ func (h *UserBadgeHandler) GetUserBadgeHandler(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(ub)
 }
 
-// PUT /api/v1/userBadges/{userId}/{badgeId}
+// UpdateUserBadgeHandler 
 func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/userBadges/"), "/")
-	if len(parts) != 2 {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
-	}
-
-	userID, err1 := strconv.ParseInt(parts[0], 10, 64)
-	badgeID, err2 := strconv.ParseInt(parts[1], 10, 64)
+	vars := mux.Vars(r)
+	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
+	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid IDs", http.StatusBadRequest)
+		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
 		return
 	}
 
@@ -261,18 +240,13 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusOK)
 }
 
-// DELETE /api/v1/userBadges/{userId}/{badgeId}
+// DeleteUserBadgeHandler 
 func (h *UserBadgeHandler) DeleteUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/userBadges/"), "/")
-	if len(parts) != 2 {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
-	}
-
-	userID, err1 := strconv.ParseInt(parts[0], 10, 64)
-	badgeID, err2 := strconv.ParseInt(parts[1], 10, 64)
+	vars := mux.Vars(r)
+	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
+	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid IDs", http.StatusBadRequest)
+		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
 		return
 	}
 

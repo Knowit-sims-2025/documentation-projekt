@@ -1,49 +1,75 @@
-# Gamification App API Contract (v2)
+# 🎮 Gamification API Guide
 
-Detta dokument beskriver API:et för **Gamification-appen**.  
-Det fungerar som ett kontrakt mellan **backend (Go)** och **frontend (React)** för att säkerställa smidig kommunikation.
+Detta dokument beskriver API:et för **Gamification-appen** och fungerar som ett kontrakt mellan backend (Go) och frontend.
 
-**Base URL:** `/api/v1`
+**Bas-URL:** `/api/v1`
 
 ---
 
-## 📌 Data Models
+## 🧩 Datamodeller
 
-### User
-Ett objekt som representerar en användare.
+### 🧑 User
+Representerar en användare i systemet.
 
 ```json
 {
   "id": 1,
   "displayName": "Anna Andersson",
-  "avatarUrl": "https://example.com/avatar1.png",
-  "totalPoints": 1250,
-  "isAdmin": false
+  "avatarUrl": "/static/avatars/avatar_1_2025-10-08_15-30-00.jpg",
+  "totalPoints": 150,
+  "isAdmin": false,
+  "createdAt": "2025-09-26T10:00:00Z",
+  "updatedAt": "2025-09-26T12:00:00Z"
 }
 ```
 
 ---
 
-### Activity
-Ett objekt som representerar en händelse som gett poäng.
+### ⚡ Activity
+Representerar en händelse som har genererat poäng.
 
 ```json
 {
   "id": 101,
-  "description": "Skapade sidan 'Ny API-dokumentation'",
+  "userId": 1,
+  "activityType": "PAGE_CREATED",
   "pointsAwarded": 15,
-  "timestamp": "2025-09-26T10:00:00Z",
-  "user": {
-    "id": 1,
-    "displayName": "Anna Andersson"
-  }
+  "createdAt": "2025-09-26T10:00:00Z"
 }
 ```
 
 ---
 
-### Competition
-Ett objekt som representerar en tävling.
+### 👥 Team
+Representerar ett team av användare.
+
+```json
+{
+  "id": 1,
+  "name": "The A-Team",
+  "createdAt": "2025-09-26T09:00:00Z"
+}
+```
+
+---
+
+### 🏅 Badge
+Representerar en utmärkelse som en användare kan tjäna.
+
+```json
+{
+  "id": 1,
+  "name": "First Commit",
+  "description": "Awarded for the first documentation contribution.",
+  "icon_url": "/static/badges/badge_1_2025-10-08_15-30-00.png",
+  "criteria_value": 1
+}
+```
+
+---
+
+### 🏆 Competition
+Representerar en tävling inom en viss tidsram.
 
 ```json
 {
@@ -52,163 +78,202 @@ Ett objekt som representerar en tävling.
   "description": "Den som samlar flest poäng under oktober vinner!",
   "startDate": "2025-10-01T00:00:00Z",
   "endDate": "2025-10-31T23:59:59Z",
-  "status": "active" // Kan vara 'upcoming', 'active', 'finished'
+  "status": "active",
+  "createdAt": "2025-09-28T11:00:00Z"
 }
 ```
 
 ---
 
-## 🌍 Public Endpoints
+# 🌐 API Endpoints
 
-### Hämta Global Leaderboard
-Returnerar en topplista med de 10 användare som har högst totalpoäng.
+## 🔧 System
 
-- **Endpoint:** `GET /leaderboard`
-
-**Svar (200 OK):**
-
-```json
-{
-  "leaderboard": [
-    {
-      "rank": 1,
-      "user": {
-        "id": 5,
-        "displayName": "Erik Svensson",
-        "avatarUrl": "https://example.com/avatar5.png"
-      },
-      "totalPoints": 2550
-    }
-    // ... 9 fler användare
-  ]
-}
-```
-
----
-
-### Hämta Globalt Aktivitetsflöde
-Returnerar de 20 senaste händelserna som har gett poäng.
-
-- **Endpoint:** `GET /activities/feed`
+### `GET /api/v1`
+**Beskrivning:** Hämtar rot-endpointen för API:et.  
+Returnerar ett välkomstmeddelande och en lista över tillgängliga resurser och exempelanrop.
 
 **Svar (200 OK):**
-
 ```json
 {
-  "feed": [
-    // ... en lista av Activity-objekt
-  ]
-}
-```
-
----
-
-## 👤 User Endpoints
-
-### Hämta en Användares Profil
-Returnerar detaljerad information om en specifik användare.
-
-- **Endpoint:** `GET /users/:userId/profile`
-
-**Svar (200 OK):**
-
-```json
-{
-  "user": {
-    "id": 1,
-    "displayName": "Anna Andersson",
-    "avatarUrl": "https://example.com/avatar1.png",
-    "totalPoints": 1250
+  "message": "Welcome to the Gamification API v1",
+  "status": "ok",
+  "resources": {
+    "users": "/api/v1/users",
+    "teams": "/api/v1/teams",
+    "competitions": "/api/v1/competitions"
   },
-  "badges": [
-    {
-      "id": 1,
-      "name": "First Commit",
-      "description": "Första dokumentationsbidraget",
-      "iconUrl": "/badges/first-commit.png"
-    }
-  ],
-  "recentActivities": [
-    // ... en lista av Activity-objekt för denna användare
-  ]
+  "examples": {
+    "Get a specific user by ID": "/api/v1/users/{id}"
+  }
 }
 ```
 
 ---
 
-### Hämta alla användare
-Returnerar en lista på alla användare i systemet.  
-Användbart för "Vem är du?"-dropdown.
+## 👤 Users (Användare)
 
-- **Endpoint:** `GET /users`
+### `GET /api/v1/users`
+Hämtar en lista över alla användare, sorterade efter poäng i fallande ordning.
 
-**Svar (200 OK):**
-
-```json
-{
-  "users": [
-    // ... en lista av User-objekt
-  ]
-}
-```
-
----
-
-## 🏆 Competition Endpoints
-
-### Hämta alla Tävlingar
-Returnerar en lista på alla tävlingar.
-
-- **Endpoint:** `GET /competitions`
-
-**Svar (200 OK):**
-
-```json
-{
-  "competitions": [
-    // ... en lista av Competition-objekt
-  ]
-}
-```
-
----
-
-### Hämta Leaderboard för en Tävling
-Returnerar en topplista för en specifik tävling, baserat på poäng som samlats enbart under tävlingens tidsperiod.
-
-- **Endpoint:** `GET /competitions/:competitionId/leaderboard`
-
-**Svar (200 OK):**
-
-```json
-{
-  "competitionName": "Oktober Dokumentations-sprint",
-  "leaderboard": [
-    {
-      "rank": 1,
-      "user": {
-        "id": 5,
-        "displayName": "Erik Svensson"
-      },
-      "pointsInCompetition": 255
-    }
-    // ... fler användare
-  ]
-}
-```
-
----
-
-## 🔑 Admin Endpoints
-Dessa endpoints kräver att användaren är autentiserad och har `isAdmin = true`.
-
----
-
-### Skapa en ny Tävling
-- **Endpoint:** `POST /admin/competitions`
+### `POST /api/v1/users`
+Skapar en ny användare.
 
 **Request Body:**
+```json
+{
+  "confluenceAuthorId": "anna.andersson.id",
+  "displayName": "Anna Andersson",
+  "avatarUrl": ""
+}
+```
 
+### `GET /api/v1/users/{id}`
+Hämtar en specifik användare baserat på ID.
+
+### `PUT /api/v1/users/{id}`
+Uppdaterar en användares information.
+
+**Request Body:**
+```json
+{
+  "displayName": "Anna A. (Uppdaterad)",
+  "isAdmin": false
+}
+```
+
+### `DELETE /api/v1/users/{id}`
+Tar bort en specifik användare.
+
+---
+
+## 👥 Teams
+
+### `GET /api/v1/teams`
+Hämtar en lista över alla team.
+
+### `POST /api/v1/teams`
+Skapar ett nytt team.
+
+**Request Body:**
+```json
+{
+  "name": "Frontend Wizards"
+}
+```
+
+### `GET /api/v1/teams/{id}`
+Hämtar ett specifikt team baserat på ID.
+
+### `PUT /api/v1/teams/{id}`
+Uppdaterar ett teams namn.
+
+### `DELETE /api/v1/teams/{id}`
+Tar bort ett team.
+
+---
+
+## 🧑‍🤝‍🧑 User & Team Management (`userteams`)
+
+### `GET /api/v1/userteams/team/{teamId}`
+Hämtar alla användare som är medlemmar i ett specifikt team.
+
+### `POST /api/v1/userteams`
+Lägger till en användare i ett team.
+
+**Request Body:**
+```json
+{
+  "user_id": 1,
+  "team_id": 2
+}
+```
+
+### `DELETE /api/v1/userteams/user/{userId}/team/{teamId}`
+Tar bort en användare från ett team.
+
+---
+
+## 🏅 Badges (Utmärkelser)
+
+### `GET /api/v1/badges`
+Hämtar en lista över alla tillgängliga badges.
+
+### `POST /api/v1/badges`
+Skapar en ny badge.
+
+**Request Body:**
+```json
+{
+  "name": "Team Player",
+  "description": "Awarded for collaborating on 5 team documents.",
+  "iconUrl": "",
+  "criteriaValue": 5
+}
+```
+
+### `GET /api/v1/badges/{id}`
+Hämtar en specifik badge.
+
+### `PUT /api/v1/badges/{id}`
+Uppdaterar en badge.
+
+### `DELETE /api/v1/badges/{id}`
+Tar bort en badge.
+
+---
+
+## 🎖️ User & Badge Management (`userbadges`)
+
+### `POST /api/v1/userbadges`
+Tilldelar en badge till en användare.
+
+**Request Body:**
+```json
+{
+  "userId": 1,
+  "badgeId": 5
+}
+```
+
+### `GET /api/v1/userbadges/{userId}/{badgeId}`
+Kontrollerar om en användare har en specifik badge.
+
+### `DELETE /api/v1/userbadges/{userId}/{badgeId}`
+Tar bort en badge från en användare.
+
+---
+
+## 📈 Activities (Aktiviteter)
+
+### `GET /api/v1/activities`
+Hämtar en lista över alla poänggivande aktiviteter.
+
+### `POST /api/v1/activities`
+Skapar en ny aktivitet (t.ex. när en sida skapas i Confluence).
+
+**Request Body:**
+```json
+{
+  "userId": 1,
+  "confluencePageId": "page-1234",
+  "confluenceVersionNumber": 1,
+  "activityType": "PAGE_CREATED",
+  "pointsAwarded": 10
+}
+```
+
+---
+
+## 🏆 Competitions (Tävlingar)
+
+### `GET /api/v1/competitions`
+Hämtar en lista över alla tävlingar.
+
+### `POST /api/v1/competitions`
+Skapar en ny tävling.
+
+**Request Body:**
 ```json
 {
   "name": "November-utmaningen",
@@ -218,20 +283,44 @@ Dessa endpoints kräver att användaren är autentiserad och har `isAdmin = true
 }
 ```
 
-**Svar (201 Created):** Returnerar det nyskapade Competition-objektet.
+### `GET /api/v1/competitions/{id}`
+Hämtar en specifik tävling.
+
+### `DELETE /api/v1/competitions/{id}`
+Tar bort en tävling.
 
 ---
 
-### Uppdatera en Tävling
-- **Endpoint:** `PUT /admin/competitions/:competitionId`
+## 📤 File Uploads
 
-**Request Body:** (samma som ovan)
+### `POST /api/v1/upload/avatar`
+Laddar upp en avatar för en användare.  
+Använder **multipart/form-data**.
 
-**Svar (200 OK):** Returnerar det uppdaterade Competition-objektet.
+**Form-data fält:**
+- `userId` (t.ex. `11`)
+- `uploadFile` (filen som ska laddas upp)
+
+**Svar (200 OK):**
+```json
+{
+  "avatarUrl": "/static/avatars/avatar_11_2025-10-08_15-45-00.png"
+}
+```
 
 ---
 
-### Ta bort en Tävling
-- **Endpoint:** `DELETE /admin/competitions/:competitionId`
+### `POST /api/v1/upload/badge`
+Laddar upp en ikon för en badge.  
+Använder **multipart/form-data**.
 
-**Svar (204 No Content):** Inget innehåll returneras vid lyckad borttagning.
+**Form-data fält:**
+- `badgeId` (t.ex. `5`)
+- `uploadFile` (filen som ska laddas upp)
+
+**Svar (200 OK):**
+```json
+{
+  "iconUrl": "/static/badges/badge_5_2025-10-08_15-50-00.png"
+}
+```

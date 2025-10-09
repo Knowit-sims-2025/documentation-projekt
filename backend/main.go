@@ -2,59 +2,18 @@ package main
 
 import (
 	"fmt"
-	"gamification-api/backend/database" // Byt ut 'gamification-api' mot ert Go-modulnamn
-	"gamification-api/backend/handlers" // Byt ut 'gamification-api' mot ert Go-modulnamn
-	"gamification-api/backend/router"   // Importera er router
+	"gamification-api/backend/router" // Importera endast din router
 	"log"
 	"net/http"
 )
 
 func main() {
-	// Steg 1: Anslut till databasen
-	db, err := database.ConnectDB()
-	if err != nil {
-		log.Fatalf("FATAL: Kunde inte ansluta till databasen: %v", err)
-	}
-	defer db.Close()
+	r := router.InitializeAndGetRouter()
 
-	// Steg 2: Skapa era repositories
-	userRepo := &database.UserRepository{DB: db}
-	badgeRepo := &database.BadgeRepository{DB: db}
-	userBadgeRepo := &database.UserBadgeRepository{DB: db}
-	activityRepo := &database.ActivityRepository{DB: db}
-	teamRepo := &database.TeamRepository{DB: db}
-	userTeamRepo := &database.UserTeamRepository{DB: db}
-	// competitionRepo := &database.CompetitionRepository{DB: db} // (läggs till senare)
-
-	// Steg 3: Skapa era handlers
-	userHandler := &handlers.UserHandler{Repo: userRepo}
-	badgeHandler := &handlers.BadgeHandler{Repo: badgeRepo}
-	userBadgeHandler := &handlers.UserBadgeHandler{Repo: userBadgeRepo}
-	activityHandler := &handlers.ActivityHandler{Repo: activityRepo}
-	teamHandler := &handlers.TeamHandler{Repo: teamRepo}
-	userTeamHandler := &handlers.UserTeamHandler{Repo: userTeamRepo}
-	// competitionHandler := &handlers.CompetitionHandler{Repo: competitionRepo} // (läggs till senare)
-
-	// Steg 4: Skapa en ny, tom router
-	mux := http.NewServeMux()
-
-	// Steg 5: Anropa er registreringsfunktion för att konfigurera routern
-	// Detta är nyckeln! main.go behöver inte känna till de specifika URL:erna.
-	router.RegisterUserRoutes(mux, userHandler)
-	router.RegisterBadgeRoutes(mux, badgeHandler)
-	router.RegisterUserBadgeRoutes(mux, userBadgeHandler)
-	router.RegisterActivityRoutes(mux, activityHandler)
-	router.RegisterTeamRoutes(mux, teamHandler)
-	router.RegisterUserTeamRoutes(mux, userTeamHandler)
-
-	// När ni skapar fler delar, anropar ni bara deras registreringsfunktioner här:
-	// router.RegisterCompetitionRoutes(mux, competitionHandler)
-	// router.RegisterBadgeRoutes(mux, badgeHandler)
-
-	// Steg 6: Starta webbservern
+	// Starta webbservern
 	port := "8081"
 	fmt.Printf("Startar API-server på http://localhost:%s\n", port)
-	err = http.ListenAndServe(":"+port, mux)
+	err := http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatalf("FATAL: Servern kunde inte starta: %v", err)
 	}

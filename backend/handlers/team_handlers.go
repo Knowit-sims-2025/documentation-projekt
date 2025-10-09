@@ -8,8 +8,8 @@ import (
 	"gamification-api/backend/models"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
+	"github.com/gorilla/mux" 
 )
 
 type TeamHandler struct {
@@ -20,24 +20,23 @@ type UserTeamHandler struct {
 	Repo *database.UserTeamRepository
 }
 
-// GetAllTeamsHandler hanterar förfrågningar till /api/v1/teams
+// GetAllTeamsHandler
 func (h *TeamHandler) GetAllTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	teams, err := h.Repo.GetAllTeams()
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(teams)
 }
 
-// GET /api/v1/teams/{id}
+// GetTeamByIDHandler
 func (h *TeamHandler) GetTeamByIDHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/teams/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		http.Error(w, "Invalid team ID", http.StatusBadRequest)
 		return
 	}
 
@@ -55,7 +54,7 @@ func (h *TeamHandler) GetTeamByIDHandler(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(team)
 }
 
-// POST /api/v1/teams
+// CreateTeamHandler 
 func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Name string `json:"name"`
@@ -76,19 +75,19 @@ func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Failed to create team", http.StatusInternalServerError)
 		return
 	}
-
 	team.ID = id
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(team)
 }
 
-// PUT /api/v1/teams/{id}
+// UpdateTeamHandler 
 func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/teams/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		http.Error(w, "Invalid team ID", http.StatusBadRequest)
 		return
 	}
 
@@ -112,15 +111,15 @@ func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(team)
 }
 
-// DELETE /api/v1/teams/{id}
+
+// DeleteTeamHandler 
 func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/teams/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		http.Error(w, "Invalid team ID", http.StatusBadRequest)
 		return
 	}
 
@@ -132,29 +131,21 @@ func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GET /api/v1/userTeams
+// GetAllUserTeamsHandler 
 func (h *UserTeamHandler) GetAllUserTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	userTeams, err := h.Repo.GetAllUserTeams()
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(userTeams)
 }
 
-// GET /api/v1/userTeams/{teamId}
+// GetUsersByTeamHandler 
 func (h *UserTeamHandler) GetUsersByTeamHandler(w http.ResponseWriter, r *http.Request) {
-	// Ta bort prefixen
-	rest := strings.TrimPrefix(r.URL.Path, "/api/v1/userTeams/")
-	// Om det finns ett extra "/" i slutet (t.ex. /api/v1/userTeams/1/2) -> fel
-	if rest == "" || strings.Contains(rest, "/") {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
-	}
-
-	teamID, err := strconv.ParseInt(rest, 10, 64)
+	vars := mux.Vars(r)
+	teamID, err := strconv.ParseInt(vars["teamId"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid team ID", http.StatusBadRequest)
 		return
@@ -170,15 +161,8 @@ func (h *UserTeamHandler) GetUsersByTeamHandler(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(users)
 }
 
-// POST /api/v1/userTeams  json body används
+// AddUserToTeamHandler 
 func (h *UserTeamHandler) AddUserToTeamHandler(w http.ResponseWriter, r *http.Request) {
-	// Kontrollera att metoden är POST
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Läs JSON-body
 	var input struct {
 		UserID int64 `json:"user_id"`
 		TeamID int64 `json:"team_id"`
@@ -189,35 +173,28 @@ func (h *UserTeamHandler) AddUserToTeamHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// Validera värden
 	if input.UserID <= 0 || input.TeamID <= 0 {
 		http.Error(w, "user_id and team_id must be positive integers", http.StatusBadRequest)
 		return
 	}
 
-	// Lägg till user i team via repository
 	if err := h.Repo.AddUserToTeam(input.UserID, input.TeamID); err != nil {
 		http.Error(w, "Failed to add user to team", http.StatusInternalServerError)
 		return
 	}
 
-	// Returnera 201 Created
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(fmt.Sprintf("User %d added to Team %d", input.UserID, input.TeamID)))
+	fmt.Fprintf(w, "User %d added to Team %d", input.UserID, input.TeamID)
 }
 
-// DELETE /api/v1/userTeams/{userId}/{teamId}
+// RemoveUserFromTeamHandler 
 func (h *UserTeamHandler) RemoveUserFromTeamHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/userTeams/user/"), "/")
-	if len(parts) != 2 {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
-		return
-	}
+	vars := mux.Vars(r)
+	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
+	teamID, err2 := strconv.ParseInt(vars["teamId"], 10, 64)
 
-	userID, err1 := strconv.ParseInt(parts[0], 10, 64)
-	teamID, err2 := strconv.ParseInt(parts[1], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid IDs", http.StatusBadRequest)
+		http.Error(w, "Invalid user or team ID", http.StatusBadRequest)
 		return
 	}
 

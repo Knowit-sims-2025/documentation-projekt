@@ -1,40 +1,35 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"gamification-api/backend/database"
 	"gamification-api/backend/models"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
+	"github.com/gorilla/mux" 
 )
 
 type ActivityHandler struct {
 	Repo *database.ActivityRepository
 }
 
-// GetAllActivitiesHandlers hanterar förfrågningar till /api/v1/activities
+// GetAllActivitiesHandler
 func (h *ActivityHandler) GetAllActivitiesHandler(w http.ResponseWriter, r *http.Request) {
-	// Anropa funktionen ni precis skapade i er repository.
 	activities, err := h.Repo.GetAllActivities()
 	if err != nil {
-		// Om något går fel med databasen, skicka ett serverfel.
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	// Sätt en header för att tala om för webbläsaren att vi skickar JSON.
 	w.Header().Set("Content-Type", "application/json")
-
-	// Omvandla er lista av användare till JSON och skicka den.
 	json.NewEncoder(w).Encode(activities)
 }
 
-// GET /api/v1/activities/{id}
+// GetActivityByIDHandler
 func (h *ActivityHandler) GetActivityByIDHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/activities/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid activity ID", http.StatusBadRequest)
 		return
@@ -42,7 +37,11 @@ func (h *ActivityHandler) GetActivityByIDHandler(w http.ResponseWriter, r *http.
 
 	activity, err := h.Repo.GetActivityByID(id)
 	if err != nil {
-		http.Error(w, "Not found", http.StatusNotFound)
+		if err == sql.ErrNoRows {
+			http.Error(w, "Activity not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -50,7 +49,7 @@ func (h *ActivityHandler) GetActivityByIDHandler(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(activity)
 }
 
-// POST /api/v1/activities
+// CreateActivityHandler 
 func (h *ActivityHandler) CreateActivityHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		UserID                  int64  `json:"userId"`
@@ -86,10 +85,10 @@ func (h *ActivityHandler) CreateActivityHandler(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(activity)
 }
 
-// PUT /api/v1/activities/{id}
+// UpdateActivityHandler 
 func (h *ActivityHandler) UpdateActivityHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/activities/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid activity ID", http.StatusBadRequest)
 		return
@@ -125,10 +124,10 @@ func (h *ActivityHandler) UpdateActivityHandler(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusOK)
 }
 
-// DELETE /api/v1/activities/{id}
+// DeleteActivityHandler 
 func (h *ActivityHandler) DeleteActivityHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/activities/")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid activity ID", http.StatusBadRequest)
 		return
@@ -141,4 +140,3 @@ func (h *ActivityHandler) DeleteActivityHandler(w http.ResponseWriter, r *http.R
 
 	w.WriteHeader(http.StatusNoContent)
 }
-

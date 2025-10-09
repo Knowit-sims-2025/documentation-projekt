@@ -1,15 +1,16 @@
 package router
 
 import (
-	"encoding/json"
-	"gamification-api/backend/handlers" // Byt ut mot ert modulnamn
+	"gamification-api/backend/database"
+	"gamification-api/backend/handlers"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
 // Dependencies innehåller alla handlers som vår router behöver.
-type Dependencies struct {
+type dependencies struct {
 	UserHandler        *handlers.UserHandler
 	CompetitionHandler *handlers.CompetitionHandler
 	ActivityHandler    *handlers.ActivityHandler
@@ -17,44 +18,85 @@ type Dependencies struct {
 	UserTeamHandler    *handlers.UserTeamHandler
 	BadgeHandler       *handlers.BadgeHandler
 	UserBadgeHandler   *handlers.UserBadgeHandler
-	
+	SystemHandler      *handlers.SystemHandler
+	FileHandler        *handlers.FileHandler
 }
 
-// NewRouter skapar och konfigurerar hela er API-router med gorilla/mux.
-func NewRouter(deps Dependencies) *mux.Router {
-	r := mux.NewRouter()
+// InitializeAndGetRouter sköter hela setup-processen och returnerar en färdig router.
+func InitializeAndGetRouter() *mux.Router {
+	// Steg 1: Anslut till databasen
+	db, err := database.ConnectDB()
+	if err != nil {
+		log.Fatalf("FATAL: Kunde inte ansluta till databasen: %v", err)
+	}
 
-	// NYTT: Skapa en subrouter för hela v1-API:et
+	// Steg 2: Skapa alla repositories
+	userRepo := &database.UserRepository{DB: db}
+	badgeRepo := &database.BadgeRepository{DB: db}
+	userBadgeRepo := &database.UserBadgeRepository{DB: db}
+	activityRepo := &database.ActivityRepository{DB: db}
+	teamRepo := &database.TeamRepository{DB: db}
+	userTeamRepo := &database.UserTeamRepository{DB: db}
+	competitionRepo := &database.CompetitionRepository{DB: db}
+	systemRepo := &database.SystemRepository{DB: db}
+
+
+	// Steg 3: Skapa alla handlers
+	deps := dependencies{
+		UserHandler:        &handlers.UserHandler{Repo: userRepo},
+		BadgeHandler:       &handlers.BadgeHandler{Repo: badgeRepo},
+		UserBadgeHandler:   &handlers.UserBadgeHandler{Repo: userBadgeRepo},
+		ActivityHandler:    &handlers.ActivityHandler{Repo: activityRepo},
+		TeamHandler:        &handlers.TeamHandler{Repo: teamRepo},
+		UserTeamHandler:    &handlers.UserTeamHandler{Repo: userTeamRepo},
+		CompetitionHandler: &handlers.CompetitionHandler{Repo: competitionRepo},
+		SystemHandler:      &handlers.SystemHandler{Repo: systemRepo},
+		FileHandler:        &handlers.FileHandler{UserRepo: userRepo, BadgeRepo: badgeRepo},
+	}
+
+	// Steg 4: Konfigurera och returnera routern
+	return newRouter(deps)
+}
+
+func newRouter(deps dependencies) *mux.Router {
+	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1").Subrouter()
 
-	// NYTT: Registrera en root handler för /api/v1
-	api.HandleFunc("", rootHandler).Methods("GET")
+	api.HandleFunc("", deps.SystemHandler.RootHandler).Methods("GET")
+
+
 
 	// Registrera alla modulära vägar
 	if deps.UserHandler != nil {
-		RegisterUserRoutes(api, deps.UserHandler) // Använder nu subroutern 'api'
+		RegisterUserRoutes(api, deps.UserHandler)
 	}
 	if deps.CompetitionHandler != nil {
-		RegisterCompetitionRoutes(api, deps.CompetitionHandler) // Använder nu subroutern 'api'
+		RegisterCompetitionRoutes(api, deps.CompetitionHandler)
 	}
 	if deps.ActivityHandler != nil {
-		RegisterActivityRoutes(api, deps.ActivityHandler) // Använder nu subroutern 'api'
+		RegisterActivityRoutes(api, deps.ActivityHandler)
+	}
+	if deps.BadgeHandler != nil {
+		RegisterBadgeRoutes(api, deps.BadgeHandler)
+	}
+	if deps.UserBadgeHandler != nil {
+		RegisterUserBadgeRoutes(api, deps.UserBadgeHandler)
+	}
+	if deps.TeamHandler != nil {
+		RegisterTeamRoutes(api, deps.TeamHandler)
+	}
+	if deps.UserTeamHandler != nil {
+		RegisterUserTeamRoutes(api, deps.UserTeamHandler)
+	}
+	if deps.FileHandler != nil {
+		uploadRouter := api.PathPrefix("/upload").Subrouter()
+		uploadRouter.HandleFunc("/avatar", deps.FileHandler.UploadAvatarHandler).Methods("POST")
+		uploadRouter.HandleFunc("/badge", deps.FileHandler.UploadBadgeIconHandler).Methods("POST")
 	}
 
-	// Hantera statiska filer (bilder etc.)
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
 	return r
-}
-
-// NY FUNKTION: rootHandler svarar på anrop till API-roten.
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Welcome to the Gamification API v1",
-		"status":  "ok",
-	})
 }
 
