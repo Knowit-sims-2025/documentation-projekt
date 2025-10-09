@@ -58,7 +58,7 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
   return (
     <div>
       <h4 style={{ marginTop: 0 }}>Medlemmar</h4>
-      <ul className="leaderboard__list" role="list">
+      <ul className="leaderboard__list muted" role="list">
         {members.length > 0 ? (
           members.map((m) => (
             <li className="leaderboard__item" key={m.id}>

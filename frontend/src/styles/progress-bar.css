@@ -2,7 +2,6 @@
    Progress bar
    ========================= */
 .progress-card {
-  background: var(--bg, #fff);
   border-radius: 12px;
   box-shadow: 0 2px 8px hsl(220 50% 2% / 0.12);
   padding: 16px 20px 20px 20px;

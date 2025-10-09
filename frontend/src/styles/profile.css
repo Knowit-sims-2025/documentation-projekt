@@ -2,63 +2,63 @@
 /* =========================
    Profile-stil
    ========================= */
-.profile.card {
-  position: relative;
-  flex-direction: column;
-  margin-top: auto;
+
+
+.profile-widget {
+  /* Nollställ kantlinjer och skuggor specifikt för denna widget */
+  border: none;
+  box-shadow: none;
+  padding: 0; /* Nollställ padding från .card, vi hanterar det internt */
+  overflow: hidden;
 }
+
 
 .profile-cover {
   position: relative;
   width: 100%;
   height: 120px;
-  background: linear-gradient(90deg, #4a3fd7 60%, #7a6bff 100%);
-  border-radius: 1rem 1rem 0 0;
-  overflow: visible;
+  background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%);
+  border-radius: 12px 12px 0 0;
 }
 
-.profile-avatar-bg img{
+.profile-avatar-wrapper {
   position: absolute;
   left: 50%;
-  bottom: -48px; /* Half the avatar height */
+  bottom: -48px;
   transform: translateX(-50%);
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px hsl(220 50% 10% / 0.25);
   z-index: 2;
 }
 
+/* Styla själva avataren inuti wrappern */
+.profile-avatar-wrapper .leaderboard__avatar {
+  width: 96px;
+  height: 96px;
+  border: 4px solid var(--card-bg);
+  box-shadow: var(--card-bg);
+}
+
 .profile-info {
-  margin-top: 56px;
+  padding: 1rem;
+  padding-top: 56px; /* Utrymme för avataren som sticker upp */
   width: 100%;
   text-align: left;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex-grow: 1;
 }
 
 .profile-name {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 700;
+  text-align: center;
+  display: inline-flex; /* Se till att namn och ikon hamnar på samma rad */
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.profile-admin {
-  display: inline-block;
-  margin-top: 8px;
-  color: var(--accent, #4a3fd7);
-  font-size: 1rem;
-}
 .profile-info .progress-card {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 12px;
-  margin-top: auto;
+  margin-top: auto; 
+  padding-top: 1rem;
 
 }
