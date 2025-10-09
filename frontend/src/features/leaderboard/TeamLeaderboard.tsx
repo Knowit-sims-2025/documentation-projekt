@@ -72,7 +72,7 @@ export default function TeamLeaderboard() {
               onClick={() => openTeam(team)}
               onKeyDown={onKeyRow}
             >
-              <span className="leaderboard__name">{team.name}</span>
+              <span className="leaderboard__name muted">{team.name}</span>
               {/* Visa poäng om du har fältet */}
               {"totalPoints" in team && (
                 <span className="leaderboard__points">

@@ -42,6 +42,10 @@
   padding: 0;
 }
 
+.muted {
+  color: var(--text-muted);
+}
+
 /* Grundrad */
 .leaderboard__item {
   display: flex;

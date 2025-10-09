@@ -68,9 +68,9 @@ export default function TeamDetails({ teamId }: TeamDetailsProps) {
                 className="leaderboard__avatar"
               />
 
-              <span className="leaderboard__name">{m.displayName}</span>
+              <span className="leaderboard__name muted">{m.displayName}</span>
 
-              <span className="leaderboard__points">
+              <span className="leaderboard__points muted">
                 {m.totalPoints ?? 0} p
               </span>
             </li>
