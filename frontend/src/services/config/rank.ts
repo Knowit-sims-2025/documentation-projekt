@@ -19,3 +19,17 @@ export function getRankTier(points: number): RankTier {
   }
   return "Iron"; // fallback till grundnivån
 }
+
+export function getNextRankThreshold(points: number): number | null {
+  for (const { min } of RANK_THRESHOLDS) {
+    if (points < min) return min; // first threshold above current points
+  }
+  return 1; // Cannot be 0 due to division, so return 1 if already at highest rank
+}
+
+export function getPreviousRankThreshold(points: number): number | null {
+  for (const { min } of RANK_THRESHOLDS) {
+    if (points >= min) return min; // first threshold above current points
+  }
+  return 1; // Cannot be 0 due to division, so return 1 if already at highest rank
+}
