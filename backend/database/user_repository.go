@@ -5,6 +5,9 @@ import (
 	"gamification-api/backend/models"
 )
 
+const defaultAvatarURL = "/static/avatars/default_avatar.jpg"
+
+
 // UserRepository hanterar all databaskommunikation för User-modellen.
 type UserRepository struct {
 	DB *sql.DB
@@ -39,6 +42,28 @@ func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
+// GetUserByConfluenceID hämtar en användare baserat på deras unika Confluence ID.
+func (repo *UserRepository) GetUserByConfluenceID(confluenceID string) (*models.User, error) {
+	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE confluence_author_id = $1", confluenceID)
+	var user models.User
+	err := row.Scan(
+		&user.ID,
+		&user.ConfluenceAuthorID,
+		&user.DisplayName,
+		&user.AvatarURL,
+		&user.TotalPoints,
+		&user.IsAdmin,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Ingen användare hittades
+		}
+		return nil, err
+	}
+	return &user, nil
+}
 
 func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
 	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE id = $1", id)
@@ -62,6 +87,11 @@ func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
 	return &user, nil
 }
 func (repo *UserRepository) CreateUser(user *models.User) (int64, error) {
+
+	if !user.AvatarURL.Valid || user.AvatarURL.String == "" {
+		user.AvatarURL = sql.NullString{String: defaultAvatarURL, Valid: true}
+	}
+
 	query := `INSERT INTO users (confluence_author_id, display_name, avatar_url)VALUES ($1, $2, $3) RETURNING id`
 	var newID int64
 	err := repo.DB.QueryRow(query, user.ConfluenceAuthorID, user.DisplayName, user.AvatarURL).Scan(&newID)
