@@ -2,3 +2,4 @@
 /.idea
 /postgres-data
 backend/config/config.go
+backend/config/config.go
