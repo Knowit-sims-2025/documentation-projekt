@@ -66,18 +66,16 @@ func SyncActivities(client *Client, repos Repositories) {
 		// ---- Logik för att skilja på SKAPAD vs UPPDATERAD ----
 		var activityType string
 		var pointsAwarded int
-		var logMessage string
 
 		if page.Version.Number == 1 {
 			activityType = "PAGE_CREATED"
 			pointsAwarded = 25 // Ge fler poäng för att skapa en ny sida
-			logMessage = fmt.Sprintf("Ny sida: Användare '%s' skapade sidan '%s'. Registrerar aktivitet...", user.DisplayName, page.Title)
+			log.Printf("Ny sida: Användare '%s' skapade sidan '%s'. Ger %d poäng.", user.DisplayName, page.Title, pointsAwarded)
 		} else {
 			activityType = "PAGE_UPDATED"
 			pointsAwarded = 10 // Standardpoäng för en uppdatering
-			logMessage = fmt.Sprintf("Siduppdatering: Användare '%s' uppdaterade sidan '%s' (v%d). Registrerar aktivitet...", user.DisplayName, page.Title, page.Version.Number)
+			log.Printf("Siduppdatering: Användare '%s' uppdaterade sidan '%s' (v%d). Ger %d poäng.", user.DisplayName, page.Title, page.Version.Number, pointsAwarded)
 		}
-		log.Println(logMessage)
 		// ---------------------------------------------------------
 
 		activity := models.Activity{
@@ -93,10 +91,14 @@ func SyncActivities(client *Client, repos Repositories) {
 			log.Printf("FEL vid skapande av aktivitet för sida %s: %v", page.ID, err)
 			continue
 		}
-		if err := repos.UserRepo.UpdateUserPoints(int64(user.ID), user.TotalPoints+pointsAwarded); err != nil {
-			log.Printf("FEL vid uppdatering av poäng för %s: %v", user.DisplayName, err)
-			continue
+
+		err = repos.UserRepo.UpdateUserPoints(user.ID, pointsAwarded)
+		if err != nil {
+			log.Printf("FEL vid uppdatering av poäng för användare %d: %v", user.ID, err)
+			// Vi fortsätter även om detta misslyckas, aktiviteten är ju redan loggad.
 		}
+		// ------------------------------------
+
 		newActivitiesCount++
 	}
 
@@ -129,3 +131,4 @@ func findOrCreateUser(authorID, authorName string, userRepo *database.UserReposi
 
 	return &newUser, nil
 }
+
