@@ -36,7 +36,7 @@
 
   --primary:   hsl(264 70% 70%);
   --secondary: hsl(84  70% 70%);
-  --accent:    hsl(120 70% 60%);
+  --accent:    hsl(76, 70%, 60%);
 
   --danger:  hsl( 30 60% 60%);
   --warning: hsl( 50 60% 60%);
@@ -69,7 +69,7 @@
 
     --primary:   oklch(0.76 0.10 264);
     --secondary: oklch(0.76 0.10 84);
-    --accent:    oklch(0.81 0.19 120);
+    --accent:    oklch(90.16% 0.19454 108.481);
 
     --danger:  oklch(0.70 0.05  30);
     --warning: oklch(0.70 0.05 100);

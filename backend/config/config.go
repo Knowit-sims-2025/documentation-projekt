@@ -14,9 +14,8 @@ type Config struct {
 func LoadConfig() *Config {
 	// senare ska det läsas från miljövariabler (.env-fil).
 	baseURL := getEnv("CONFLUENCE_BASE_URL", "https://christianstrid.atlassian.net/wiki")
-	email := getEnv("CONFLUENCE_EMAIL", "skrivdin-email-här")
-	apiToken := getEnv("CONFLUENCE_API_TOKEN", "skrivdin-api-token-här")
-
+	email := getEnv("CONFLUENCE_EMAIL", "")
+	apiToken := getEnv("CONFLUENCE_API_TOKEN", "")
 
 	return &Config{
 		ConfluenceBaseURL:  baseURL,
@@ -32,4 +31,3 @@ func getEnv(key, fallback string) string {
 	}
 	return fallback
 }
-

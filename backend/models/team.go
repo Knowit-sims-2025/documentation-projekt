@@ -5,10 +5,9 @@ import (
 )
 
 type Team struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	CreatedAt   time.Time `json:"createdAt"`
-	TotalPoints int       `json:"totalPoints,omitempty"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type UserTeam struct {

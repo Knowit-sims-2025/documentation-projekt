@@ -7,14 +7,15 @@ import (
 	"gamification-api/backend/models"
 	"net/http"
 	"strconv"
-	"github.com/gorilla/mux" 
+
+	"github.com/gorilla/mux"
 )
 
 type UserHandler struct {
 	Repo *database.UserRepository
 }
 
-// GetAllUsersHandler 
+// GetAllUsersHandler
 func (h *UserHandler) GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := h.Repo.GetAllUsers()
 	if err != nil {
@@ -25,7 +26,7 @@ func (h *UserHandler) GetAllUsersHandler(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(users)
 }
 
-// GetUserByIDHandler 
+// GetUserByIDHandler
 func (h *UserHandler) GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 	// ANVÄND MUX.VARS FÖR ATT HÄMTA 'id' FRÅN URL
 	vars := mux.Vars(r)
@@ -50,7 +51,7 @@ func (h *UserHandler) GetUserByIDHandler(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(user)
 }
 
-// CreateUserHandler 
+// CreateUserHandler
 func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		ConfluenceAuthorID string `json:"confluenceAuthorId"`
@@ -86,7 +87,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(createdUser)
 }
 
-// UpdateUserHandler 
+// UpdateUserHandler
 func (h *UserHandler) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// ANVÄND MUX.VARS FÖR ATT HÄMTA 'id' FRÅN URL
 	vars := mux.Vars(r)
@@ -116,8 +117,7 @@ func (h *UserHandler) UpdateUserHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(updatedUser)
 }
 
-
-// DeleteUserHandler 
+// DeleteUserHandler
 func (h *UserHandler) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// ANVÄND MUX.VARS FÖR ATT HÄMTA 'id' FRÅN URL
 	vars := mux.Vars(r)

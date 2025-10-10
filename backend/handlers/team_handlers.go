@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"github.com/gorilla/mux" 
+
+	"github.com/gorilla/mux"
 )
 
 type TeamHandler struct {
@@ -54,7 +55,7 @@ func (h *TeamHandler) GetTeamByIDHandler(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(team)
 }
 
-// CreateTeamHandler 
+// CreateTeamHandler
 func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Name string `json:"name"`
@@ -82,7 +83,7 @@ func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(team)
 }
 
-// UpdateTeamHandler 
+// UpdateTeamHandler
 func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -113,8 +114,7 @@ func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
-
-// DeleteTeamHandler 
+// DeleteTeamHandler
 func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -131,7 +131,7 @@ func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetAllUserTeamsHandler 
+// GetAllUserTeamsHandler
 func (h *UserTeamHandler) GetAllUserTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	userTeams, err := h.Repo.GetAllUserTeams()
 	if err != nil {
@@ -142,7 +142,7 @@ func (h *UserTeamHandler) GetAllUserTeamsHandler(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(userTeams)
 }
 
-// GetUsersByTeamHandler 
+// GetUsersByTeamHandler
 func (h *UserTeamHandler) GetUsersByTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID, err := strconv.ParseInt(vars["teamId"], 10, 64)
@@ -161,7 +161,7 @@ func (h *UserTeamHandler) GetUsersByTeamHandler(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(users)
 }
 
-// AddUserToTeamHandler 
+// AddUserToTeamHandler
 func (h *UserTeamHandler) AddUserToTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		UserID int64 `json:"user_id"`
@@ -187,7 +187,7 @@ func (h *UserTeamHandler) AddUserToTeamHandler(w http.ResponseWriter, r *http.Re
 	fmt.Fprintf(w, "User %d added to Team %d", input.UserID, input.TeamID)
 }
 
-// RemoveUserFromTeamHandler 
+// RemoveUserFromTeamHandler
 func (h *UserTeamHandler) RemoveUserFromTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)

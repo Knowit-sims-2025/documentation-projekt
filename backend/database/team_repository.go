@@ -17,21 +17,7 @@ type UserTeamRepository struct {
 
 // Hämta alla teams
 func (r *TeamRepository) GetAllTeams() ([]models.Team, error) {
-	query := `
-		SELECT
-			t.id,
-			t.name,
-			t.created_at,
-			COALESCE(SUM(u.total_points), 0) as total_points
-		FROM
-			teams t
-		LEFT JOIN
-			user_teams ut ON t.id = ut.team_id
-		LEFT JOIN
-			users u ON ut.user_id = u.id
-		GROUP BY
-			t.id, t.name, t.created_at
-		ORDER BY total_points DESC`
+	query := `SELECT id, name, created_at FROM teams ORDER BY ID ASC`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -42,7 +28,7 @@ func (r *TeamRepository) GetAllTeams() ([]models.Team, error) {
 
 	for rows.Next() {
 		var t models.Team
-		err := rows.Scan(&t.ID, &t.Name, &t.CreatedAt, &t.TotalPoints)
+		err := rows.Scan(&t.ID, &t.Name, &t.CreatedAt)
 		if err != nil {
 			log.Println("Error scanning team:", err)
 			continue
@@ -169,7 +155,7 @@ func (r *UserTeamRepository) GetUserTeamsByUserID(userID int64) ([]models.UserTe
 // GetUsersByTeamID hämtar alla users som är med i ett specifikt team
 func (r *UserTeamRepository) GetUsersByTeamID(teamID int64) ([]models.User, error) {
 	query := `
-        SELECT u.id, u.display_name, u.avatar_url, u.total_points, u.created_at
+        SELECT u.id, u.display_name, u.created_at
         FROM users u
         INNER JOIN user_teams ut ON u.id = ut.user_id
         WHERE ut.team_id = $1
@@ -184,7 +170,7 @@ func (r *UserTeamRepository) GetUsersByTeamID(teamID int64) ([]models.User, erro
 	var users []models.User
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.ID, &u.DisplayName, &u.AvatarURL, &u.TotalPoints, &u.CreatedAt); err != nil {
+		if err := rows.Scan(&u.ID, &u.DisplayName, &u.CreatedAt); err != nil {
 			return nil, err
 		}
 		users = append(users, u)

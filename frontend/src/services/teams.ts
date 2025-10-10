@@ -1,9 +1,5 @@
 import type { Team, TeamWithDetails } from "../types/team";
 
-/**
- * Hämtar alla team från backend.
- * Backend har redan beräknat den totala poängen för varje team.
- */
 export async function getTeams(
   signal?: AbortSignal
 ): Promise<TeamWithDetails[]> {

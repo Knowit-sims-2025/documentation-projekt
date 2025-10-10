@@ -10,7 +10,7 @@ type SystemRepository struct {
 
 // GetAllPublicTables hämtar namnen på alla tabeller i det publika schemat.
 func (r *SystemRepository) GetAllPublicTables() ([]string, error) {
-	
+
 	query := `
 		SELECT tablename
 		FROM pg_catalog.pg_tables

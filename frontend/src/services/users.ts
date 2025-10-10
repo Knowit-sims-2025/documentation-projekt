@@ -21,6 +21,33 @@ function pickString(v: any): string | undefined {
   return undefined;
 }
 
+/** Försöker parsa datum från olika tänkbara representationer till ISO-sträng */
+function pickDateString(v: any): string | undefined {
+  if (!v) return undefined;
+
+  // Vanligt: RFC3339-sträng
+  if (typeof v === "string") {
+    const d = new Date(v);
+    if (!isNaN(d.getTime())) return d.toISOString();
+    return undefined;
+  }
+
+  // Go's time om den råkar skickas som objekt, t.ex. { Time: "2025-10-08T12:34:56Z" }
+  if (typeof v === "object") {
+    const candidate = v.Time ?? v.time ?? v.date ?? v.String;
+    if (candidate) return pickDateString(candidate);
+  }
+
+  // Unix epoch (ms eller s)
+  if (typeof v === "number") {
+    const isSeconds = v < 10_000_000_000; // grov heuristik
+    const d = new Date(isSeconds ? v * 1000 : v);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
+
+  return undefined;
+}
+
 
 /* ==========================================================================
    normalize(u)
@@ -34,31 +61,29 @@ function pickString(v: any): string | undefined {
      - fallback för confluenceAuthorId om det saknas
    ========================================================================== */
 export function normalizeUser(u: RawUser) {
-  // id kan komma som "id" eller "ID"
   const id = Number(u.id ?? u.ID);
 
-  // displayName i flera varianter
   const displayName =
     u.displayName ?? u.DisplayName ?? u.display_name ?? "(unknown)";
 
-  // avatarUrl kan vara sträng eller {String, Valid}
   const avatarUrl =
-    pickString(u.avatarUrl) ??
-    pickString(u.AvatarURL) ??
-    pickString(u.avatar_url);
+    pickString(u.avatarUrl) ?? pickString(u.AvatarURL) ?? pickString(u.avatar_url);
 
-  // confluenceAuthorId – vi läser bara det backend faktiskt skickar
   const confluenceAuthorId: string | null =
-    (u.confluenceAuthorId ??
-      u.ConfluenceAuthorID ??
-      u.confluence_author_id ??
-      null) ?? null;
+    (u.confluenceAuthorId ?? u.ConfluenceAuthorID ?? u.confluence_author_id ?? null) ?? null;
 
-  // poäng och admin-stöd med fallback
   const totalPoints = Number(u.totalPoints ?? u.TotalPoints ?? u.total_points ?? 0);
   const isAdmin = Boolean(u.isAdmin ?? u.IsAdmin ?? u.is_admin ?? false);
 
-  return { id, displayName, confluenceAuthorId, avatarUrl, totalPoints, isAdmin };
+  // Nytt: försök hitta createdAt i flera varianter
+  const createdAt =
+    pickDateString(u.createdAt) ??
+    pickDateString(u.CreatedAt) ??
+    pickDateString(u.created_at) ??
+    // absolut sista fallback om backend inte skickar något
+    new Date(0).toISOString(); // 1970-01-01T00:00:00.000Z
+
+  return { id, displayName, confluenceAuthorId, avatarUrl, totalPoints, isAdmin, createdAt };
 }
 
 /* ==========================================================================
@@ -76,7 +101,7 @@ export function normalizeUser(u: RawUser) {
 export async function getUsers(): Promise<User[]> {
   const res = await fetch("/api/v1/users");
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-  
+
   const data = await res.json();
   const raw: RawUser[] = Array.isArray(data?.users) ? data.users : data;
 
@@ -84,9 +109,11 @@ export async function getUsers(): Promise<User[]> {
     .map(normalizeUser)
     .sort((a, b) => b.totalPoints - a.totalPoints);
 
-  return list.map((u, i) => ({
+  const users: User[] = list.map((u, i) => ({
     ...u,
     rank: i + 1,
     rankTier: getRankTier(u.totalPoints),
   }));
+
+  return users;
 }

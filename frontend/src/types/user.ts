@@ -12,10 +12,11 @@ export type RankTier =
 export interface User {
   id: number;
   displayName: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   totalPoints: number;
   isAdmin: boolean;
   createdAt: string;
   rankTier?: string; 
   rank?: number;
+
 }

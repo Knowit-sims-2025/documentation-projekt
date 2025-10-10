@@ -5,7 +5,7 @@ interface AvatarProps {
   name: string;
   src?: string;
   className?: string;
-  size?: number; // px-storlek om du vill styra lokalt
+  size?: number;
 }
 
 export function Avatar({
@@ -26,8 +26,8 @@ export function Avatar({
     .toUpperCase();
 
   // === 2. Försök ladda bild; annars använd fallback ===
+  const showInitials = imgError && !!name;
   const showFallback = imgError || !src;
-  const showInitials = imgError && !fallbackAvatar;
 
   const handleError = () => setImgError(true);
   const handleLoad = () => setImgError(false);
@@ -57,14 +57,13 @@ export function Avatar({
       ) : (
         <img
           src={fallbackAvatar}
-          alt={name}
+          alt="default avatar"
           className="leaderboard__avatar-img"
         />
       )}
     </div>
   );
 }
-
 // import React, { useState } from "react";
 
 // export function Avatar({

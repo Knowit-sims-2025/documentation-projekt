@@ -21,8 +21,10 @@ export function getRankTier(points: number): RankTier {
 }
 
 export function getNextRankThreshold(points: number): number | null {
+  var previous = RANK_THRESHOLDS[0].min; // starta på högsta tröskeln
   for (const { min } of RANK_THRESHOLDS) {
-    if (points < min) return min; // first threshold above current points
+    if (points > min) return previous; // first threshold above current points
+    previous = min;
   }
   return 1; // Cannot be 0 due to division, so return 1 if already at highest rank
 }

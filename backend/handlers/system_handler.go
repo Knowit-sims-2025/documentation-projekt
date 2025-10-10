@@ -30,8 +30,8 @@ func (h *SystemHandler) RootHandler(w http.ResponseWriter, r *http.Request) {
 
 	// NYTT: Skapa en map med exempel-anrop
 	examplesMap := map[string]string{
-		"Get a specific user by ID":       "/api/v1/users/{id}",
-		"Get a specific team by ID":       "/api/v1/teams/{id}",
+		"Get a specific user by ID":        "/api/v1/users/{id}",
+		"Get a specific team by ID":        "/api/v1/teams/{id}",
 		"Get a specific competition by ID": "/api/v1/competitions/{id}",
 		"Get all users in a specific team": "/api/v1/userteams/team/{teamId}",
 		"Get a specific badge from a user": "/api/v1/userbadges/{userId}/{badgeId}",
