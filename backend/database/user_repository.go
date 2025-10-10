@@ -122,6 +122,6 @@ func (repo *UserRepository) DeleteUser(id int64) error {
 }
 
 func (repo *UserRepository) UpdateUserPoints(id int64, points int) error {
-	_, err := repo.DB.Exec("UPDATE users SET total_points = $1 WHERE id = $2", points, id)
+	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1 WHERE id = $2", points, id)
 	return err
 }
