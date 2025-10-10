@@ -3,6 +3,7 @@ import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
 import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
 import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
+import Achivements from "../../components/Achivements";
 import {
   layouts as defaultLayouts,
   breakpoints,
@@ -69,11 +70,7 @@ export default function Dashboard() {
     },
     { i: "teams", title: "Teams", content: <TeamLeaderboard /> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
-    {
-      i: "achievements",
-      title: "Achievements",
-      content: <div>Achievements</div>,
-    },
+    { i: "achievements", title: "Achievements", content: <Achivements />},
   ];
 
   // Ladda layout från localStorage om den finns
