@@ -93,6 +93,10 @@ func SyncActivities(client *Client, repos Repositories) {
 			log.Printf("FEL vid skapande av aktivitet för sida %s: %v", page.ID, err)
 			continue
 		}
+		if err := repos.UserRepo.UpdateUserPoints(int64(user.ID), user.TotalPoints+pointsAwarded); err != nil {
+			log.Printf("FEL vid uppdatering av poäng för %s: %v", user.DisplayName, err)
+			continue
+		}
 		newActivitiesCount++
 	}
 
@@ -125,4 +129,3 @@ func findOrCreateUser(authorID, authorName string, userRepo *database.UserReposi
 
 	return &newUser, nil
 }
-

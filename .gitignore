@@ -60,3 +60,4 @@ Thumbs.db
 .vscode/
 .idea/
 *.iml
+backend/config/config.go
