@@ -15,7 +15,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   src = undefined
 }) => {
   const percentage = Math.min(Math.max(((value-min) / (max - min)) * 100, 0), 100);
-  const hideLabel = percentage < 10;
+  const hideLabel = percentage === 100;
    return (
     <div className="progress-card">
       {label && <span className="progress-label">{label}</span>}
