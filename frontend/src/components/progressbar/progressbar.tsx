@@ -10,7 +10,7 @@ interface ProgressBarProps {
 const ProgressBar: React.FC<ProgressBarProps> = ({
   value,
   max = 1,
-  min = 1,
+  min = 0,
   label, 
   src = undefined
 }) => {
@@ -30,7 +30,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
             </div>
       </div>
       <div className="progress-numbers">
-        {label && <span>{min}</span>}
+        {label && (min !== 0 ? <span>{min}</span> : <span className="invisible" style={{ visibility: "hidden" }}>0</span>)}
         {label && <span>{max}</span>}
     </div>
     </div>

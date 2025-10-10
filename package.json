@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "react-grid-layout": "^1.5.2"
+  },
+  "devDependencies": {
+    "vite-plugin-svgr": "^4.5.0"
   }
 }

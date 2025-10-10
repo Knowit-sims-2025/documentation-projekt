@@ -3,6 +3,7 @@ import { WidthProvider, Responsive, Layout } from "react-grid-layout";
 import UserLeaderBoard from "../../components/UserLeaderBoard";
 import { useAuth } from "../AuthContext";
 import Profile from "../../components/Profile";
+import Achivements from "../../components/Achivements";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -25,11 +26,7 @@ export default function Dashboard() {
     { i: "individual", title: "Individual", content: <UserLeaderBoard /> },
     { i: "teams", title: "Teams", content: <div>Teams</div> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
-    {
-      i: "achievements",
-      title: "Achievements",
-      content: <div>Achievements</div>,
-    },
+    { i: "achievements", title: "Achievements", content: <div><Achivements /></div>},
   ];
 
   // Standardlayout (ersätter din tidigare CSS grid)
