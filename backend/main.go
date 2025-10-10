@@ -31,7 +31,7 @@ func main() {
 	//Skapa den nya tjänsten med klienten och våra repositories
 	confluenceService := confluence.NewService(confluenceClient, userRepo, activityRepo)
 
-	//Starta den automatiska synkroniseringen. Kör var 5:e sekund 
+	//Starta den automatiska synkroniseringen. Kör var 5:e sekund
 	confluenceService.Start(5 * time.Second)
 	// -----------------------------------------
 
