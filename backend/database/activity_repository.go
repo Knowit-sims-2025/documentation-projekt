@@ -51,6 +51,17 @@ func (r *ActivityRepository) GetAllActivities() ([]models.Activity, error) {
 	return activities, nil
 }
 
+// ActivityExists kollar om en specifik sidversion redan har registrerats som en aktivitet.
+func (r *ActivityRepository) ActivityExists(pageID string, version int) (bool, error) {
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM activities WHERE confluence_page_id = $1 AND confluence_version_number = $2)"
+	err := r.DB.QueryRow(query, pageID, version).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		return false, err
+	}
+	return exists, nil
+}
+
 // Hämta aktivitet efter ID
 func (r *ActivityRepository) GetActivityByID(id int64) (*models.Activity, error) {
 	row := r.DB.QueryRow(`

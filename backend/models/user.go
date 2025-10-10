@@ -14,4 +14,5 @@ type User struct {
 	IsAdmin            bool           `json:"isAdmin"`
 	CreatedAt          time.Time      `json:"createdAt"`
 	UpdatedAt          time.Time      `json:"updatedAt"`
+
 }
