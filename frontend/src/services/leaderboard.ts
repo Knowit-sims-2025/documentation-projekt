@@ -1,4 +1,3 @@
-// services/leaderboard.ts
 import type { LeaderboardEntry } from "../types/leaderboard";
 
 // Hjälpare: YYYY-MM-DD i LOKAL tid (inte UTC), så “idag” blir rätt i Sverige.

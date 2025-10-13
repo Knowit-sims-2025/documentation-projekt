@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   const individualTitle = (
     <>
-      Individual Rank{" "}
+      Individual Ranking{" "}
       <span style={{ color: "var(--text-muted)" }}>
         ({showMyTierOnly ? myTier ?? "—" : "All"})
       </span>
