@@ -178,3 +178,43 @@ func (r *UserTeamRepository) GetUsersByTeamID(teamID int64) ([]models.User, erro
 
 	return users, rows.Err()
 }
+
+func (r *UserTeamRepository) GetTeamPoints(teamID int64) ([]models.User, error) {
+	query := `
+		SELECT 
+			u.id,
+			u.display_name,
+			u.avatar_url,
+			u.total_points
+		FROM users u
+		INNER JOIN user_teams ut ON u.id = ut.user_id
+		WHERE ut.team_id = $1
+		ORDER BY u.total_points DESC;
+	`
+
+	rows, err := r.DB.Query(query, teamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(
+			&user.ID,
+			&user.DisplayName,
+			&user.AvatarURL,
+			&user.TotalPoints,
+		); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
