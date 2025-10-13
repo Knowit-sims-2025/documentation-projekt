@@ -11,10 +11,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+
+	"github.com/gorilla/mux"
 )
 
 type TeamHandler struct {
-	Repo *database.TeamRepository
+	Repo         *database.TeamRepository
+	UserTeamRepo *database.UserTeamRepository // Lägg till denna om du vill anropa GetTeamPoints
 }
 
 type UserTeamHandler struct {
@@ -56,6 +59,7 @@ func (h *TeamHandler) GetTeamByIDHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // CreateTeamHandler
+// CreateTeamHandler
 func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Name string `json:"name"`
@@ -83,6 +87,7 @@ func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(team)
 }
 
+// UpdateTeamHandler
 // UpdateTeamHandler
 func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -114,6 +119,7 @@ func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeleteTeamHandler
 // DeleteTeamHandler
 func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -204,4 +210,25 @@ func (h *UserTeamHandler) RemoveUserFromTeamHandler(w http.ResponseWriter, r *ht
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetTeamPointsHandler returnerar alla användares poäng i ett team
+func (h *TeamHandler) GetTeamPointsHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamIDStr := vars["id"]
+
+	teamID, err := strconv.ParseInt(teamIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid team ID", http.StatusBadRequest)
+		return
+	}
+
+	users, err := h.UserTeamRepo.GetTeamPoints(teamID)
+	if err != nil {
+		http.Error(w, "Failed to fetch team points: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
 }

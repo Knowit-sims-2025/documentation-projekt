@@ -67,3 +67,5 @@ lerna-debug.log*
 # =========================
 coverage/
 *.coverage
+backend/config/config.go
+backend/config/config.go
