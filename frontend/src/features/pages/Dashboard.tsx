@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
 import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
-import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
 import Achivements from "../../components/Achivements";
 import {
   layouts as defaultLayouts,
@@ -59,7 +58,6 @@ export default function Dashboard() {
     </div>
   );
 
-  // Dina widgets — motsvarar dina tidigare divar
   const widgets: Widget[] = [
     { i: "profile", title: "Profile", content: <Profile /> },
     {
@@ -68,18 +66,18 @@ export default function Dashboard() {
       content: <UserLeaderBoard showMyTierOnly={showMyTierOnly} />,
       headerControls: individualControls,
     },
-    { i: "teams", title: "Teams", content: <TeamLeaderboard /> },
+    { i: "teams", title: "Teams", content: <div>Teams</div> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
-    { i: "achievements", title: "Achievements", content: <Achivements />},
+    { i: "achievements", title: "Achievements", content: <Achivements /> },
   ];
 
   // Ladda layout från localStorage om den finns
-  useEffect(() => {
-    const stored = localStorage.getItem(LS_KEY);
-    if (stored) {
-      setLayouts(JSON.parse(stored));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const stored = localStorage.getItem(LS_KEY);
+  //   if (stored) {
+  //     setLayouts(JSON.parse(stored));
+  //   }
+  // }, []);
 
   // Spara layout när användaren flyttar/ändrar storlek
   function handleLayoutChange(currentLayout: Layout[], allLayouts: Layouts) {

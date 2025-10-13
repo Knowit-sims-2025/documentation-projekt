@@ -117,7 +117,7 @@
     margin: 0 auto;
     padding: 12px var(--container-px);
     gap: var(--gap);
-    min-height: 100%; 
+    min-height: var(--container-h); 
    }
 
    /* Basecard */

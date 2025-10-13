@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { User } from "../types/user";
+import type { User } from "../types/user"; // Importera User-typen
 import { getUsers } from "../services/users";
 
 
@@ -13,31 +13,39 @@ export function useUsers() {
   const [error, setError] = useState<string | null>(null);
 
   //funktion för att hämta alla användare
-  async function load() {
-    try {
+  const load = async (isInitialLoad = false) => {
+    // Visa bara den stora laddningsindikatorn vid första hämtningen
+    if (isInitialLoad) {
       setLoading(true);
-      setError(null); // återställ felmeddelandet innan ny hämtning
-      const users = await getUsers(); // hämta användare från API
-      setData(users); // sätt den hämtade datan i state
+    }
+    setError(null);
+
+    try {
+      const users = await getUsers();
+      // Använd en funktionell state-uppdatering för att undvika race conditions
+      // om en ny hämtning startar innan den förra är klar.
+      setData(users);
     } catch (e) {
-      // om ett fel uppstår, sätt felmeddelandet i state
       setError(e instanceof Error ? e.message : "Okänt fel vid hämtning");
     } finally {
-      setLoading(false); // sätt loading till false när hämtningen är klar
+      if (isInitialLoad) {
+        setLoading(false);
+      }
     }
-  }
+  };
 
   //körs en gång när hooken används
   useEffect(() => {
-    let active = true; // skyddar mot state-uppdatering efter unmount
-    (async () => {
-      await load();
-    })();
+    // 1. Hämta data direkt vid mount
+    load(true);
 
-    // städar upp vid unmount och sätter den som inaktiv
-    return () => { active = false };
-    // OBS: active används inte just nu, men kan vara bra att ha kvar
-    // om vi senare vill förhindra setState vid unmount (t.ex. vid långsamma requests)
+    // 2. Starta en timer som hämtar data var 30:e sekund
+    const intervalId = setInterval(() => {
+      load(false);
+    }, 30000); //uppdaterar var 30 sek
+
+    // 3. Städa upp: rensa timern när komponenten avmonteras
+    return () => clearInterval(intervalId);
   }, []);
 
   // Returnerar all nödvändig data + funktion för manuell "refetch"

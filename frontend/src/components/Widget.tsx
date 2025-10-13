@@ -17,8 +17,8 @@ export default function Widget({
         <h3>{title}</h3>
         <div className="widget__controls">
           {headerControls}
-          <button className="widget__remove" onClick={onHide} title="Ta bort">
-            ✕
+          <button className="widget__remove" onClick={onHide} title="Minimera">
+            -
           </button>
         </div>
       </div>

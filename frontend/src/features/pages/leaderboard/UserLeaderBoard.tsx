@@ -17,6 +17,9 @@ export default function UserLeaderBoard({
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState<"daily" | "weekly" | "total">(
+    "total"
+  );
 
   const myTier = currentUser?.rankTier ?? null;
 
@@ -43,15 +46,49 @@ export default function UserLeaderBoard({
         <ErrorMessage message="Ingen användare inloggad." />
       ) : (
         <>
-          <ul className="leaderboard__list">
-            {visibleUsers.map((user) => (
-              <IndividualRank
-                key={user.id}
-                user={user}
-                onSelect={handleUserSelect}
-              />
-            ))}
-          </ul>
+          <div className="leaderboard__tabs">
+            <button
+              className={`leaderboard__tab ${
+                activeTab === "daily" ? "is-active" : ""
+              }`}
+              onClick={() => setActiveTab("daily")}
+            >
+              Daily
+            </button>
+            <button
+              className={`leaderboard__tab ${
+                activeTab === "weekly" ? "is-active" : ""
+              }`}
+              onClick={() => setActiveTab("weekly")}
+            >
+              Weekly
+            </button>
+            <button
+              className={`leaderboard__tab ${
+                activeTab === "total" ? "is-active" : ""
+              }`}
+              onClick={() => setActiveTab("total")}
+            >
+              Total
+            </button>
+          </div>
+
+          {activeTab === "total" && (
+            <ul className="leaderboard__list">
+              {visibleUsers.map((user) => (
+                <IndividualRank
+                  key={user.id}
+                  user={user}
+                  onSelect={handleUserSelect}
+                />
+              ))}
+            </ul>
+          )}
+          {(activeTab === "daily" || activeTab === "weekly") && (
+            <div className="leaderboard__placeholder">
+              <p>Data för {activeTab} topplista är ännu inte tillgänglig.</p>
+            </div>
+          )}
 
           {/* Visa overlay om en användare är vald */}
           {selectedUser && (

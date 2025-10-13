@@ -1,27 +1,25 @@
 # =========================
-# Node / React (frontend)
+# 🌍 Globalt / OS / IDE
 # =========================
-node_modules/
-dist/
-build/
-.vite/
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.iml
+*.log
+*.tmp
+*.swp
+*.swo
 
-# Loggar
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Miljöfiler
+# =========================
+# 🔒 Miljöfiler
+# =========================
 .env
 .env.local
 .env.*.local
 
 # =========================
-# Go (backend)
+# ⚙️ Backend (Go)
 # =========================
 # Kompilerade binärer
 *.exe
@@ -39,28 +37,33 @@ pnpm-debug.log*
 *.swo
 *.DS_Store
 
-# Om du använder Go modules
-/go.sum  
-# (du kan behålla go.sum om du vill dela exakt versionslåsning)
+# Go modules (du kan ta bort /go.sum om du vill behålla versionslåsning)
+go.work
+go.work.sum
+# /go.sum
 
-# =========================
 # Databas
-# =========================
 postgres-data/
 
 # =========================
-# OS-specifika
+# 💻 Frontend (Node / React)
 # =========================
-.DS_Store
-Thumbs.db
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+
+# Loggar
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # =========================
-# Editor / IDE
+# 🧪 Test & Verktyg
 # =========================
-.vscode/
-.idea/
-*.iml
-backend/config/config.go
-backend/config/config.go
-backend/config/config.go
-backend/config/config.go
+coverage/
+*.coverage
