@@ -12,6 +12,7 @@ import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
 import { useAuth } from "../AuthContext";
 import Profile from "../../components/Profile";
+import TeamLeaderboard from "./leaderboard/TeamLeaderboard";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -22,6 +23,8 @@ type Widget = {
   headerControls?: React.ReactNode;
 };
 
+type Tab = "daily" | "weekly" | "total";
+
 // Key för localStorage
 const LS_KEY = "user-dashboard-layout";
 
@@ -29,6 +32,7 @@ export default function Dashboard() {
   const { currentUser, isLoading: authLoading } = useAuth();
   const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("total");
 
   const myTier = currentUser?.rankTier ?? null;
 
@@ -63,21 +67,27 @@ export default function Dashboard() {
     {
       i: "individual",
       title: individualTitle,
-      content: <UserLeaderBoard showMyTierOnly={showMyTierOnly} />,
-      headerControls: individualControls,
+      content: (
+        <UserLeaderBoard
+          showMyTierOnly={showMyTierOnly}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      ),
+      headerControls: activeTab === "total" ? individualControls : null,
     },
-    { i: "teams", title: "Teams", content: <div>Teams</div> },
+    { i: "teams", title: "Team Leaderboard", content: <TeamLeaderboard /> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
     { i: "achievements", title: "Achievements", content: <Achivements /> },
   ];
 
   // Ladda layout från localStorage om den finns
-  // useEffect(() => {
-  //   const stored = localStorage.getItem(LS_KEY);
-  //   if (stored) {
-  //     setLayouts(JSON.parse(stored));
-  //   }
-  // }, []);
+  useEffect(() => {
+    const stored = localStorage.getItem(LS_KEY);
+    if (stored) {
+      setLayouts(JSON.parse(stored));
+    }
+  }, []);
 
   // Spara layout när användaren flyttar/ändrar storlek
   function handleLayoutChange(currentLayout: Layout[], allLayouts: Layouts) {
@@ -110,12 +120,14 @@ export default function Dashboard() {
           layouts={layouts}
           breakpoints={breakpoints}
           cols={cols}
-          rowHeight={30}
+          rowHeight={40}
           margin={[8, 8]}
           compactType="vertical"
           onLayoutChange={handleLayoutChange}
           draggableHandle=".widget__header"
           useCSSTransforms={false}
+          // preventCollision={true}
+          // isBounded={true}
         >
           {widgets.map((w) => (
             <div key={w.i}>

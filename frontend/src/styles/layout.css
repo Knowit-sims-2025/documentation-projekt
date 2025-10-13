@@ -102,7 +102,7 @@
 
      /* Main */
    .app__main {
-    height: 100dvh;
+    min-block-size: 100dvb;
     padding-top : var(--header-h);
     padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom));
     padding-left: env(safe-area-inset-left);
@@ -117,7 +117,8 @@
     margin: 0 auto;
     padding: 12px var(--container-px);
     gap: var(--gap);
-    min-height: var(--container-h); 
+    /* min-height: var(--container-h);  */
+    min-block-size: 100%
    }
 
    /* Basecard */

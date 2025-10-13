@@ -3,26 +3,52 @@ import { useUsers } from "../../../hooks/useUsers";
 import { useAuth } from "../../AuthContext";
 import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
-import { IndividualRank } from "./IndividualRank";
 import { Overlay } from "./Overlay";
 import type { User } from "../../../types/user";
 
+import { useDailyLeaderboard } from "../../../hooks/useDailyLeaderboard";
+import { LeaderboardTabs } from "../../../components/LeaderboardTabs";
+import { DailyControls } from "../../../components/DailyControls";
+import { TotalList } from "../../../components/lists/TotalList";
+import { DailyList } from "../../../components/lists/DailyLists";
+import { toLocalYYYYMMDD, clampToToday } from "../../../utils/date";
+import WeeklyCurrent from "../../../components/WeeklyCurrent";
+
 interface UserLeaderBoardProps {
   showMyTierOnly: boolean;
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
 }
+
+type Tab = "daily" | "weekly" | "total";
 
 export default function UserLeaderBoard({
   showMyTierOnly,
+  activeTab,
+  onTabChange,
 }: UserLeaderBoardProps) {
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [activeTab, setActiveTab] = useState<"daily" | "weekly" | "total">(
-    "total"
+  const [selectedDailyUserId, setSelectedDailyUserId] = useState<number | null>(
+    null
   );
 
-  const myTier = currentUser?.rankTier ?? null;
+  // Daily datum-state
+  const today = toLocalYYYYMMDD();
+  const [dailyDate, setDailyDate] = useState(today);
 
+  // Hook för daily
+  const {
+    data: daily,
+    loading: dailyLoading,
+    error: dailyError,
+    updatedAt: dailyUpdatedAt,
+    refetch: refetchDaily,
+  } = useDailyLeaderboard({ date: dailyDate });
+
+  const myTier = currentUser?.rankTier ?? null;
   const visibleUsers = useMemo(
     () =>
       showMyTierOnly && myTier
@@ -31,83 +57,56 @@ export default function UserLeaderBoard({
     [users, showMyTierOnly, myTier]
   );
 
-  // Använd useCallback för att undvika onödiga re-renders av list-items
-  const handleUserSelect = useCallback((user: User) => {
-    setSelectedUser(user);
-  }, []);
+  const handleUserSelect = useCallback(
+    (user: User) => setSelectedUser(user),
+    []
+  );
+  const handleDateChange = (value: string) =>
+    setDailyDate(clampToToday(value, today));
+
+  // Gatekeeping
+  if (loading || authLoading) return <Loading text="Laddar användare..." />;
+  if (error) return <ErrorMessage message={error} />;
+  if (!currentUser) return <ErrorMessage message="Ingen användare inloggad." />;
 
   return (
     <div className="leaderboard">
-      {loading || authLoading ? (
-        <Loading text="Laddar användare..." />
-      ) : error ? (
-        <ErrorMessage message={error} />
-      ) : !currentUser ? (
-        <ErrorMessage message="Ingen användare inloggad." />
-      ) : (
+      <LeaderboardTabs active={activeTab} onChange={onTabChange} />
+
+      {activeTab === "total" && (
+        <TotalList users={visibleUsers} onSelect={handleUserSelect} />
+      )}
+
+      {activeTab === "daily" && (
         <>
-          <div className="leaderboard__tabs">
-            <button
-              className={`leaderboard__tab ${
-                activeTab === "daily" ? "is-active" : ""
-              }`}
-              onClick={() => setActiveTab("daily")}
-            >
-              Daily
-            </button>
-            <button
-              className={`leaderboard__tab ${
-                activeTab === "weekly" ? "is-active" : ""
-              }`}
-              onClick={() => setActiveTab("weekly")}
-            >
-              Weekly
-            </button>
-            <button
-              className={`leaderboard__tab ${
-                activeTab === "total" ? "is-active" : ""
-              }`}
-              onClick={() => setActiveTab("total")}
-            >
-              Total
-            </button>
-          </div>
-
-          {activeTab === "total" && (
-            <ul className="leaderboard__list">
-              {visibleUsers.map((user) => (
-                <IndividualRank
-                  key={user.id}
-                  user={user}
-                  onSelect={handleUserSelect}
-                />
-              ))}
-            </ul>
-          )}
-          {(activeTab === "daily" || activeTab === "weekly") && (
-            <div className="leaderboard__placeholder">
-              <p>Data för {activeTab} topplista är ännu inte tillgänglig.</p>
-            </div>
-          )}
-
-          {/* Visa overlay om en användare är vald */}
-          {selectedUser && (
-            <Overlay
-              onClose={() => setSelectedUser(null)}
-              title={selectedUser.displayName}
-            >
-              <p>
-                Här kan mer information om användaren visas i framtiden.
-                <br />
-                <br />
-                Mer och mer information.
-                <br />
-                Ännu mera text.
-              </p>
-              <p>Poäng: {selectedUser.totalPoints}</p>
-            </Overlay>
+          <DailyControls
+            date={dailyDate}
+            today={today}
+            updatedAt={dailyUpdatedAt}
+            onDateChange={handleDateChange}
+            onResetToToday={() => setDailyDate(today)}
+            onRefresh={refetchDaily}
+          />
+          {dailyLoading ? (
+            <Loading text={`Laddar leaderboard för ${dailyDate}...`} />
+          ) : dailyError ? (
+            <ErrorMessage message={dailyError} />
+          ) : (
+            <DailyList data={daily} onSelectUserId={setSelectedDailyUserId} />
           )}
         </>
+      )}
+
+      {activeTab === "weekly" && <WeeklyCurrent />}
+
+      {/* Overlay – din befintliga för “total” */}
+      {selectedUser && (
+        <Overlay
+          onClose={() => setSelectedUser(null)}
+          title={selectedUser.displayName}
+        >
+          <p>Poäng: {selectedUser.totalPoints}</p>
+        </Overlay>
       )}
     </div>
   );
