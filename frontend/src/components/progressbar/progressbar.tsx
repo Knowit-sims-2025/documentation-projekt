@@ -18,16 +18,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   const hideLabel = percentage === 100;
    return (
     <div className="progress-card">
-      {label && <span className="progress-label">{label}</span>}
-      {src && <img src={src} alt="" />}
+      <div className="progress-header">
+        {label && <span className="progress-label">{label}</span>}
+        {src && <img src={src} alt="badge icon" className="progress-header-icon" />}
+      </div>
       <div className="progress-bar-outer">
-        <div
-          className="progress-bar"
-          style={{
-            width: `${percentage}%`,
-          }}>
+        <div className="progress-bar" style={{width: `${percentage}%`,}}>
             {!hideLabel && <span>{value}</span>}
-            </div>
+        </div>
       </div>
       <div className="progress-numbers">
         {label && (min !== 0 ? <span>{min}</span> : <span className="invisible" style={{ visibility: "hidden" }}>0</span>)}

@@ -138,11 +138,18 @@ func main() {
 		Name, Description, IconURL string
 		CriteriaValue              int
 	}{
-		{"First Words", "Awarded for writing your very first documentation entry.", "https://example.com/icons/first-words.svg", 1},
-		{"Consistent Contributor", "Granted after updating documentation 5 times in a week.", "https://example.com/icons/consistent-contributor.svg", 5},
-		{"Clarity Champion", "Earned for maintaining a 90% clarity score across your docs.", "https://example.com/icons/clarity-champion.svg", 90},
-		{"Reviewer", "Given to users who review and approve 10 documentation pull requests.", "https://example.com/icons/reviewer.svg", 10},
-		{"Documentation Hero", "The ultimate recognition for contributing 100 or more high-quality documentation updates.", "https://example.com/icons/documentation-hero.svg", 100},
+		{"Beginner documenter", "Awarded for creating your very first document.", "documents0", 1},
+		{"Novice documenter", "Awarded for creating your 10th document.", "documents1", 10},
+		{"Intermidiate documenter", "Awarded for creating your 50th document.", "documents2", 50},
+		{"Proffesional documenter", "Awarded for creating your 100th document.", "documents3", 100},
+		{"Beginner commenter", "Awarded for making your very first comment.", "comments0", 1},
+		{"Novice commenter", "Awarded for making your 10th comment.", "comments1", 10},
+		{"Intermidiate commenter", "Awarded for mmaking your 50th comment.", "comments2", 50},
+		{"Proffesional commenter", "Awarded for making your 100th comment.", "comments3", 100},
+		{"Beginner editor", "Awarded for making your very first edit.", "edits0", 1},
+		{"Novice editor", "Awarded for making your 10th edit.", "edits1", 10},
+		{"Intermidiate editor", "Awarded for making your 50th edit.", "edits2", 50},
+		{"Proffesional editor", "Awarded for making your 100th edit.", "edits3", 100},
 	}
 
 	badgeIDs := make([]int, 0)

@@ -20,6 +20,15 @@ export function getRankTier(points: number): RankTier {
   return "Iron"; // fallback till grundnivån
 }
 
+export function getNextRankTier(points: number): RankTier {
+  var previous = RANK_THRESHOLDS[0].tier; // starta på högsta tröskeln
+  for (const { tier, min } of RANK_THRESHOLDS) {
+    if (points > min) return previous; // first threshold above current points
+    previous = tier;
+  }
+  return RANK_THRESHOLDS[RANK_THRESHOLDS.length - 1].tier; // Already at highest rank, return highest
+}
+
 export function getNextRankThreshold(points: number): number | null {
   var previous = RANK_THRESHOLDS[0].min; // starta på högsta tröskeln
   for (const { min } of RANK_THRESHOLDS) {
