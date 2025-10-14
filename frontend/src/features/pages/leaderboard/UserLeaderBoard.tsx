@@ -105,6 +105,9 @@ export default function UserLeaderBoard({
           onClose={() => setSelectedUser(null)}
           title={selectedUser.displayName}
         >
+          {" "}
+          <h1>Rubriken kommer här</h1>
+          <p> Här kommer informatoim om användaren.</p>
           <p>Poäng: {selectedUser.totalPoints}</p>
         </Overlay>
       )}
