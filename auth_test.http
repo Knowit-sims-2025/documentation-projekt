@@ -1,0 +1,36 @@
+@host = http://localhost:8081
+@api_v1 = {{host}}/api/v1
+
+
+###
+# 7. AUTHENTICATION
+
+###
+# [POST] Logga in en användare
+# Detta simulerar en lyckad inloggning och returnerar en JWT-token.
+# Byt ut confluenceAuthorId mot ett ID som finns i din databas!
+# @name loginRequest
+POST {{api_v1}}/auth/login
+Content-Type: application/json
+
+{
+    "confluenceAuthorId": "633f64da409249995eecc7ba"
+}
+
+
+###
+# Spara den mottagna token i en variabel för att använda i nästa anrop.
+@token = {{loginRequest.response.body.$.token}}
+
+
+###
+# [GET] Hämta den inloggade användarens profil (/me)
+# Detta anrop SKA fungera eftersom vi skickar med en giltig token.
+GET {{api_v1}}/me
+Authorization: Bearer {{token}}
+
+
+###
+# [GET] Försök hämta /me UTAN token (Valfritt test)
+# Detta anrop SKA MISSLYCKAS med status 401 Unauthorized.
+GET {{api_v1}}/me

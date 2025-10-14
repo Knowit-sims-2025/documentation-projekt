@@ -7,7 +7,6 @@ import (
 
 const defaultAvatarURL = "/static/avatars/default_avatar.jpg"
 
-
 // UserRepository hanterar all databaskommunikation för User-modellen.
 type UserRepository struct {
 	DB *sql.DB
@@ -42,6 +41,7 @@ func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
+
 // GetUserByConfluenceID hämtar en användare baserat på deras unika Confluence ID.
 func (repo *UserRepository) GetUserByConfluenceID(confluenceID string) (*models.User, error) {
 	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE confluence_author_id = $1", confluenceID)
@@ -118,5 +118,10 @@ func (repo *UserRepository) UpdateAvatarURL(id int64, avatarURL string) error {
 
 func (repo *UserRepository) DeleteUser(id int64) error {
 	_, err := repo.DB.Exec("DELETE FROM users WHERE id = $1", id)
+	return err
+}
+
+func (repo *UserRepository) UpdateUserPoints(id int64, points int) error {
+	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1 WHERE id = $2", points, id)
 	return err
 }
