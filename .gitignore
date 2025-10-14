@@ -3,3 +3,69 @@
 /postgres-data
 backend/config/config.go
 backend/config/config.go
+# =========================
+# 🌍 OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# 🔒 Miljöfiler (globala)
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# 💻 Frontend (Node/React)
+# =========================
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+.eslintcache
+
+# Loggar (JS/Node)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# ⚙️ Backend (Go)
+# =========================
+# Kompilerade binärer/artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Vanliga temporära filer
+*.tmp
+*.swp
+*.swo
+
+# Behåll go.mod och go.sum i Git!
+# (Vi ignorerar alltså INTE go.sum)
+# go.work & go.work.sum om ni använder multi-module workspace:
+go.work
+go.work.sum
+
+# =========================
+# 🗄️ Databas / Docker volymer
+# =========================
+postgres-data/
+
+# =========================
+# 🧪 Test/coverage
+# =========================
+coverage/
+*.coverage

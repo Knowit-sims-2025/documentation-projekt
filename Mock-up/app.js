@@ -37,21 +37,32 @@ if (window.__APP_MOUNTED__) {
   const copyDocBtn            = $('copy-doc-btn');
   const generatedDocContent   = $('generated-doc-content');
   const logoutBtn             = $('logout-btn');
-  const TOP_N                 = 5;
-  let _lbExpanded = false;
-  let _lbRowsCache = null;
-  let _lbCurrentUserCache = null;
 
+  // Leaderboard state (kompakt/expand)
+  const TOP_N = 5;  // antal rader att visa i kompakt vy
+  let _lbExpanded = false;  // om true: visa hela listan
+  let _lbRowsCache = null;  // cache för rader
+  let _lbCurrentUserCache = null; // cache för aktuell user
+/**
+ * Nollställer cache för leaderboard-data.
+ */
   function invalidateLeaderboardCache() {
   _lbRowsCache = null;
   _lbCurrentUserCache = null;
 }
 
+/**
+ * Sätter om leaderboard ska visas i kompakt eller full vy.
+ */
 function setLeaderboardExpanded(v) {
   _lbExpanded = !!v;
 }
 
   // ========== Tema ==========
+  /**
+   * Applicerar valt tema och sparar i localStorage.
+   * @param {*} theme   'light' | 'dark' | 'system'
+   */
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     try { localStorage.setItem('theme', theme); } catch {}
@@ -64,12 +75,17 @@ function setLeaderboardExpanded(v) {
   })();
 
   // ========== Login/Logout ==========
+  /**
+   * Visar dashboard-sektionen och döljer login-sektionen.
+   * @param {*} username - Namn på inloggad användare (för välkomstmeddelande)
+   */
   async function showDashboard(username) {
     loginSection?.classList.add('hidden');
     dashboardSection?.classList.remove('hidden');
     logoutBtn?.classList.remove('hidden');
 
     if (welcomeMessage) welcomeMessage.textContent = `Welcome${username ? ', ' + username : ''}!`;
+    // Mocka poäng & rank för aktuell "user" (om inloggad)
     const pointsEl = $('user-points');
     const rankEl   = $('user-rank');
     if (pointsEl) pointsEl.textContent = '1250';
@@ -82,18 +98,29 @@ function setLeaderboardExpanded(v) {
     ]);
   }
 
+  /**
+   * Visar login-sektionen och döljer dashboard-sektionen.
+   */
   function showLogin() {
     dashboardSection?.classList.add('hidden');
     loginSection?.classList.remove('hidden');
     logoutBtn?.classList.add('hidden');
   }
 
+  /**
+   * checkar om användare är inloggad (i localStorage).
+   * @returns {Promise<boolean>} true om redan inloggad, false om inte
+   */
   async function checkLogin() {
     const savedUser = await getCurrentUser();
     if (savedUser) { await showDashboard(savedUser); return true; }
     showLogin(); return false;
   }
 
+    /**
+   * Login-formulär: validerar enkelt (båda fält krävs),
+   * sparar användarnamn i storage och visar dashboarden.
+   */
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const usernameEl = document.getElementById('username');
@@ -109,6 +136,10 @@ function setLeaderboardExpanded(v) {
     await showDashboard(username);
   });
 
+    /**
+   * Logout: plockar bort loggedInUser, återställer leaderboardens state
+   * och visar login.
+   */
 logoutBtn?.addEventListener('click', () => {
   try { localStorage.removeItem('loggedInUser'); } catch {}
   setLeaderboardExpanded(false);
@@ -116,8 +147,16 @@ logoutBtn?.addEventListener('click', () => {
   showLogin();
 });
 
+
   // ========== Listor ==========
 
+  /**
+   * populateLeaderboard:
+   * - Hämtar (och cachar) leaderboarddata + nuvarande användare.
+   * - Bygger antingen kompakt vy (Top 5 + ev. separator + min rad)
+   *   eller full vy (alla + "Show less").
+   * - Markerar min rad och ser till att "You" visas som namn för mig.
+   */
 async function populateLeaderboard() {
   if (!leaderboardList) return;
   leaderboardList.innerHTML = '';
@@ -132,31 +171,40 @@ async function populateLeaderboard() {
   const currentUser = _lbCurrentUserCache;
   const norm = (s) => (s || '').toLowerCase();
 
-  // Hitta "jag"
+  // Hitta "user", först "You", annars matcha inloggat namn (case-insensitive)
   let meIdx = rows.findIndex(r => r.name === 'You');
   if (meIdx === -1 && currentUser) meIdx = rows.findIndex(r => norm(r.name) === norm(currentUser));
 
+  /// Beräkna min rank
   let meRow = null;
   let meRank = null;
   if (meIdx >= 0) {
     meRow = rows[meIdx];
     meRank = meIdx + 1;
   } else {
+    // Använd min "user-points" i UI för att räkna ut rank
     const pointsEl = document.getElementById('user-points');
     const myPoints = pointsEl ? parseInt(pointsEl.textContent, 10) || 0 : 0;
     meRow = { name: 'You', points: myPoints };
     meRank = rows.reduce((acc, r) => acc + (r.points > myPoints ? 1 : 0), 0) + 1;
   }
 
+
+    /**
+     * makeLi: skapar en <li> för en leaderboard-rad.
+     * - Om raden är "jag": visa alltid "You" som display name och
+     *   använd data-user="You" så overlayn öppnar rätt profil.
+     * - Sätter tabIndex=0 för tangentbordsnavigering.
+     */
 const makeLi = (player, absoluteRank) => {
   const userKey = player.name;
 
   // Är detta jag?
   const isMe = userKey === 'You' || (_lbCurrentUserCache && userKey.toLowerCase() === _lbCurrentUserCache.toLowerCase());
 
-  // Visa alltid "You" för min rad (display) och använd "You" som canonical key
+  // Visa alltid "You" för min rad (display) och använd "You" som  key
   const displayName  = isMe ? 'You' : userKey;
-  const datasetKey   = isMe ? 'You' : userKey;  // så overlay öppnar user_profile.html?user=You
+  const datasetKey   = isMe ? 'You' : userKey;
 
   const li = document.createElement('li');
   li.className = 'lb-item' + (isMe ? ' is-current-user' : '');
@@ -185,8 +233,8 @@ const makeLi = (player, absoluteRank) => {
     return;
   }
 
-  // Kompakt vy: Top 5
-  const TOP_N = 5;
+  // Kompakt vy: Top 5 Om jag är utanför Top 5: separator + min rad
+  const TOP_N = 5; 
   rows.slice(0, TOP_N).forEach((p, i) => leaderboardList.appendChild(makeLi(p, i + 1)));
 
   // Separator + min rad om jag är utanför top 5
@@ -205,7 +253,11 @@ const makeLi = (player, absoluteRank) => {
 }
 
 
-
+  /**
+   * populateTeamLeaderboard:
+   * - Renderar lagsammanställning (klickbar).
+   * - Varje <li> får data-team för att lätt kunna öppnas i overlay.
+   */
 async function populateTeamLeaderboard() {
   if (!teamLeaderboardList) return;
   teamLeaderboardList.innerHTML = '';
@@ -222,6 +274,13 @@ async function populateTeamLeaderboard() {
   });
 }
 
+
+  /**
+   * populateStaleDocuments:
+   * - Hämtar dokumentlistan
+   * - Filtrerar enligt valt intervall (15/30/45/90+)
+   * - Visar antal dagar sedan senaste ändring
+   */
   async function populateStaleDocuments() {
     if (!staleFilter || !staleDocumentsList) return;
     const docs = await getStaleDocuments();
@@ -248,6 +307,7 @@ async function populateTeamLeaderboard() {
       staleDocumentsList.appendChild(li);
     });
   }
+  // filtera om när select ändras
   staleFilter?.addEventListener('change', populateStaleDocuments);
 
   // ========== AI-dokumentationsdemo ==========
@@ -265,6 +325,11 @@ async function populateTeamLeaderboard() {
   });
 
   // ========= OVERLAY =========
+
+   /**
+   * injectOverlayStyles: injicerar minimal overlay-CSS via <style> om den inte redan finns.
+   * 
+   */
   (function injectOverlayStyles(){
     if (document.getElementById('overlay-styles')) return;
     const s = document.createElement('style');
@@ -286,6 +351,12 @@ async function populateTeamLeaderboard() {
     document.head.appendChild(s);
   })();
 
+
+  /**
+   * ensureOverlay: säkerställ att overlay-DOM-trädet finns i <body>.
+   * Skapar: backdrop + panel + stängknapp + <iframe>.
+   * @returns {HTMLElement} roten för overlayen
+   */
   function ensureOverlay(){
     let root = document.getElementById('app-overlay');
     if (root) return root;
@@ -328,6 +399,10 @@ async function populateTeamLeaderboard() {
     return root;
   }
 
+  /**
+   * openOverlay: öppnar overlayfönstret och laddar en sida i iframen.
+   * @param {string} src URL att ladda i iframen (t.ex. 'user_profile.html?user=You')
+   */
   function openOverlay(src){
     const root = ensureOverlay();
     const frame = root.querySelector('#overlay-frame');
@@ -336,12 +411,17 @@ async function populateTeamLeaderboard() {
     root.setAttribute('aria-hidden','false');
     document.body.classList.add('overlay-lock');
 
+    //auto-close med mouse-out med lite fördröjning
     const panel = root.querySelector('.overlay-panel');
     let leaveTimer = null;
     panel.onmouseleave = () => { leaveTimer = setTimeout(closeOverlay, 800); };
     panel.onmouseenter = () => { if (leaveTimer){ clearTimeout(leaveTimer); leaveTimer = null; } };
   }
 
+
+   /**
+   * closeOverlay: stänger overlayen och låser upp body-scroll.
+   */
   function closeOverlay(){
     const root = document.getElementById('app-overlay');
     if (!root) return;
@@ -372,7 +452,11 @@ if (myProgress) {
   });
 }
 
-  // Hook: klick på leaderboard-rad → overlay user_profile?user=...
+  /**
+   * Leaderboard (individuella): click & keyboard-delegation
+   * - Hanterar separator/expand/kollaps
+   * - Öppnar user_profile.html i overlay vid klick på rad
+   */
 if (leaderboardList) {
   leaderboardList.addEventListener('click', (e) => {
     const el = e.target instanceof Element ? e.target : null;
@@ -395,7 +479,7 @@ if (leaderboardList) {
           leaderboardList.querySelector('.is-current-user')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
         });
       }
-      return; // <-- viktig! hindra att profil-öppning körs på sep
+      return;
     }
 
     // 2) Klick på en rad i listan (öppna profil)
@@ -412,7 +496,7 @@ if (leaderboardList) {
     const el = e.target instanceof Element ? e.target : null;
     if (!el) return;
 
-    // Separator
+    // Separator vid Enter/Space
     if (el.closest('.lb-sep') && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       const isCollapse = el.classList.contains('lb-collapse');
@@ -439,7 +523,10 @@ if (leaderboardList) {
 }
 
 
-// Team: klick/Enter/Space => öppna teamprofil i overlay
+  /**
+   * Team Leaderboard: click & keyboard-delegation
+   * - Öppnar team_profile.html i overlay vid klick/Enter/Space.
+   */
 if (teamLeaderboardList) {
   teamLeaderboardList.addEventListener('click', (e) => {
     const el = e.target instanceof Element ? e.target : null;
@@ -465,6 +552,6 @@ if (teamLeaderboardList) {
 }
 
 
-  // Init
+  // Init: checka inloggning vid start
   checkLogin();
 }
