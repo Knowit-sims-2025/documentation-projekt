@@ -2,6 +2,7 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
+
 	"github.com/gorilla/mux"
 )
 
@@ -13,6 +14,8 @@ func RegisterTeamRoutes(r *mux.Router, h *handlers.TeamHandler) {
 	s.HandleFunc("/{id:[0-9]+}", h.GetTeamByIDHandler).Methods("GET")
 	s.HandleFunc("/{id:[0-9]+}", h.UpdateTeamHandler).Methods("PUT")
 	s.HandleFunc("/{id:[0-9]+}", h.DeleteTeamHandler).Methods("DELETE")
+
+	s.HandleFunc("/{id:[0-9]+}/points", h.GetTeamPointsHandler).Methods("GET")
 }
 
 func RegisterUserTeamRoutes(r *mux.Router, h *handlers.UserTeamHandler) {
