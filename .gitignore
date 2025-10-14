@@ -1,3 +1,73 @@
-/backend/.idea
-/.idea
-/postgres-data
+# =========================
+# 🌍 OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# =========================
+# 🧾 Loggar & temporära filer
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.tmp
+*.swp
+*.swo
+
+# =========================
+# 🔒 Miljöfiler (lägg hemligheter här, inte i kod)
+#  (gäller i alla undermappar)
+# =========================
+**/.env
+**/.env.local
+**/.env.*.local
+# Behåll ev. .env.example i Git
+
+# =========================
+# ⚙️ Backend (Go)
+# =========================
+# Binärer / artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace filer (behåll go.mod & go.sum)
+go.work
+go.work.sum
+
+# =========================
+# 💻 Frontend (Node / React / Vite)
+# =========================
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+.eslintcache
+
+# =========================
+# 🗄️ Databas / Docker volymer
+# =========================
+postgres-data/
+
+# =========================
+# 🧪 Test/coverage
+# =========================
+coverage/
+*.coverage
+
+# =========================
+# ℹ️ Not om config.go
+# =========================
+# Ignorera INTE backend/config/config.go om det bara läser miljövariabler.
+# Flytta hemligheter till .env. Om ni MÅSTE ignorera källfilen:
+# backend/config/config.go
