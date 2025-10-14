@@ -12,6 +12,7 @@ import (
 // Dependencies innehåller alla handlers som vår router behöver.
 type dependencies struct {
 	UserHandler        *handlers.UserHandler
+	AuthHandler        *handlers.AuthHandler 
 	CompetitionHandler *handlers.CompetitionHandler
 	ActivityHandler    *handlers.ActivityHandler
 	TeamHandler        *handlers.TeamHandler
@@ -40,10 +41,10 @@ func InitializeAndGetRouter() *mux.Router {
 	competitionRepo := &database.CompetitionRepository{DB: db}
 	systemRepo := &database.SystemRepository{DB: db}
 
-
 	// Steg 3: Skapa alla handlers
 	deps := dependencies{
 		UserHandler:        &handlers.UserHandler{Repo: userRepo},
+		AuthHandler:        &handlers.AuthHandler{UserRepo: userRepo}, 
 		BadgeHandler:       &handlers.BadgeHandler{Repo: badgeRepo},
 		UserBadgeHandler:   &handlers.UserBadgeHandler{Repo: userBadgeRepo},
 		ActivityHandler:    &handlers.ActivityHandler{Repo: activityRepo},
@@ -64,7 +65,12 @@ func newRouter(deps dependencies) *mux.Router {
 
 	api.HandleFunc("", deps.SystemHandler.RootHandler).Methods("GET")
 
+	authRouter := api.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/login", deps.AuthHandler.LoginHandler).Methods("POST")
 
+	// Denna väg är skyddad av vår middleware
+	api.Handle("/me", JwtMiddleware(http.HandlerFunc(deps.UserHandler.MeHandler))).Methods("GET")
+	
 
 	// Registrera alla modulära vägar
 	if deps.UserHandler != nil {
