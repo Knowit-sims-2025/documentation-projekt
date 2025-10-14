@@ -1,8 +1,46 @@
 {
-  "hash": "58943e8e",
+  "hash": "a236917c",
   "configHash": "e5a38d76",
-  "lockfileHash": "048fc71a",
-  "browserHash": "333ef7ca",
-  "optimized": {},
-  "chunks": {}
+  "lockfileHash": "869eac43",
+  "browserHash": "fe638bf8",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "d3dfaf1c",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "9eda683a",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "708f9cb4",
+      "needsInterop": true
+    },
+    "react-grid-layout": {
+      "src": "../../node_modules/react-grid-layout/index.js",
+      "file": "react-grid-layout.js",
+      "fileHash": "1d101a2f",
+      "needsInterop": true
+    },
+    "react-dom": {
+      "src": "../../node_modules/react-dom/index.js",
+      "file": "react-dom.js",
+      "fileHash": "d0f524db",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-ABGXFQJL": {
+      "file": "chunk-ABGXFQJL.js"
+    },
+    "chunk-7CE7OA3O": {
+      "file": "chunk-7CE7OA3O.js"
+    }
+  }
 }
