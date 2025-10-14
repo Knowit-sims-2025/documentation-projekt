@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"gamification-api/backend/contextkeys"
 	"gamification-api/backend/database"
 	"gamification-api/backend/models"
 	"net/http"
@@ -13,6 +14,29 @@ import (
 
 type UserHandler struct {
 	Repo *database.UserRepository
+}
+
+func (h *UserHandler) MeHandler(w http.ResponseWriter, r *http.Request) {
+	// Använd den nya, säkra nyckeln från router-paketet för att hämta värdet.
+	userID, ok := r.Context().Value(contextkeys.UserContextKey).(int64)
+	if !ok {
+		http.Error(w, "Kunde inte hämta användar-ID från token", http.StatusInternalServerError)
+		return
+	}
+
+	// Använd det befintliga repositoryt för att hämta användaren.
+	user, err := h.Repo.GetUserByID(userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Användare hittades inte", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Internt serverfel", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 // GetAllUsersHandler
