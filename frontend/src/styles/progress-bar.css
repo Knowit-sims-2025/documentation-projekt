@@ -71,7 +71,6 @@
 .progress-header-icon{
   width: 60px;
   height: 60px;
-  /* The label provides enough margin, so we don't need extra on the icon */
   margin-left: 12px;
 }
 .progress-header-icon img {

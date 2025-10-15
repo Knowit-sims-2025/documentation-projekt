@@ -25,7 +25,7 @@ function pickString(v: any): string | undefined {
 function normalizeBadge(b: RawBadge): Badge {
   const id = Number(b.id ?? b.ID);
   const name = b.name ?? b.Name ?? b.badgeName ?? "(unknown)";
-  const description = b.description ?? b.Description ?? "";
+  const description = b.description.String ?? b.Description.String ?? b.description ?? b.Description ?? "unknown description";
   const iconUrl = pickString(b.iconUrl) ?? pickString(b.iconURL) ?? pickString(b.icon_url);
   const criteriaValue = b.criteriaValue ?? b.CriteriaValue ?? b.criteria_value;
 
