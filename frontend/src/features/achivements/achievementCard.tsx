@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { useBadges } from "../../hooks/useBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import type { Badge } from "../../types/badge";
-import {HexProgress} from "./hexProgress";
+import { HexProgress } from "./hexProgress";
 import type { User } from "../../types/user";
+import ProgressBar from "../../components/progressbar/progressbar";
+import { Overlay } from "../pages/leaderboard/Overlay";
 import documents0 from "../../assets/badges/documents0.svg";
 import documents1 from "../../assets/badges/documents1.svg";
 import documents2 from "../../assets/badges/documents2.svg";
@@ -55,6 +58,7 @@ const sortBadges = (badges: Badge[], user: User): Badge[] => {
 
 export default function AchievementCard({ user }: AchievementCardProps) {
   const { data: badges, loading, error } = useBadges();
+  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
   if (loading) return <div>Laddar badges...</div>;
   if (error) return <ErrorMessage message={`Kunde inte hämta badges: ${error}`} />;
@@ -67,49 +71,76 @@ export default function AchievementCard({ user }: AchievementCardProps) {
   let i = 0;
   if(badgeList.length % 2 === 1) {
   while (i < badgeList.length) {
-    const rowCount = rows.length % 2 === 0 ? 3 : 2;
-    rows.push(badgeList.slice(i, i + rowCount));
-    i += rowCount;
+      const rowCount = rows.length % 2 === 0 ? 3 : 2;
+      rows.push(badgeList.slice(i, i + rowCount));
+      i += rowCount;
+    }
   }
-}
   else {
   while (i < badgeList.length) {
-    const rowCount = rows.length % 2 === 0 ? 2 : 3;
-    rows.push(badgeList.slice(i, i + rowCount));
-    i += rowCount;
+      const rowCount = rows.length % 2 === 0 ? 2 : 3;
+      rows.push(badgeList.slice(i, i + rowCount));
+      i += rowCount;
+    }
   }
-}
 
   if(badgeList.length === 0) {
     return <ErrorMessage message="Inga badges hittades." />;
   }
 
   return (
-    <div className="hex-grid">
-      {rows.map((row, rowIndex) => (
-        <div
-          className={`hex-row ${rowIndex % 2 === 1 ? "offset" : ""}`}
-          key={rowIndex}
-        >
-          {row.map((badge) => {
-            // TODO: Replace this with your actual progress calculation logic
-            const userProgress = 5; // Example: calculateUserProgress(badge, user);
-            const maxValue = badge.criteriaValue ?? 100;
-            const progress = maxValue > 0 ? Math.min(userProgress / maxValue, 1) : 0;
-            const progress_label =  `${userProgress} / ${maxValue}`;
+    <>
+      <div className="hex-grid">
+        {rows.map((row, rowIndex) => (
+          <div
+            className={`hex-row ${rowIndex % 2 === 1 ? "offset" : ""}`}
+            key={rowIndex}
+          >
+            {row.map((badge) => {
+              // TODO: Replace this with your actual progress calculation logic
+              const userProgress = 5; // Example: calculateUserProgress(badge, user);
+              const maxValue = badge.criteriaValue ?? 100;
+              const progress =
+                maxValue > 0 ? Math.min(userProgress / maxValue, 1) : 0;
+              const progress_label = `${userProgress} / ${maxValue}`;
 
-            return (
-              <div className="achievement-item" key={badge.id ?? Math.random()}>
-                <HexProgress
-                  progress={progress}
-                  label={progress_label}
-                  src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
-                />
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
+              return (
+                <div
+                  className="achievement-item"
+                  key={badge.id ?? Math.random()}
+                  onClick={() => setSelectedBadge(badge)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
+                >
+                  <HexProgress
+                    progress={progress}
+                    label={progress_label}
+                    src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      {selectedBadge && (
+        <Overlay
+          onClose={() => setSelectedBadge(null)}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <h2>{selectedBadge.name}</h2>
+            <p>{selectedBadge.description}</p>
+            <img src={selectedBadge.iconUrl ? iconMap[selectedBadge.iconUrl] : undefined} alt={selectedBadge.name} style={{ width: '100px', height: '100px' }} />
+            <div style={{ width: '100%' }}>
+              <ProgressBar
+                value={5} // TODO: Replace with actual progress
+                max={selectedBadge.criteriaValue ?? 100}
+              />
+            </div>
+            <p>Progress: 5 / {selectedBadge.criteriaValue ?? 100}</p>
+          </div>
+        </Overlay>
+      )}
+    </>
   );
 }
