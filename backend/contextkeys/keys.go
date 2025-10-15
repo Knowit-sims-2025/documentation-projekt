@@ -5,4 +5,3 @@ type contextKey string
 
 // UserContextKey är nyckeln som används för att lagra och hämta användar-ID från contexten.
 const UserContextKey = contextKey("userID")
-

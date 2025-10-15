@@ -12,7 +12,6 @@ type Config struct {
 	ConfluenceBaseURL  string
 	ConfluenceEmail    string
 	ConfluenceAPIToken string
-	JWTSecret          string
 }
 
 // LoadConfig läser in värden från .env eller systemets miljö.

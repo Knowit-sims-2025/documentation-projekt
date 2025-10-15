@@ -35,7 +35,6 @@ func main() {
 	confluenceService.Start(5 * time.Minute) // Rimligt intervall för normal drift
 
 	// Hämta och starta routern
-	// Hämta och starta routern
 	r := router.InitializeAndGetRouter()
 
 	// Starta webbservern
