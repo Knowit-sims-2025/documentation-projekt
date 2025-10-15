@@ -4,11 +4,15 @@
 .progress-card {
   border-radius: 12px;
   box-shadow: 0 2px 8px hsl(220 50% 2% / 0.12);
-  padding: 16px 20px 20px 20px;
+  padding: 10px;
+  margin: 10px 0 2px 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
+  border-style: solid;
+  border-width: 1px;
+  border-color:var(--border);
 }
 .progress-header {
   display: flex;
@@ -65,14 +69,12 @@
   color: var(--muted, #666);
 }
 .progress-header-icon{
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 60px;
+  height: 60px;
   /* The label provides enough margin, so we don't need extra on the icon */
   margin-left: 12px;
 }
 .progress-header-icon img {
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 100%
 }

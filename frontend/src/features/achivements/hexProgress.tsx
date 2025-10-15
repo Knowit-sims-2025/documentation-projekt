@@ -22,13 +22,6 @@ export function HexProgress({ progress, label, src }: HexProgressProps) {
       style={{ ["--progress" as any]: progress } as React.CSSProperties}
     >
       <svg viewBox="0 0 100 100" className="hex-svg" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <linearGradient id="hexGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#FFD700" />
-            <stop offset="100%" stopColor="#FFA500" />
-          </linearGradient>
-        </defs>
-
         {/* Fill polygon */}
         <polygon
           className="hex-fill"
@@ -50,7 +43,7 @@ export function HexProgress({ progress, label, src }: HexProgressProps) {
           ref={polyRef}
           className="hex-border"
           points="50,2 93,25 93,75 50,98 7,75 7,25"
-          stroke="url(#hexGradient)"
+          stroke="var(--accent)"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
