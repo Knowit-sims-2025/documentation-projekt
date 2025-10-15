@@ -7,26 +7,26 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Config innehåller inställningar för Confluence-API-integration.
+// Samlad app-konfig
 type Config struct {
 	ConfluenceBaseURL  string
 	ConfluenceEmail    string
 	ConfluenceAPIToken string
+	JWTSecret          string // <-- används av auth.InitJWT
 }
 
-// LoadConfig läser in värden från .env eller systemets miljö.
 func LoadConfig() *Config {
-	// Läs in .env-filen om den finns
+	// Läser .env i aktuell arbetskatalog (ingen panik om filen saknas)
 	_ = godotenv.Load()
 
 	return &Config{
 		ConfluenceBaseURL:  mustGetEnv("CONFLUENCE_BASE_URL"),
 		ConfluenceEmail:    mustGetEnv("CONFLUENCE_EMAIL"),
 		ConfluenceAPIToken: mustGetEnv("CONFLUENCE_API_TOKEN"),
+		JWTSecret:          mustGetEnv("JWT_SECRET"),
 	}
 }
 
-// mustGetEnv avbryter programmet om en obligatorisk variabel saknas.
 func mustGetEnv(key string) string {
 	v, ok := os.LookupEnv(key)
 	if !ok || v == "" {
