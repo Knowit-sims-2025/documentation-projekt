@@ -54,7 +54,7 @@ func (r *CompetitionRepository) GetAllCompetitions() ([]models.Competition, erro
 }
 
 func (r *CompetitionRepository) CreateCompetition(c *models.Competition) (int64, error) {
-	query :=  `INSERT INTO competitions (name, description, start_date, end_date, created_by_user_id) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	query := `INSERT INTO competitions (name, description, start_date, end_date, created_by_user_id) VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	err := r.DB.QueryRow(query, c.Name, c.Description, c.StartDate, c.EndDate, c.CreatedByUserID).Scan(&c.ID)
 	if err != nil {
 		return 0, err
@@ -62,26 +62,26 @@ func (r *CompetitionRepository) CreateCompetition(c *models.Competition) (int64,
 	return c.ID, nil
 }
 
-func (r * CompetitionRepository) GetCompetitionByID(id int64) (*models.Competition, error) {
-    row := r.DB.QueryRow(`SELECT id, name, description, start_date, end_date, created_by_user_id, created_at FROM competitions WHERE id = $1`, id)
-    var comp models.Competition
-    err := row.Scan(
-        &comp.ID,
-        &comp.Name,
-        &comp.Description,
-        &comp.StartDate,
-        &comp.EndDate,
-        &comp.CreatedByUserID, 
-        &comp.CreatedAt,
-    )
-    if err != nil {
-        if err == sql.ErrNoRows {
-            return nil, nil // 
-        }
-        return nil, err
+func (r *CompetitionRepository) GetCompetitionByID(id int64) (*models.Competition, error) {
+	row := r.DB.QueryRow(`SELECT id, name, description, start_date, end_date, created_by_user_id, created_at FROM competitions WHERE id = $1`, id)
+	var comp models.Competition
+	err := row.Scan(
+		&comp.ID,
+		&comp.Name,
+		&comp.Description,
+		&comp.StartDate,
+		&comp.EndDate,
+		&comp.CreatedByUserID,
+		&comp.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil //
+		}
+		return nil, err
 
-    }
-    return &comp, nil
+	}
+	return &comp, nil
 }
 
 func (r *CompetitionRepository) UpdateCompetition(c *models.Competition) error {
@@ -90,7 +90,7 @@ func (r *CompetitionRepository) UpdateCompetition(c *models.Competition) error {
 	return err
 }
 
-func (r * CompetitionRepository) DeleteCompetition(id int64) error {
+func (r *CompetitionRepository) DeleteCompetition(id int64) error {
 	_, err := r.DB.Exec(`DELETE FROM competitions WHERE id = $1`, id)
 	return err
 }

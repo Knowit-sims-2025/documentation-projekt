@@ -1,0 +1,64 @@
+
+/* =========================
+   Profile-stil
+   ========================= */
+
+
+.profile-widget {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+.profile-cover {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.profile-avatar-wrapper {
+  position: absolute;
+  left: 50%;
+  bottom: -70px;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Styla själva avataren inuti wrappern */
+.profile-avatar-wrapper .leaderboard__avatar {
+  width: 120px;
+  height: 120px;
+  border: 4px solid var(--card-bg);
+  box-shadow: var(--card-bg);
+  bottom: 20px;
+}
+
+.profile-info {
+  padding: 1rem;
+  padding-top: 56px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-info .progress-card {
+  margin-top: auto; 
+  padding-top: 1rem;
+
+}
