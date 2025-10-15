@@ -32,7 +32,7 @@ func main() {
 	// Skapa och starta Confluence-tjänsten
 	confluenceClient := confluence.NewClient(cfg.ConfluenceBaseURL, cfg.ConfluenceEmail, cfg.ConfluenceAPIToken)
 	confluenceService := confluence.NewService(confluenceClient, userRepo, activityRepo)
-	confluenceService.Start(5 * time.Minute) // Rimligt intervall för normal drift
+	confluenceService.Start(30 * time.Second) // Rimligt intervall för normal drift
 
 	// Hämta och starta routern
 	r := router.InitializeAndGetRouter()
