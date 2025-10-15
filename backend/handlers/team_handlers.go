@@ -57,6 +57,7 @@ func (h *TeamHandler) GetTeamByIDHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // CreateTeamHandler
+// CreateTeamHandler
 func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Name string `json:"name"`
@@ -84,6 +85,7 @@ func (h *TeamHandler) CreateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(team)
 }
 
+// UpdateTeamHandler
 // UpdateTeamHandler
 func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -115,6 +117,7 @@ func (h *TeamHandler) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeleteTeamHandler
 // DeleteTeamHandler
 func (h *TeamHandler) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

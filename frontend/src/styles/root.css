@@ -1,0 +1,188 @@
+/* Baseline (sRGB/HSL) – funkar överallt */
+:root {
+  /* Layout */
+  --header-h: 4.5rem;
+  --gap: 0.5rem;
+  --container-w: clamp(960px, 90vw, 90vw);
+  --container-h: calc(100dvh - var(--header-h) - var(--footer-h));
+  --container-px: 1rem;
+  --footer-h: 3rem;
+  --border-radius: 1rem;
+
+  /* Z-index */
+  --z-header: 100;
+  --z-overlay: 500;
+  --z-toast: 300;
+
+
+  /* sRGB/HSL fallback-färger */
+  --bg-dark: hsl(220 25% 10%);
+  --bg:      hsl(220 20% 15%);
+  --bg-light:hsl(220 20% 20%);
+
+  --text:        hsl(210 20% 92%);
+  --text-muted:  hsl(215 12% 62%);
+
+  --highlight:   hsl(220 10% 50%);
+  --border:      hsl(220 12% 40%);
+  --border-muted:hsl(220 10% 30%);
+  --border-card: solid 1px var(--border);
+
+  --bar-bg: rgba(0,0,0,0.08);
+
+  --gradient:       linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+  --gradient-hover: linear-gradient(0deg, var(--bg) 0%,  var(--bg-light) 100%);
+
+  --shadow: 0 2px 2px rgba(0,0,0,.07), 0 4px 4px rgba(0,0,0,.04);
+
+  --primary:   hsl(264 70% 70%);
+  --secondary: hsl(84  70% 70%);
+  --accent:    hsl(56, 94%, 58%);
+
+  --danger:  hsl( 30 60% 60%);
+  --warning: hsl( 50 60% 60%);
+  --success: hsl(160 60% 60%);
+  --info:    hsl(260 60% 60%);
+
+
+  color-scheme: dark;
+}
+
+/* Modernare uppgradering – RGB + color-mix(in srgb, ...) */
+@supports (color: rgb(0 0 0) and (color-mix(in srgb, red 50%, white))) {
+  :root {
+    --bar-bg: color-mix(in srgb, var(--bg) 90%, transparent);
+  }
+}
+/* Modernare uppgradering – OKLCH + color-mix(in oklch, ...) */
+@supports (color: oklch(0.5 0.1 264)) {
+  :root {
+    --bg-dark:  oklch(0.10 0.025 264);
+    --bg:       oklch(0.15 0.025 264);
+    --bg-light: oklch(0.20 0.025 264);
+
+    --text:        oklch(0.96 0.05 264);
+    --text-muted:  oklch(0.76 0.05 264);
+
+    --highlight:   oklch(0.50 0.05 264);
+    --border:      oklch(0.40 0.05 264);
+    --border-muted:oklch(0.30 0.05 264);
+
+    --primary:   oklch(0.76 0.10 264);
+    --secondary: oklch(0.76 0.10 84);
+    --accent:    oklch(86.83% 0.17566 91.47);
+
+    --danger:  oklch(0.70 0.05  30);
+    --warning: oklch(0.70 0.05 100);
+    --success: oklch(0.70 0.05 160);
+    --info:    oklch(0.70 0.05 260);
+
+    --bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
+  }
+}
+
+/* Light mode med hsl och därefter med modernar color-mix */
+:root[data-theme="light"] {
+  --bg-dark:  hsl(220 20% 92%);
+  --bg:       hsl(220 20% 96%);
+  --bg-light: hsl(220 20% 100%);
+
+  --text:       hsl(220 30% 15%);
+  --text-muted: hsl(220 10% 40%);
+
+  --highlight:   hsl(220 20% 98%);
+  --border:      hsl(220 20% 60%);
+  --border-muted:hsl(220 20% 70%);
+
+  --border-card: solid 1px var(--bg);
+
+  --bar-bg: color-mix(in srgb, var(--bg) 92%, transparent);
+
+  --primary:   hsl(264 60% 40%);
+  --secondary: hsl( 84 60% 40%);
+  --accent:    hsl(56, 94%, 58%);
+
+  --danger:  hsl( 30 60% 50%);
+  --warning: hsl( 50 60% 50%);
+  --success: hsl(160 60% 50%);
+  --info:    hsl(260 60% 50%);
+
+  color-scheme: light;
+}
+
+@supports (color: oklch(0.5 0.1 264)) {
+  :root[data-theme="light"] {
+    --bg-dark:  oklch(0.92 0.025 264);
+    --bg:       oklch(0.96 0.025 264);
+    --bg-light: oklch(1    0.025 264);
+
+    --text:       oklch(0.15 0.05 264);
+    --text-muted: oklch(0.40 0.05 264);
+
+    --highlight:   oklch(1    0.05 264);
+    --border:      oklch(0.60 0.05 264);
+    --border-muted:oklch(0.70 0.05 264);
+
+    --bar-bg: color-mix(in oklch, var(--bg) 92%, transparent);
+
+    --primary:   oklch(0.40 0.10 264);
+    --secondary: oklch(0.40 0.10  84);
+    --accent:    oklch(86.83% 0.17566 91.471);
+
+    --danger:  oklch(0.50 0.05  30);
+    --warning: oklch(0.50 0.05 100);
+    --success: oklch(0.50 0.05 160);
+    --info:    oklch(0.50 0.05 260);
+  }
+}
+
+
+/* =========================
+   Reset/typografi
+   ========================= */
+* { 
+    box-sizing: border-box; 
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+
+    background: var(--bg-dark);
+    color: var(--text-muted);
+
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* mjuka övergångar vid temabyte */
+    transition: background-color 180ms ease, color 180ms ease, background-image 180ms ease;
+}
+
+/* mjuka övergångar vid temabyte */
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; } 
+}
+
+/* Fokusring för tillgänglighet (endast tangentbord) – UPPD: använd accent */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+}
+
+
+/* länkar */
+a { color: var(--accent); }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
+}

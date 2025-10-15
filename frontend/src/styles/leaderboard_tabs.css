@@ -1,0 +1,41 @@
+/* =========================
+   Leaderboard Tabs
+   ========================= */
+
+.leaderboard__tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+ 
+  position: sticky;
+  top: 0;
+  background: var(--bar-bg);
+  z-index: 10;
+}
+
+.leaderboard__tab {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.75rem 0.25rem;
+  cursor: pointer;
+  color: var(--text-muted);
+
+  /* Understrykning för aktiv/hover */
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.leaderboard__tab:hover {
+  color: var(--text);
+}
+
+.leaderboard__tab.is-active {
+  color: var(--accent);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}

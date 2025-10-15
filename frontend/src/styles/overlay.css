@@ -1,0 +1,52 @@
+/* =========================
+   Overlay-lager
+   ========================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  /* UPPD: blåtonad dim som funkar i båda teman */
+  background: linear-gradient(
+    to bottom,
+    hsl(220 40% 2% / 0.70),
+    hsl(220 40% 2% / 0.55)
+  );
+
+  display: grid;
+  place-items: center;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(2px);
+  
+}
+.overlay__card {
+  background: var(--bg-light); 
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  max-width: var(--container-w);
+}
+
+.overlay__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-card);
+  color: var(--text);
+}
+
+.overlay__title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.overlay__close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-muted);
+}

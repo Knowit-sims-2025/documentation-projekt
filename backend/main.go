@@ -45,4 +45,3 @@ func main() {
 		log.Fatalf("FATAL: Servern kunde inte starta: %v", err)
 	}
 }
-

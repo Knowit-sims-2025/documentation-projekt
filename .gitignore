@@ -1,45 +1,37 @@
-/backend/.idea
-/.idea
-/postgres-data
-backend/config/config.go
-backend/config/config.go
 # =========================
 # 🌍 OS / Editor
 # =========================
 .DS_Store
 Thumbs.db
-.vscode/
 .idea/
+.vscode/
 *.iml
 
 # =========================
-# 🔒 Miljöfiler (globala)
+# 🧾 Loggar & temporära filer
 # =========================
-.env
-.env.local
-.env.*.local
-
-# =========================
-# 💻 Frontend (Node/React)
-# =========================
-node_modules/
-dist/
-dist-ssr/
-build/
-.vite/
-.eslintcache
-
-# Loggar (JS/Node)
+*.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.tmp
+*.swp
+*.swo
+
+# =========================
+# 🔒 Miljöfiler (lägg hemligheter här, inte i kod)
+#  (gäller i alla undermappar)
+# =========================
+**/.env
+**/.env.local
+**/.env.*.local
+# Behåll ev. .env.example i Git
 
 # =========================
 # ⚙️ Backend (Go)
 # =========================
-# Kompilerade binärer/artifacts
+# Binärer / artifacts
 *.exe
 *.exe~
 *.dll
@@ -48,16 +40,19 @@ lerna-debug.log*
 *.test
 *.out
 
-# Vanliga temporära filer
-*.tmp
-*.swp
-*.swo
-
-# Behåll go.mod och go.sum i Git!
-# (Vi ignorerar alltså INTE go.sum)
-# go.work & go.work.sum om ni använder multi-module workspace:
+# Go workspace filer (behåll go.mod & go.sum)
 go.work
 go.work.sum
+
+# =========================
+# 💻 Frontend (Node / React / Vite)
+# =========================
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+.eslintcache
 
 # =========================
 # 🗄️ Databas / Docker volymer
@@ -69,3 +64,10 @@ postgres-data/
 # =========================
 coverage/
 *.coverage
+
+# =========================
+# ℹ️ Not om config.go
+# =========================
+# Ignorera INTE backend/config/config.go om det bara läser miljövariabler.
+# Flytta hemligheter till .env. Om ni MÅSTE ignorera källfilen:
+# backend/config/config.go

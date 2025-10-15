@@ -1,0 +1,19 @@
+/*ladda in alla stiler i denna fil. lägg dem i ordning */
+
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
+
+@import "../styles/root.css";
+@import "../styles/layout.css";
+@import "../styles/react_grid_widget.css";
+
+@import "../styles/leaderboards.css";
+@import "../styles/overlay.css";
+@import "../styles/leaderboard_tabs.css";
+
+@import "../styles/settings_meny.css";
+@import "../styles/switch.css";
+@import "../styles/profile.css";
+@import "../styles/progress-bar.css";
+@import "../styles/hex.css";

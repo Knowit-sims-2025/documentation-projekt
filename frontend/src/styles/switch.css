@@ -1,0 +1,134 @@
+/* =========================
+   UI Switch
+   ========================= */
+.ui-switch {
+  /* Tokens – ändra här om du vill justera storlek/färg globalt */
+  --switch-w: 50px;
+  --switch-h: 24px;
+  --switch-d: 20px;
+  --switch-bw: 1px;
+  --switch-offset: calc((var(--switch-h) - var(--switch-d)) / 2);
+
+
+  --switch-bg: color-mix(in oklch, var(--bg) 85%, var(--bg-light) 15%);
+  --switch-border: var(--border);
+  --switch-accent: var(--accent);
+  --switch-knob: var(--switch-accent);
+ 
+
+  box-sizing: border-box;
+  line-height: 0;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: var(--switch-w);
+  height: var(--switch-h);
+
+  border-radius: 999px;
+  border: var(--switch-bw) solid var(--switch-border);
+  background: var(--switch-bg);
+
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Själva cirkeln (slider-knoppen) */
+.ui-switch__slider {
+  position: absolute;
+  left: calc(var(--switch-offset) - var(--switch-bw));
+  top: 50%;
+  width: var(--switch-d);
+  height: var(--switch-d);
+  border-radius: 50%;
+  background: var(--switch-knob);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  /* vertikal centrering oberoende av border/padding */
+  transform: translateY(-50%);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Flytta slidern vid aktivt läge */
+.ui-switch[aria-checked="true"] .ui-switch__slider {
+  transform: translateX(calc(var(--switch-w) - var(--switch-h))) translateY(-50%);
+}
+
+/* Lätt highlight för tillståndet "på" */
+.ui-switch[aria-checked="true"] {
+  background: color-mix(in oklab, var(--switch-accent) 20%, var(--surface-2));
+  border-color: color-mix(in oklab, var(--switch-accent) 40%, var(--switch-border));
+}
+
+/* Tangentbordsfokus */
+.ui-switch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 35%, transparent),
+              0 0 0 1px var(--switch-accent);
+}
+
+/* Disabled */
+.ui-switch[aria-disabled="true"],
+.ui-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Rörelsereducering */
+@media (prefers-reduced-motion: reduce) {
+  .ui-switch,
+  .ui-switch__slider {
+    transition: none;
+  }
+}
+
+/* =========================
+   Theme Toggle Switch styling
+   ========================= */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.theme-toggle__icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  /* NYTT: Använd CSS-variabel för att färga ikonen */
+  background-color: var(--text-muted);
+  transition: opacity 200ms ease, background-color 150ms ease;
+}
+
+.theme-toggle:hover .theme-toggle__icon {
+  background-color: var(--accent);
+}
+
+.theme-toggle__icon--sun {
+  mask: url("../assets/light_mode.svg") center / contain no-repeat;
+}
+
+.theme-toggle__icon--moon {
+  mask: url("../assets/dark_mode.svg") center / contain no-repeat;
+}
+
+
+/* =========================
+   Leaderboard styling för switchen
+   ========================= */
+.leaderboard-filter .muted {
+  color: var(--text-muted);
+}
+
+.leaderboard-filter .ui-switch {
+  /* lite compaktare än header */
+  --switch-w: 40px;
+  --switch-h: 20px;
+  --switch-d: 16px;
+}

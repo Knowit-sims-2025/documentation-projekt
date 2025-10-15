@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"github.com/gorilla/mux" 
+
+	"github.com/gorilla/mux"
 )
 
 type ActivityHandler struct {
@@ -49,7 +50,7 @@ func (h *ActivityHandler) GetActivityByIDHandler(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(activity)
 }
 
-// CreateActivityHandler 
+// CreateActivityHandler
 func (h *ActivityHandler) CreateActivityHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		UserID                  int64  `json:"userId"`
@@ -85,7 +86,7 @@ func (h *ActivityHandler) CreateActivityHandler(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(activity)
 }
 
-// UpdateActivityHandler 
+// UpdateActivityHandler
 func (h *ActivityHandler) UpdateActivityHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -124,7 +125,7 @@ func (h *ActivityHandler) UpdateActivityHandler(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusOK)
 }
 
-// DeleteActivityHandler 
+// DeleteActivityHandler
 func (h *ActivityHandler) DeleteActivityHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/gorilla/mux"
 )
 
@@ -19,7 +20,7 @@ type UserBadgeHandler struct {
 	Repo *database.UserBadgeRepository
 }
 
-// GetAllBadgesHandler 
+// GetAllBadgesHandler
 func (h *BadgeHandler) GetAllBadgesHandler(w http.ResponseWriter, r *http.Request) {
 	badges, err := h.Repo.GetAllBadges()
 	if err != nil {
@@ -30,7 +31,7 @@ func (h *BadgeHandler) GetAllBadgesHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(badges)
 }
 
-// GetBadgeByIDHandler 
+// GetBadgeByIDHandler
 func (h *BadgeHandler) GetBadgeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -86,7 +87,7 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 	json.NewEncoder(w).Encode(badge)
 }
 
-// UpdateBadgeHandler 
+// UpdateBadgeHandler
 func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -123,7 +124,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 }
 
-// DeleteBadgeHandler 
+// DeleteBadgeHandler
 func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -140,7 +141,7 @@ func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetAllUserBadgesHandler 
+// GetAllUserBadgesHandler
 func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *http.Request) {
 	userBadges, err := h.Repo.GetAllUserBadges()
 	if err != nil {
@@ -151,7 +152,7 @@ func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *htt
 	json.NewEncoder(w).Encode(userBadges)
 }
 
-// CreateUserBadgeHandler 
+// CreateUserBadgeHandler
 func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		UserID    int64      `json:"userId"`
@@ -185,7 +186,7 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(userBadge)
 }
 
-// GetUserBadgeHandler 
+// GetUserBadgeHandler
 func (h *UserBadgeHandler) GetUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
@@ -210,7 +211,7 @@ func (h *UserBadgeHandler) GetUserBadgeHandler(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(ub)
 }
 
-// UpdateUserBadgeHandler 
+// UpdateUserBadgeHandler
 func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
@@ -240,7 +241,7 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusOK)
 }
 
-// DeleteUserBadgeHandler 
+// DeleteUserBadgeHandler
 func (h *UserBadgeHandler) DeleteUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)

@@ -105,7 +105,6 @@ func (r *BadgeRepository) GetBadgeByID(id int64) (*models.Badge, error) {
 	return &b, nil
 }
 
-
 // Ta bort en badge från en användare
 func (r *UserBadgeRepository) RemoveBadge(userID, badgeID int64) error {
 	_, err := r.DB.Exec(`

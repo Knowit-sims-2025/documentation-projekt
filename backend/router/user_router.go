@@ -2,6 +2,7 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
+
 	"github.com/gorilla/mux"
 )
 
