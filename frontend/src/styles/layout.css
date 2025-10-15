@@ -101,14 +101,19 @@
    }
 
      /* Main */
-   .app__main {
-    min-block-size: 100dvb;
-    padding-top : var(--header-h);
-    padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom));
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-    overflow-y: auto;
-   }
+  .app__main {
+    position: fixed;
+    top:    var(--container-inset-top);
+    bottom: var(--container-inset-bottom);
+    left: 0;
+    right: 0;
+
+    /* Höjden är i praktiken redan satt av top/bottom, men lägg gärna med för tydlighet */
+    block-size: var(--container-h);
+
+    overflow: auto; /* inre scroll */
+    /* Ingen extra padding-top/bottom här – header/footer är redan borträknade */
+  }
 
    /* Dashboard */
    .dashboard {
