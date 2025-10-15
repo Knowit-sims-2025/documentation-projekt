@@ -1,7 +1,10 @@
 package config
 
 import (
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 // Samlad app-konfig
@@ -9,26 +12,25 @@ type Config struct {
 	ConfluenceBaseURL  string
 	ConfluenceEmail    string
 	ConfluenceAPIToken string
-	JWTSecret          string // <-- används av auth.InitJWT
+	JWTSecret          string
 }
 
 func LoadConfig() *Config {
-	// senare ska det läsas från miljövariabler (.env-fil).
-	baseURL := getEnv("CONFLUENCE_BASE_URL", "https://christianstrid.atlassian.net/wiki")
-	email := getEnv("CONFLUENCE_EMAIL", "skrivdin-email-här")
-	apiToken := getEnv("CONFLUENCE_API_TOKEN", "skrivdin-api-token-här")
+	// Läser .env i aktuell arbetskatalog (ingen panik om filen saknas)
+	_ = godotenv.Load()
 
 	return &Config{
-		ConfluenceBaseURL:  baseURL,
-		ConfluenceEmail:    email,
-		ConfluenceAPIToken: apiToken,
+		ConfluenceBaseURL:  mustGetEnv("CONFLUENCE_BASE_URL"),
+		ConfluenceEmail:    mustGetEnv("CONFLUENCE_EMAIL"),
+		ConfluenceAPIToken: mustGetEnv("CONFLUENCE_API_TOKEN"),
+		JWTSecret:          mustGetEnv("JWT_SECRET"),
 	}
 }
 
-// Hjälpfunktion för att läsa en miljövariabel med ett fallback-värde.
-func getEnv(key, fallback string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
+func mustGetEnv(key string) string {
+	v, ok := os.LookupEnv(key)
+	if !ok || v == "" {
+		log.Fatalf("Missing required environment variable: %s", key)
 	}
-	return fallback
+	return v
 }
