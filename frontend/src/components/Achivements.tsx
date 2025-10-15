@@ -1,4 +1,4 @@
-import { AchivementCard } from "../features/achivements/achivementCard.tsx";
+import AchivementCard from "../features/achivements/achievementCard.tsx";
 import { useUsers } from "../hooks/useUsers";
 import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage"; 
@@ -13,6 +13,6 @@ export default function Achievements() {
       const user = users && users.length > 0 ? users[4] : null;
 
       return user
-        ? <AchivementCard />
-    : <ErrorMessage message="Inga badges hittades." />;
+        ? <AchivementCard user={user} />
+        : <ErrorMessage message="Inga badges hittades." />;
 }
