@@ -12,7 +12,7 @@ type Config struct {
 	ConfluenceBaseURL  string
 	ConfluenceEmail    string
 	ConfluenceAPIToken string
-	JWTSecret          string // <-- används av auth.InitJWT
+	JWTSecret          string
 }
 
 func LoadConfig() *Config {
