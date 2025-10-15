@@ -13,7 +13,6 @@ import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
 import { useAuth } from "../AuthContext";
 import Profile from "../../components/Profile";
-import TeamLeaderboard from "./leaderboard/TeamLeaderboard";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
