@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { useUsers } from "../../../hooks/useUsers";
-import { useAuth } from "../../AuthContext";
+import { useAuth } from "../../auth/AuthContext";
 import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Overlay } from "./Overlay";

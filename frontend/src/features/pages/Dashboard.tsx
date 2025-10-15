@@ -11,7 +11,7 @@ import {
 } from "../../styles/dashboardLayout";
 import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../../features/auth/AuthContext";
 import Profile from "../../components/Profile";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -78,7 +78,7 @@ export default function Dashboard() {
     },
     { i: "teams", title: "Team Leaderboard", content: <TeamLeaderboard /> },
     { i: "competition", title: "Competition", content: <div>Competition</div> },
-    { i: "achievements", title: "Achievements", content: <Achivements />},
+    { i: "achievements", title: "Achievements", content: <Achivements /> },
   ];
 
   // Ladda layout från localStorage om den finns

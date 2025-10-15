@@ -1,6 +1,6 @@
 // components/lists/WeeklyList.tsx
 import React from "react";
-import { useAuth } from "../../features/AuthContext"; // anpassa path om din AuthContext ligger annorstädes
+import { useAuth } from "../../features/auth/AuthContext"; // anpassa path om din AuthContext ligger annorstädes
 import { Avatar } from "../../components/Avatar"; // global komponent
 import type { WeeklyEntry } from "../../hooks/useWeeklyLeaderboard";
 
