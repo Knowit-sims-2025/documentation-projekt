@@ -1,4 +1,5 @@
-import { Avatar } from "../../components/Avatar";
+// import { Avatar } from "../../components/Avatar";
+import Avatar from "../../components/Avatar";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
 import { useBadges } from "../../hooks/useBadges";
@@ -92,7 +93,6 @@ export function ProfileCard({ user }: { user: User }) {
         </h2>
       </div>
 
-      {/* NYTT: grupp som vi kan trycka till botten */}
       <div className="profile-progress">
         {topBadge && (
           <ProgressBar
