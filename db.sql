@@ -8,7 +8,8 @@ CREATE TABLE users (
     -- NYTT: Kolumn för att hantera admin-rättigheter.
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    lifetime_points INTEGER DEFAULT 0
 );
 
 -- Tabell för att lagra team.

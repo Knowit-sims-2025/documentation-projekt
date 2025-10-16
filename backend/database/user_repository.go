@@ -66,7 +66,7 @@ func (repo *UserRepository) GetUserByConfluenceID(confluenceID string) (*models.
 }
 
 func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
-	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE id = $1", id)
+	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at, lifetime_points FROM users WHERE id = $1", id)
 	var user models.User
 	err := row.Scan(
 		&user.ID,
@@ -77,6 +77,7 @@ func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
 		&user.IsAdmin,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.LifeTimePoints,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -122,6 +123,6 @@ func (repo *UserRepository) DeleteUser(id int64) error {
 }
 
 func (repo *UserRepository) UpdateUserPoints(id int64, points int) error {
-	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1 WHERE id = $2", points, id)
+	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1, lifetime_points = lifetime_points + $1 WHERE id = $2", points, id)
 	return err
 }
