@@ -13,6 +13,7 @@ import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
 import { useAuth } from "../../features/auth/AuthContext";
 import Profile from "../../components/Profile";
+import { useAutoRowHeight } from "../../hooks/useAutoRowHeight";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
