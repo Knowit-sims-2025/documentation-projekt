@@ -1,36 +1,49 @@
+/* =========================
+   widgets.css
+   - RGL-beteende, z-index, kort-höjd i grid-celler
+   - Widget-komponenter (header/controls/body/remove)
+   - Custom resize-handle
+   ========================= */
+
+/* Temavariabler (kan ligga i tokens.css om du vill) */
 :root {
-  --resize-handle-size: 16px;              
-  --resize-handle-offset: 6px;             
-  --resize-handle-color: var(--border);    
+  --resize-handle-size: 16px;
+  --resize-handle-offset: 6px;
+  --resize-handle-color: var(--border);
   --resize-handle-color-hover: var(--accent);
 }
 
-
-/* Tvinga RGL att fylla sin container */
-.react-grid-layout {
-  height: auto;
-  overflow: visible;
+/* RGL-bas: låt items kliva över varann vid hover/drag/resize */
+.react-grid-item { 
+  overflow: visible; 
+  z-index: 1; 
+}
+.react-grid-item:has(.card:hover),
+.react-grid-item:focus-within { 
+  z-index: 5; 
+}
+.react-grid-item.react-draggable-dragging,
+.react-grid-item.react-resizable-resizing { 
+  z-index: 6; 
 }
 
-.react-grid-item {
-  overflow: visible;
-}
-.react-grid-item { z-index: 1; }
-.react-grid-item:has(.card:hover) { z-index: 5; }
-
+/* Slå av transform på kortet under drag/resize (för att undvika GPU-artefakter) */
 .react-draggable-dragging .card,
-.react-resizable-resizing .card { transform: none; }
+.react-resizable-resizing .card { 
+  transform: none; 
+}
 
-
+/* Viktigt: kort inuti RGL ska fylla cellen + kunna ha intern scroll */
 .react-grid-item > .card {
-  height: 100%; 
-  min-height: 0; 
-  display: flex; 
+  height: 100%;
+  min-height: 0;
+  display: flex;
   flex-direction: column;
 }
 
+/* === Custom resize-handle (SE-hörn) === */
 .react-grid-item .react-resizable-handle {
-  background: none !important; 
+  background: none !important;  /* ta bort svart base64-ikon från react-resizable */
   border: 0 !important;
   position: absolute;
   width: var(--resize-handle-size);
@@ -38,22 +51,34 @@
   right: var(--resize-handle-offset);
   bottom: var(--resize-handle-offset);
   cursor: se-resize;
-  z-index: 10;       
+  z-index: 10;
   touch-action: none;
 }
-
+.react-grid-item .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-right: 2px solid var(--resize-handle-color);
+  border-bottom: 2px solid var(--resize-handle-color);
+  border-radius: 2px;
+  opacity: .9;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.25));
+}
 .react-grid-item:hover .react-resizable-handle::after,
 .react-grid-item.react-resizable-resizing .react-resizable-handle::after {
   border-color: var(--resize-handle-color-hover);
   opacity: 1;
 }
 
+/* === Widget-komponenter === */
+
 .widget-container {
-  /* Beräkna höjden baserat på vår custom property och marginalerna */
-  height: calc((100% - var(--gap)) * var(--widget-height-factor)) !important;
+  /* Höjd från TSX via --widget-height-factor (0..1).
+     min-height:0 krävs för att barn med overflow ska kunna scrolla. */
+  height: calc((100% - var(--gap)) * var(--widget-height-factor, 1) ) !important;
+  min-height: 0;
 }
 
-/* Header i widgeten (drag handle) */
 .widget__header {
   display: flex;
   align-items: center;
@@ -62,18 +87,16 @@
   padding-bottom: .5rem;
   margin-bottom: .5rem;
   border-bottom: 1px solid var(--border);
-  cursor: grab;
+  cursor: grab;        /* RGL drag-handle */
   user-select: none;
 }
 
-/* Kontroller (knappar etc.) */
 .widget__controls {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-/* Remove-knapp */
 .widget__remove {
   appearance: none;
   border: 1px solid var(--border);
@@ -94,12 +117,38 @@
 .widget__remove:active { transform: scale(0.97); }
 .widget__remove:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* Innehåll: fyll återstående höjd och scrolla internt vid behov */
+/* Innehållsyta fyller återstående höjd och scrollar internt vid behov */
 .widget__body {
   flex: 1 1 auto;
-  min-height: 0;   /* kritiskt för att inre scroll ska funka */
+  min-height: 0;
   overflow: auto;
 }
 
+/* ==========================================================================
+   Responsivitet för liten widget (minimerad vy)
+   - Dölj innehåll när widgeten är mindre än ~75px hög för att undvika overflow.
+   ========================================================================== */
+.react-grid-item:has(.card) {
+  container-type: size;
+}
 
+@container (max-height: 75px) {
+  /* Dölj kontroller och innehåll */
+  .widget__header .widget__controls,
+  .widget__body {
+    display: none;
+  }
 
+  /* Anpassa header för minimerat läge */
+  .widget__header {
+    border-bottom: none;
+    margin-bottom: 0;
+    justify-content: center; /* Centrera rubriken horisontellt */
+    height: 100%; /* Fyll ut hela den lilla ytan */
+  }
+
+  /* Skala rubrikens textstorlek med widgetens höjd */
+  .widget__header h3 {
+    font-size: clamp(0.7rem, 4.5cqh, 1rem);
+  }
+}

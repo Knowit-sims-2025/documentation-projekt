@@ -5,6 +5,8 @@ import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Overlay } from "./Overlay";
 import type { User } from "../../../types/user";
+import { ProfileCard } from "../../profile/ProfileCard";
+import UserAchievements from "../../../components/Achivements";
 
 import { useDailyLeaderboard } from "../../../hooks/useDailyLeaderboard";
 import { LeaderboardTabs } from "../../../components/LeaderboardTabs";
@@ -105,7 +107,8 @@ export default function UserLeaderBoard({
           onClose={() => setSelectedUser(null)}
           title={selectedUser.displayName}
         >
-          <p>Poäng: {selectedUser.totalPoints}</p>
+          <ProfileCard user={selectedUser} />
+          <UserAchievements user={selectedUser} />
         </Overlay>
       )}
     </div>
