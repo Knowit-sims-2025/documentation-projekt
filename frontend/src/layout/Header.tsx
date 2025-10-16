@@ -3,8 +3,9 @@ import type { Theme } from "../hooks/useTheme";
 import ThemeToggle from "../components/ThemeToggle";
 import SettingsButton from "../components/buttons/SettingsButton";
 import SettingsMenu from "../components/SettingsMenu";
-import { useAuth } from "../features/AuthContext";
+import { useAuth } from "../features/auth/AuthContext";
 import { Avatar } from "../components/Avatar";
+import { authFetch } from "../services/auth"; // ← för att skicka Authorization på upload
 
 interface HeaderProps {
   theme: Theme;
@@ -12,22 +13,23 @@ interface HeaderProps {
 }
 
 export default function Header({ theme, setTheme }: HeaderProps) {
-  const { currentUser, updateCurrentUserAvatar } = useAuth();
+  const { currentUser, logout, updateCurrentUserAvatar } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Enkel utloggningsfunktion som en platshållare
+  // Riktig utloggning
   const handleLogout = () => {
-    alert("Loggar ut...");
-    setIsMenuOpen(false);
+    logout(); // rensar token + state
+    setIsMenuOpen(false); // stäng menyn
+    // Login-overlay tar över automatiskt eftersom isAuthenticated blir false
   };
 
-  // Triggrar den dolda filväljaren
+  // Triggar dold filväljare
   const handleAvatarButtonClick = () => {
     fileInputRef.current?.click();
   };
 
-  // Hanterar filuppladdningen när en fil har valts
+  // Ladda upp avatar (skicka JWT med authFetch, låt browsern sätta multipart boundary)
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -39,18 +41,23 @@ export default function Header({ theme, setTheme }: HeaderProps) {
     formData.append("uploadFile", file);
 
     try {
-      const response = await fetch("/api/v1/upload/avatar", {
+      const response = await authFetch("/api/v1/upload/avatar", {
         method: "POST",
         body: formData,
       });
-      if (!response.ok) throw new Error("Kunde inte ladda upp filen.");
+      if (!response.ok)
+        throw new Error(`Kunde inte ladda upp filen: ${response.status}`);
 
       const result = await response.json();
-      updateCurrentUserAvatar(result.avatarUrl); // Uppdatera avataren i hela appen!
-      setIsMenuOpen(false); // Stäng menyn
+      // Förutsätter att backend returnerar { avatarUrl: "..." }
+      updateCurrentUserAvatar(result.avatarUrl);
+      setIsMenuOpen(false);
     } catch (error) {
       console.error("Avatar upload failed:", error);
       alert("Något gick fel vid uppladdningen av din avatar.");
+    } finally {
+      // nollställ input så samma fil kan väljas igen om man vill
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -68,23 +75,23 @@ export default function Header({ theme, setTheme }: HeaderProps) {
                 <Avatar
                   name={currentUser.displayName}
                   src={currentUser.avatarUrl}
-                  size={40}
+                  size={40} // ← fixad typo här
                 />
                 <div className="settings-menu__user-details">
                   <span className="settings-menu__user-name">
                     {currentUser.displayName}
                   </span>
                   <span className="settings-menu__user-email muted">
-                    {currentUser.totalPoints} poäng
+                    {currentUser.totalPoints ?? 0} poäng
                   </span>
                 </div>
               </div>
             )}
+
             <div className="settings-menu__separator" />
             <a href="#">Min Profil</a>
             <a href="#">Teaminställningar</a>
 
-            {/* Admin-specifika länkar som bara visas om användaren är admin */}
             {currentUser?.isAdmin && (
               <>
                 <div className="settings-menu__separator" />
@@ -98,12 +105,15 @@ export default function Header({ theme, setTheme }: HeaderProps) {
             <button onClick={handleLogout}>Logga ut</button>
           </SettingsMenu>
         </div>
+
         <h1 className="header__center">Dashboard</h1>
+
         <div className="header__right">
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
       </div>
-      {/* Dold filväljare som vi kan trigga */}
+
+      {/* Dold filväljare */}
       <input
         type="file"
         ref={fileInputRef}

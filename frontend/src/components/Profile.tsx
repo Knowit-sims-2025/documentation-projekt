@@ -1,5 +1,5 @@
 import { ProfileCard } from "../features/profile/ProfileCard";
-import { useAuth } from "../features/AuthContext";
+import { useAuth } from "../features/auth/AuthContext";
 import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage";
 

@@ -1,11 +1,13 @@
-// services/teams.ts
+// src/services/teams.ts
 import type { Team, RankedTeam } from "../types/team";
 import type { User } from "../types/user";
 import { normalizeUser } from "./users";
+import { authFetch } from "./auth";
 
-// Rå-typer från backend
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
+
+// Rå-typ från backend
 type RawTeam = Record<string, any>;
-type RawUser = Record<string, any>;
 
 // Liten limiter så vi inte bombar backend med 50 parallella anrop
 function createLimiter(max = 5) {
@@ -37,22 +39,22 @@ function normalizeBareTeam(t: RawTeam): Omit<Team, "totalPoints" | "members"> {
   };
 }
 
-/** Hämtar users (med poäng) för ett team via /teams/:id/points */
+/** Hämtar users (med poäng) för ett team via /teams/:id/points (skyddad) */
 async function fetchTeamMembersWithPoints(teamId: number, signal?: AbortSignal): Promise<User[]> {
-  const res = await fetch(`/api/v1/teams/${teamId}/points`, { signal });
-  if (!res.ok) throw new Error(`Kunde inte hämta teamets poäng: ${res.status}`);
-  const raw: RawUser[] = await res.json();
+  const res = await authFetch(`${API_BASE}/teams/${teamId}/points`, { signal });
+  if (!res.ok) throw new Error(`Kunde inte hämta teamets poäng: ${res.status} ${res.statusText}`);
+  const raw: any[] = await res.json();
   return raw.map(normalizeUser);
 }
 
 /**
- * Bygger ut alla team med members + totalPoints med BARA befintliga endpoints:
+ * Bygger ut alla team med members + totalPoints med BEFINTLIGA endpoints:
  *   - GET /api/v1/teams
  *   - GET /api/v1/teams/:id/points
  */
 export async function getTeamsUsingExistingAPI(signal?: AbortSignal): Promise<RankedTeam[]> {
-  const res = await fetch("/api/v1/teams", { signal });
-  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+  const res = await authFetch(`${API_BASE}/teams`, { signal });
+  if (!res.ok) throw new Error(`HTTP error! status: ${res.status} ${res.statusText}`);
   const rawTeams: RawTeam[] = await res.json();
 
   const bare = rawTeams.map(normalizeBareTeam);
@@ -69,7 +71,7 @@ export async function getTeamsUsingExistingAPI(signal?: AbortSignal): Promise<Ra
     )
   );
 
-  // Sortera, ranka
+  // Sortera + ranka
   const sorted = enriched.sort((a, b) => b.totalPoints - a.totalPoints);
   return sorted.map((team, idx) => ({ ...team, rank: idx + 1 }));
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../../AuthContext";
+import { useAuth } from "../../auth/AuthContext";
 import { Avatar } from "../../../components/Avatar";
 
 export function DailyRankItem({

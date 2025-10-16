@@ -1,10 +1,16 @@
 /* Baseline (sRGB/HSL) – funkar överallt */
 :root {
   /* Layout */
+  
   --header-h: 4.5rem;
   --gap: 0.5rem;
   --container-w: clamp(960px, 90vw, 90vw);
-  --container-h: calc(100dvh - var(--header-h) - var(--footer-h));
+  
+  /* --container-h: calc(100dvh - var(--header-h) - var(--footer-h)); */
+  --container-inset-top: calc(env(safe-area-inset-top) + var(--header-h));
+  --container-inset-bottom: calc(env(safe-area-inset-bottom) + var(--footer-h));
+  --container-h: calc(100dvh - var(--container-inset-top) - var(--container-inset-bottom));
+
   --container-px: 1rem;
   --footer-h: 3rem;
   --border-radius: 1rem;
@@ -100,7 +106,7 @@
 
   --primary:   hsl(264 60% 40%);
   --secondary: hsl( 84 60% 40%);
-  --accent:    hsl(56, 94%, 58%);
+  --accent:    hsl(224, 94%, 58%);
 
   --danger:  hsl( 30 60% 50%);
   --warning: hsl( 50 60% 50%);
@@ -127,7 +133,7 @@
 
     --primary:   oklch(0.40 0.10 264);
     --secondary: oklch(0.40 0.10  84);
-    --accent:    oklch(86.83% 0.17566 91.471);
+    --accent:    oklch(46.697% 0.30114 265.18);
 
     --danger:  oklch(0.50 0.05  30);
     --warning: oklch(0.50 0.05 100);
