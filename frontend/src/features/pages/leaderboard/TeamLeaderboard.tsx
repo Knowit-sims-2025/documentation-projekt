@@ -1,13 +1,24 @@
+import { useState } from "react";
 import { useTeams } from "../../../hooks/useTeams";
 import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import type { RankedTeam } from "../../../types/team";
+import { Overlay } from "./Overlay";
+import { TeamDetails } from "./TeamDetails";
 
-function TeamRank({ team }: { team: RankedTeam }) {
+function TeamRank({
+  team,
+  onSelect,
+}: {
+  team: RankedTeam;
+  onSelect: () => void;
+}) {
   // Enkel rad-komponent för ett team
   return (
     <li
       className="leaderboard__item"
+      onClick={onSelect}
+      style={{ cursor: "pointer" }}
       title={`${team.name} har ${team.members.length} medlemmar`}
     >
       <span className="leaderboard__rank">{team.rank}.</span>
@@ -19,6 +30,7 @@ function TeamRank({ team }: { team: RankedTeam }) {
 }
 
 export default function TeamLeaderboard() {
+  const [selectedTeam, setSelectedTeam] = useState<RankedTeam | null>(null);
   const { data: teams, loading, error } = useTeams();
 
   if (loading) {
@@ -33,9 +45,24 @@ export default function TeamLeaderboard() {
     <div className="leaderboard">
       <ul className="leaderboard__list">
         {teams.map((team) => (
-          <TeamRank key={team.id} team={team} />
+          <TeamRank
+            key={team.id}
+            team={team}
+            onSelect={() => setSelectedTeam(team)}
+          />
         ))}
       </ul>
+
+      {selectedTeam && (
+        <Overlay
+          onClose={() => setSelectedTeam(null)}
+          title={`Team: ${selectedTeam.name}`}
+        >
+          {" "}
+          <p>Detta är teamets medlemmar, sorterade efter poäng:</p>
+          <TeamDetails team={selectedTeam} />
+        </Overlay>
+      )}
     </div>
   );
 }
