@@ -148,6 +148,31 @@ func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *htt
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	// Encode the slice directly, not inside a map.
+	// The frontend expects an array: `[...]` not an object: `{"userBadges": [...]}`
+	json.NewEncoder(w).Encode(userBadges)
+}
+
+// GetUserBadgesByUserIDHandler
+func (h *UserBadgeHandler) GetUserBadgesByUserIDHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, err := strconv.ParseInt(vars["userId"], 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	userBadges, err := h.Repo.GetUserBadgesByUserID(userID)
+	if err != nil {
+		// Om inga rader hittas är det inte nödvändigtvis ett serverfel,
+		// det kan bara betyda att användaren inte har några badges än.
+		// Returnera en tom lista i det fallet.
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode([]models.UserBadge{})
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(userBadges)
 }
@@ -158,6 +183,7 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 		UserID    int64      `json:"userId"`
 		BadgeID   int64      `json:"badgeId"`
 		AwardedAt *time.Time `json:"awardedAt,omitempty"`
+		Progress  int        `json:"progress"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -174,6 +200,7 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 		UserID:    requestBody.UserID,
 		BadgeID:   requestBody.BadgeID,
 		AwardedAt: awardedAt,
+		Progress:  requestBody.Progress,
 	}
 
 	if err := h.Repo.AwardBadge(userBadge); err != nil {
@@ -222,19 +249,29 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	}
 
 	var requestBody struct {
-		AwardedAt *time.Time `json:"awardedAt"`
+		AwardedAt *time.Time `json:"awardedAt,omitempty"`
+		Progress  *int       `json:"progress,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
 		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
 		return
 	}
 
-	newTime := time.Now().UTC()
-	if requestBody.AwardedAt != nil {
-		newTime = *requestBody.AwardedAt
+	// Hämta befintlig user-badge för att ha default-värden
+	existingUB, err := h.Repo.GetUserBadge(userID, badgeID)
+	if err != nil || existingUB == nil {
+		http.Error(w, "User badge not found", http.StatusNotFound)
+		return
 	}
 
-	if err := h.Repo.UpdateAwardedAt(userID, badgeID, newTime); err != nil {
+	if requestBody.AwardedAt != nil {
+		existingUB.AwardedAt = *requestBody.AwardedAt
+	}
+	if requestBody.Progress != nil {
+		existingUB.Progress = *requestBody.Progress
+	}
+
+	if err := h.Repo.UpdateUserBadge(existingUB); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

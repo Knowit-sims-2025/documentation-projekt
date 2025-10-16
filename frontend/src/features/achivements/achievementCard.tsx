@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useBadges } from "../../hooks/useBadges";
+import { useUserBadges } from "../../hooks/useUserBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import type { Badge } from "../../types/badge";
-import { HexProgress } from "./hexProgress";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
 import { Overlay } from "../pages/leaderboard/Overlay";
+import type { UserBadge } from "../../types/userBadge";
 import documents0 from "../../assets/badges/documents0.svg";
 import documents1 from "../../assets/badges/documents1.svg";
 import documents2 from "../../assets/badges/documents2.svg";
@@ -39,17 +40,21 @@ interface AchievementCardProps {
   user: User;
 }
 
-const sortBadges = (badges: Badge[], user: User): Badge[] => {
+const getUserProgressForBadge = (badgeId: number, userBadges: UserBadge[]): number => {
+  const userBadge = userBadges.find(ub => ub.badgeId === badgeId);
+  return userBadge?.progress ?? 0;
+};
+
+const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
   // Create a copy to avoid mutating the original array
   return [...badges].sort((a, b) => {
-    // TODO: Replace this with your actual progress calculation logic
-    const userProgressA = 5; // Example: calculateUserProgress(a, user);
-    const userProgressB = 5; // Example: calculateUserProgress(b, user);
+    const userProgressA = getUserProgressForBadge(a.id, userBadges);
+    const userProgressB = getUserProgressForBadge(b.id, userBadges);
     const badgeCriteriaValueA = a.criteriaValue ?? 100;
     const badgeCriteriaValueB = b.criteriaValue ?? 100;
 
-    const progressA = (a.criteriaValue ?? 0) > 0 ? userProgressA / badgeCriteriaValueA : 0;
-    const progressB = (b.criteriaValue ?? 0) > 0 ? userProgressB / badgeCriteriaValueB : 0;
+    const progressA = badgeCriteriaValueA > 0 ? userProgressA / badgeCriteriaValueA : 0;
+    const progressB = badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
 
     // Sort descending (from most complete to least complete)
     return progressB - progressA;
@@ -57,32 +62,14 @@ const sortBadges = (badges: Badge[], user: User): Badge[] => {
 };
 
 export default function AchievementCard({ user }: AchievementCardProps) {
-  const { data: badges, loading, error } = useBadges();
+  const { data: badges, loading: loadingBadges, error: errorBadges } = useBadges();
+  const { data: userBadges, loading: loadingUserBadges, error: errorUserBadges } = useUserBadges(user.id);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
-  if (loading) return <div>Laddar badges...</div>;
-  if (error) return <ErrorMessage message={`Kunde inte hämta badges: ${error}`} />;
+  if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
+  if (errorBadges || errorUserBadges) return <ErrorMessage message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges}`} />;
 
-  const badgeList = sortBadges((badges ?? []) as Badge[], user);
-
-  // Split badges into alternating rows: 3 / 2 / 3 / 2
-  // or 2/3/2/3... depending on odd/even number of badges.
-  const rows: Badge[][] = [];
-  let i = 0;
-  if(badgeList.length % 2 === 1) {
-  while (i < badgeList.length) {
-      const rowCount = rows.length % 2 === 0 ? 3 : 2;
-      rows.push(badgeList.slice(i, i + rowCount));
-      i += rowCount;
-    }
-  }
-  else {
-  while (i < badgeList.length) {
-      const rowCount = rows.length % 2 === 0 ? 2 : 3;
-      rows.push(badgeList.slice(i, i + rowCount));
-      i += rowCount;
-    }
-  }
+  const badgeList = sortBadges((badges ?? []), (userBadges ?? []));
 
   if(badgeList.length === 0) {
     return <ErrorMessage message="Inga badges hittades." />;
@@ -90,41 +77,36 @@ export default function AchievementCard({ user }: AchievementCardProps) {
 
   return (
     <>
-      <div className="hex-grid">
-        {rows.map((row, rowIndex) => (
-          <div
-            className={`hex-row ${rowIndex % 2 === 1 ? "offset" : ""}`}
-            key={rowIndex}
-          >
-            {row.map((badge) => {
-              // TODO: Replace this with your actual progress calculation logic
-              const userProgress = 5; // Example: calculateUserProgress(badge, user);
-              const maxValue = badge.criteriaValue ?? 100;
-              const progress =
-                maxValue > 0 ? Math.min(userProgress / maxValue, 1) : 0;
-              const progress_label = `${userProgress} / ${maxValue}`;
+      <div className="achievements-list">
+        {badgeList.map((badge) => {
+          const userProgress = getUserProgressForBadge(badge.id, userBadges);
+          const maxValue = badge.criteriaValue ?? 100;
+          const progressLabel = `${badge.name}`;
 
-              return (
-                <div
-                  className="achievement-item"
-                  key={badge.id ?? Math.random()}
-                  onClick={() => setSelectedBadge(badge)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
-                >
-                  <HexProgress
-                    progress={progress}
-                    label={progress_label}
-                    src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        ))}
+          return (
+            <div
+              className="achievement-item"
+              key={badge.id}
+              onClick={() => setSelectedBadge(badge)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
+            >
+              <ProgressBar
+                value={userProgress}
+                max={maxValue}
+                label={progressLabel}
+                description={badge.description}
+                src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
+              />
+            </div>
+          );
+        })}
       </div>
       {selectedBadge && (
+        (() => { // IIFE to calculate progress for selected badge
+          const userProgress = getUserProgressForBadge(selectedBadge.id, userBadges);
+          return (
         <Overlay
           onClose={() => setSelectedBadge(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -133,13 +115,15 @@ export default function AchievementCard({ user }: AchievementCardProps) {
             <img src={selectedBadge.iconUrl ? iconMap[selectedBadge.iconUrl] : undefined} alt={selectedBadge.name} style={{ width: '100px', height: '100px' }} />
             <div style={{ width: '100%' }}>
               <ProgressBar
-                value={5} // TODO: Replace with actual progress
+                value={userProgress}
                 max={selectedBadge.criteriaValue ?? 100}
               />
             </div>
-            <p>Progress: 5 / {selectedBadge.criteriaValue ?? 100}</p>
+            <p>Progress: {userProgress} / {selectedBadge.criteriaValue ?? 100}</p>
           </div>
         </Overlay>
+          );
+        })()
       )}
     </>
   );

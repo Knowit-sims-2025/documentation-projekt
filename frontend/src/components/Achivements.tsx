@@ -10,7 +10,8 @@ export default function Achievements() {
       if (loading) return <Loading text="Laddar badges..." />;
       if (error) return <ErrorMessage message={error} />;
     
-      const user = users && users.length > 0 ? users[4] : null;
+      // To test with a specific user, find them by their ID from the fetched list.
+      const user = users?.find(u => u.id === 1); // Example: Hardcoding for user with ID 5
 
       return user
         ? <AchivementCard user={user} />
