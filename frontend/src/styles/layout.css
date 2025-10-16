@@ -116,15 +116,23 @@
   }
 
    /* Dashboard */
-   .dashboard {
+  .dashboard {
     width: 100%;
     max-width: var(--container-w);
     margin: 0 auto;
-    padding: 12px var(--container-px);
+
+    /* var(--dash-py) används för block-padding (topp/botten) */
+    padding-block: var(--dash-py);
+    padding-inline: var(--container-px);
+
     gap: var(--gap);
-    /* min-height: var(--container-h);  */
-    min-block-size: 100%
-   }
+    min-block-size: 100%;
+  }
+
+
+  .dashboard__grid {
+    block-size: 100%;
+  }
 
    /* Basecard */
    .card{

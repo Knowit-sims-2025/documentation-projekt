@@ -1,7 +1,10 @@
-/* Sätt en fast höjd på dashboard-containern så att %-höjder fungerar */
-.dashboard {
-  height: calc(100vh - var(--header-h));
+:root {
+  --resize-handle-size: 16px;              
+  --resize-handle-offset: 6px;             
+  --resize-handle-color: var(--border);    
+  --resize-handle-color-hover: var(--accent);
 }
+
 
 /* Tvinga RGL att fylla sin container */
 .react-grid-layout {
@@ -15,7 +18,6 @@
 .react-grid-item { z-index: 1; }
 .react-grid-item:has(.card:hover) { z-index: 5; }
 
-/* Inaktivera RGL:s transformeringar vid drag/resize för att undvika konflikter */
 .react-draggable-dragging .card,
 .react-resizable-resizing .card { transform: none; }
 
@@ -27,7 +29,25 @@
   flex-direction: column;
 }
 
-/* NYTT: Denna container får sin höjd från CSS-variabeln i Dashboard.tsx */
+.react-grid-item .react-resizable-handle {
+  background: none !important; 
+  border: 0 !important;
+  position: absolute;
+  width: var(--resize-handle-size);
+  height: var(--resize-handle-size);
+  right: var(--resize-handle-offset);
+  bottom: var(--resize-handle-offset);
+  cursor: se-resize;
+  z-index: 10;       
+  touch-action: none;
+}
+
+.react-grid-item:hover .react-resizable-handle::after,
+.react-grid-item.react-resizable-resizing .react-resizable-handle::after {
+  border-color: var(--resize-handle-color-hover);
+  opacity: 1;
+}
+
 .widget-container {
   /* Beräkna höjden baserat på vår custom property och marginalerna */
   height: calc((100% - var(--gap)) * var(--widget-height-factor)) !important;
@@ -82,9 +102,4 @@
 }
 
 
-.react-grid-item > .card {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
+
