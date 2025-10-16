@@ -101,7 +101,6 @@ export default function UserLeaderBoard({
 
       {activeTab === "weekly" && <WeeklyCurrent />}
 
-      {/* Overlay – din befintliga för “total” */}
       {selectedUser && (
         <Overlay
           onClose={() => setSelectedUser(null)}
