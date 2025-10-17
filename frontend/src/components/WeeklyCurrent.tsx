@@ -15,7 +15,11 @@ const fmtYYYYMMDD = (d: Date) =>
     d.getDate()
   ).padStart(2, "0")}`;
 
-export default function WeeklyCurrent() {
+interface WeeklyCurrentProps {
+  onSelectUserId?: (id: number) => void;
+}
+
+export default function WeeklyCurrent({ onSelectUserId }: WeeklyCurrentProps) {
   const today = toLocalYYYYMMDD();
 
   // starta på måndagen denna vecka
@@ -57,7 +61,7 @@ export default function WeeklyCurrent() {
       ) : error ? (
         <ErrorMessage message={error} />
       ) : (
-        <WeeklyList data={data} />
+        <WeeklyList data={data} onSelectUserId={onSelectUserId} />
       )}
     </div>
   );

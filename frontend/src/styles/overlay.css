@@ -1,52 +1,71 @@
 /* =========================
-   Overlay-lager
+   Overlay-lager (scrollbar)
    ========================= */
+
+:root {
+  /* justerbara “ramar” */
+  --overlay-pad: 24px;
+  /* --overlay-max-w: var(--container-w); */
+}
+
+/* Backdropen kan scrolla om innehållet blir större än viewporten */
 .overlay {
   position: fixed;
   inset: 0;
-
-  /* UPPD: blåtonad dim som funkar i båda teman */
   background: linear-gradient(
     to bottom,
     hsl(220 40% 2% / 0.70),
     hsl(220 40% 2% / 0.55)
   );
+  backdrop-filter: blur(2px);
 
   display: grid;
   place-items: center;
+
+  padding: var(--overlay-pad);
+  overflow: auto;                 /* <-- nyckeln: overlayen får scrollen */
   z-index: var(--z-overlay);
-  backdrop-filter: blur(2px);
-  
 }
+
+/* Kortet centrerat, men med max-höjd och intern scroll */
 .overlay__card {
-  background: var(--bg-light); 
+  background: var(--bg-light);
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow);
   border-radius: var(--border-radius);
   padding: 16px;
-  max-width: var(--container-w);
+
+  width: min(100%, var(--overlay-max-w));
+  max-height: calc(100dvh - 2 * var(--overlay-pad));  /* <-- viktig! */
+  overflow: auto;                                     /* intern scroll */
+
+  display: flex;               /* så header/body kan layoutas */
+  flex-direction: column;
+  min-height: 0;               /* krävs för att child-överflöd ska få scroll */
 }
 
+/* Header ligger överst och tar inte plats i scrollflödet */
 .overlay__header {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding-bottom: 8px;
   margin-bottom: 16px;
   border-bottom: 1px solid var(--border-card);
   color: var(--text);
 }
 
-.overlay__title {
-  margin: 0;
-  font-size: 1.2rem;
+/* Kroppen fyller resterande höjd och blir scroll-yta när det behövs */
+.overlay__body {
+  flex: 1 1 auto;
+  min-height: 0;     /* kritiskt för att inre scroll ska funka i flex-kolumn */
+  overflow: auto;    /* egen scroll när innehållet blir långt */
 }
 
-.overlay__close-btn {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--text-muted);
+/* Responsiv finputsning på små skärmar */
+@media (max-width: 640px) {
+  :root { --overlay-pad: 12px; }
+  .overlay__card { border-radius: 12px; padding: 12px; }
 }
