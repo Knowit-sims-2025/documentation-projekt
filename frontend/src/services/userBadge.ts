@@ -27,8 +27,9 @@ function normalizeUserBadge(b: RawUserBadge): UserBadge {
   const badgeId = Number(b.badge_id ?? b.badgeId ?? b.BadgeID);
   const awardedAt = b.awarded_at ?? b.awardedAt ?? b.AwardedAt ?? new Date().toISOString();
   const progress = Number(b.progress ?? b.Progress ?? 0);
+  const claimStatus = (b.claim_status ?? b.claimStatus ?? b.ClaimStatus ?? "unclaimed").toLowerCase();
 
-  return { userId, badgeId, awardedAt, progress };
+  return { userId, badgeId, awardedAt, progress, claimStatus };
 }
 
 /* ========================================================================== 
@@ -64,4 +65,24 @@ export async function getUserBadgesByUserId(userId: number): Promise<UserBadge[]
 
   const raw: RawUserBadge[] = Array.isArray(data) ? data : [];
   return raw.map(normalizeUserBadge);
+}
+
+/* ==========================================================================
+   updateUserBadgeStatus(userId, badgeId, status)
+   --------------------------------------------------------------------------
+   Uppdaterar claimStatus för en specifik user_badge.
+   ========================================================================== */
+export async function updateUserBadgeStatus(userId: number, badgeId: number, status: 'claimed' | 'unclaimed'): Promise<UserBadge> {
+  const res = await fetch(`/api/v1/users/${userId}/badges/${badgeId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ claim_status: status }),
+  });
+
+  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+  const data = await res.json();
+  return normalizeUserBadge(data);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { UserBadge } from "../types/userBadge";
 import { getUserBadgesByUserId } from "../services/userBadge";
 
@@ -25,5 +25,10 @@ export function useUserBadges(userId: number) {
     fetchUserBadges();
   }, [userId]);
 
-  return { data, loading, error };
+  // Create a stable mutate function to update the local state
+  const mutate = useCallback((newData: UserBadge[]) => {
+    setData(newData);
+  }, []);
+
+  return { data, loading, error, mutate };
 }

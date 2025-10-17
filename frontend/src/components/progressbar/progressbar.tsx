@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useImperativeHandle } from "react";
 
 interface ProgressBarProps {
   value: number;      // current user progress
@@ -7,14 +7,19 @@ interface ProgressBarProps {
   description?: string; // description of widget
   label?: string;     // label of widget
   src?: string;       // optional image URL
+  claimText: string; // Text for the claim status/button
+  onClaim?: () => void; // Optional click handler for the claim button
 }
+
 const ProgressBar: React.FC<ProgressBarProps> = ({
   value,
   max = 1,
   min = 0,
   label, 
   description = "",
-  src = undefined
+  src = undefined,
+  claimText = "",
+  onClaim,
 }) => {
   const percentage = Math.min(Math.max(((value-min) / (max - min)) * 100, 0), 100);
    return (
@@ -26,14 +31,22 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       </div>
       
         {description && <span className="progress-description">{description}</span>}
-      <div className="progress-bar-outer">
-        <div className="progress-bar" style={{width: `${percentage}%`,}}>
-        </div>
-      </div>
-      <div className="progress-numbers">
-        {label && (min !== 0 ? <span>{min}</span> : <span className="invisible" style={{ visibility: "hidden" }}>0</span>)}
-        {label && <span>{value}/{max}</span>}
-    </div>
+      
+          {claimText === "COLLECT" && onClaim ? (
+            <button className="claim-button" onClick={onClaim}>{claimText}</button>
+          ) : (
+            <>
+              <div className="progress-bar-outer">
+                <div className="progress-bar" style={{width: `${percentage}%`}}>
+                </div>
+              </div>
+              <div className="progress-numbers">
+                {label && (min !== 0 ? <span>{min}</span> : <span className="invisible" style={{ visibility: "hidden" }}>0</span>)}
+                {label && <span>{value}/{max}</span>}
+                <p className="claim-status-text">{claimText}</p>
+              </div>
+            </>
+          )}
     </div>
   );
 };

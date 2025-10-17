@@ -57,12 +57,14 @@ CREATE TABLE badges (
     criteria_value INTEGER NOT NULL
 );
 
+CREATE TYPE claim_status_enum AS ENUM ('CLAIMED', 'UNCLAIMED');
 -- Kopplingstabell för att hålla koll på vilka badges en användare har förtjänat.
 CREATE TABLE user_badges (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     badge_id INTEGER NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
     awarded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     progress INTEGER NOT NULL DEFAULT 0,
+    claim_status ENUM('CLAIMED', 'UNCLAIMED') NOT NULL DEFAULT 'UNCLAIMED',
     PRIMARY KEY (user_id, badge_id)
 );
 

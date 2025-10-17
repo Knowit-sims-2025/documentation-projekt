@@ -116,7 +116,7 @@ func (r *UserBadgeRepository) RemoveBadge(userID, badgeID int64) error {
 
 // Hämta alla user_badges från db
 func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
-	query := `SELECT user_id, badge_id, awarded_at, progress FROM user_badges ORDER BY awarded_at DESC`
+	query := `SELECT user_id, badge_id, awarded_at, progress, claim_status FROM user_badges ORDER BY awarded_at DESC`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -132,6 +132,7 @@ func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
 			&ub.BadgeID,
 			&ub.AwardedAt,
 			&ub.Progress,
+			&ub.ClaimStatus,
 		)
 		if err != nil {
 			log.Println("Error scanning user_badge:", err)
@@ -150,9 +151,9 @@ func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
 // Tilldela en badge till en användare
 func (r *UserBadgeRepository) AwardBadge(ub *models.UserBadge) error {
 	_, err := r.DB.Exec(`
-		INSERT INTO user_badges (user_id, badge_id, awarded_at, progress)
-		VALUES ($1, $2, $3, $4)`,
-		ub.UserID, ub.BadgeID, ub.AwardedAt, ub.Progress,
+		INSERT INTO user_badges (user_id, badge_id, awarded_at, progress, claim_status)
+		VALUES ($1, $2, $3, $4, $5)`,
+		ub.UserID, ub.BadgeID, ub.AwardedAt, ub.Progress, ub.ClaimStatus,
 	)
 	return err
 }
@@ -161,16 +162,16 @@ func (r *UserBadgeRepository) AwardBadge(ub *models.UserBadge) error {
 func (r *UserBadgeRepository) UpdateUserBadge(ub *models.UserBadge) error {
 	_, err := r.DB.Exec(`
 		UPDATE user_badges
-		SET awarded_at = $1, progress = $2
-		WHERE user_id = $3 AND badge_id = $4`,
-		ub.AwardedAt, ub.Progress, ub.UserID, ub.BadgeID,
+		SET awarded_at = $3, progress = $4, claim_status = $5
+		WHERE user_id = $1 AND badge_id = $2`,
+		ub.UserID, ub.BadgeID, ub.AwardedAt, ub.Progress, ub.ClaimStatus,
 	)
 	return err
 }
 
 // Hämta alla badges för en specifik användare
 func (r *UserBadgeRepository) GetUserBadgesByUserID(userID int64) ([]models.UserBadge, error) {
-	query := `SELECT user_id, badge_id, awarded_at, progress FROM user_badges WHERE user_id = $1 ORDER BY awarded_at DESC`
+	query := `SELECT user_id, badge_id, awarded_at, progress, claim_status FROM user_badges WHERE user_id = $1 ORDER BY awarded_at DESC`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
 		return nil, err
@@ -180,7 +181,7 @@ func (r *UserBadgeRepository) GetUserBadgesByUserID(userID int64) ([]models.User
 	var userBadges []models.UserBadge
 	for rows.Next() {
 		var ub models.UserBadge
-		err := rows.Scan(&ub.UserID, &ub.BadgeID, &ub.AwardedAt, &ub.Progress)
+		err := rows.Scan(&ub.UserID, &ub.BadgeID, &ub.AwardedAt, &ub.Progress, &ub.ClaimStatus)
 		if err != nil {
 			log.Println("Error scanning user_badge:", err)
 			continue
@@ -196,14 +197,14 @@ func (r *UserBadgeRepository) GetUserBadgesByUserID(userID int64) ([]models.User
 // Hämta en specifik user_badge (t.ex. via kombon user_id + badge_id)
 func (r *UserBadgeRepository) GetUserBadge(userID, badgeID int64) (*models.UserBadge, error) {
 	row := r.DB.QueryRow(`
-		SELECT user_id, badge_id, awarded_at, progress
+		SELECT user_id, badge_id, awarded_at, progress, claim_status
 		FROM user_badges
 		WHERE user_id = $1 AND badge_id = $2`,
 		userID, badgeID,
 	)
 
 	var ub models.UserBadge
-	err := row.Scan(&ub.UserID, &ub.BadgeID, &ub.AwardedAt, &ub.Progress)
+	err := row.Scan(&ub.UserID, &ub.BadgeID, &ub.AwardedAt, &ub.Progress, &ub.ClaimStatus)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Returnera nil om ingen badge hittades

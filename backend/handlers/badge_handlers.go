@@ -7,6 +7,7 @@ import (
 	"gamification-api/backend/models"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -180,10 +181,11 @@ func (h *UserBadgeHandler) GetUserBadgesByUserIDHandler(w http.ResponseWriter, r
 // CreateUserBadgeHandler
 func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
-		UserID    int64      `json:"userId"`
-		BadgeID   int64      `json:"badgeId"`
-		AwardedAt *time.Time `json:"awardedAt,omitempty"`
-		Progress  int        `json:"progress"`
+		UserID      int64      `json:"userId"`
+		BadgeID     int64      `json:"badgeId"`
+		AwardedAt   *time.Time `json:"awardedAt,omitempty"`
+		Progress    int        `json:"progress"`
+		ClaimStatus string     `json:"claimStatus,omitempty"` // Added this field
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -196,11 +198,18 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 		awardedAt = *requestBody.AwardedAt
 	}
 
+	// Determine claim status: use provided value or default to "UNCLAIMED"
+	claimStatus := "UNCLAIMED"
+	if requestBody.ClaimStatus != "" {
+		claimStatus = strings.ToUpper(requestBody.ClaimStatus)
+	}
+
 	userBadge := &models.UserBadge{
-		UserID:    requestBody.UserID,
-		BadgeID:   requestBody.BadgeID,
-		AwardedAt: awardedAt,
-		Progress:  requestBody.Progress,
+		UserID:      requestBody.UserID,
+		BadgeID:     requestBody.BadgeID,
+		AwardedAt:   awardedAt,
+		Progress:    requestBody.Progress,
+		ClaimStatus: claimStatus, // Now correctly assigned
 	}
 
 	if err := h.Repo.AwardBadge(userBadge); err != nil {
@@ -249,8 +258,9 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	}
 
 	var requestBody struct {
-		AwardedAt *time.Time `json:"awardedAt,omitempty"`
-		Progress  *int       `json:"progress,omitempty"`
+		AwardedAt   *time.Time `json:"awardedAt,omitempty"`
+		Progress    *int       `json:"progress,omitempty"`
+		ClaimStatus *string    `json:"claim_status,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
 		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
@@ -270,12 +280,19 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	if requestBody.Progress != nil {
 		existingUB.Progress = *requestBody.Progress
 	}
+	if requestBody.ClaimStatus != nil {
+		existingUB.ClaimStatus = strings.ToUpper(*requestBody.ClaimStatus)
+	}
 
 	if err := h.Repo.UpdateUserBadge(existingUB); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	// Return the updated object to the frontend
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(existingUB)
 }
 
 // DeleteUserBadgeHandler

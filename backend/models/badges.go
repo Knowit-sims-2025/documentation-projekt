@@ -18,4 +18,5 @@ type UserBadge struct {
 	BadgeID   int64     `json:"badge_id"`
 	AwardedAt time.Time `json:"awarded_at"`
 	Progress  int       `json:"progress"`
+	ClaimStatus string   `json:"claim_status"` // "unclaimed", "claimed"
 }

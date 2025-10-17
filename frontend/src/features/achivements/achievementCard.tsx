@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useBadges } from "../../hooks/useBadges";
 import { useUserBadges } from "../../hooks/useUserBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { updateUserBadgeStatus } from "../../services/userBadge";
 import type { Badge } from "../../types/badge";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
@@ -45,6 +46,11 @@ const getUserProgressForBadge = (badgeId: number, userBadges: UserBadge[]): numb
   return userBadge?.progress ?? 0;
 };
 
+const getUserBadgeForBadge = (badgeId: number, userBadges: UserBadge[]): UserBadge | undefined => {
+  const userBadge = userBadges.find(ub => ub.badgeId === badgeId);
+  return userBadge;
+};
+
 const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
   // Create a copy to avoid mutating the original array
   return [...badges].sort((a, b) => {
@@ -63,8 +69,38 @@ const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
 
 export default function AchievementCard({ user }: AchievementCardProps) {
   const { data: badges, loading: loadingBadges, error: errorBadges } = useBadges();
-  const { data: userBadges, loading: loadingUserBadges, error: errorUserBadges } = useUserBadges(user.id);
+  const { data: userBadges, loading: loadingUserBadges, error: errorUserBadges, mutate } = useUserBadges(user.id);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+
+  // Optimistic Update for claiming a badge
+  const handleClaimBadge = async (badgeId: number) => {
+    if (!userBadges) return; // Should not happen if button is visible
+
+    // Find the badge we are about to claim
+    const badgeToClaim = userBadges.find(ub => ub.badgeId === badgeId);
+    if (!badgeToClaim) return;
+
+    // 1. Create the "optimistic" new state
+    const optimisticBadges = userBadges.map(ub => 
+      ub.badgeId === badgeId ? { ...ub, claimStatus: 'claimed' as const } : ub
+    );
+
+    // 2. Update the UI immediately, without waiting for the server.
+    //    The `false` flag prevents SWR from re-fetching automatically.
+    mutate(optimisticBadges);
+
+    try {
+      // 3. Send the actual request to the server
+      await updateUserBadgeStatus(user.id, badgeId, 'claimed');
+    } catch (error) {
+      console.error("Failed to claim badge:", error);
+      // 4. If the request fails, roll back to the original state
+      mutate(userBadges); // Revert to the original data
+    }
+    
+    
+    console.log("Badge state:", userBadges.find(ub => ub.badgeId === badgeId)?.claimStatus); 
+  };
 
   if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
   if (errorBadges || errorUserBadges) return <ErrorMessage message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges}`} />;
@@ -79,9 +115,14 @@ export default function AchievementCard({ user }: AchievementCardProps) {
     <>
       <div className="achievements-list">
         {badgeList.map((badge) => {
-          const userProgress = getUserProgressForBadge(badge.id, userBadges);
+          const userBadge = getUserBadgeForBadge(badge.id, userBadges ?? []);
+          const userProgress = userBadge?.progress ?? 0;
           const maxValue = badge.criteriaValue ?? 100;
           const progressLabel = `${badge.name}`;
+          const isClaimed = userBadge?.claimStatus === 'claimed';
+          const isClaimable = userProgress >= maxValue && !isClaimed;
+
+          const claimText = isClaimed ? "Claimed" : isClaimable ? "COLLECT" : "";
 
           return (
             <div
@@ -98,6 +139,8 @@ export default function AchievementCard({ user }: AchievementCardProps) {
                 label={progressLabel}
                 description={badge.description}
                 src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
+                claimText={claimText}
+                onClaim={isClaimable ? () => handleClaimBadge(badge.id) : undefined}
               />
             </div>
           );
@@ -105,7 +148,9 @@ export default function AchievementCard({ user }: AchievementCardProps) {
       </div>
       {selectedBadge && (
         (() => { // IIFE to calculate progress for selected badge
-          const userProgress = getUserProgressForBadge(selectedBadge.id, userBadges);
+          const userBadge = getUserBadgeForBadge(selectedBadge.id, userBadges ?? []);
+          const userProgress = userBadge?.progress ?? 0;
+          const isClaimed = userBadge?.claimStatus === 'claimed';
           return (
         <Overlay
           onClose={() => setSelectedBadge(null)}>
@@ -117,9 +162,11 @@ export default function AchievementCard({ user }: AchievementCardProps) {
               <ProgressBar
                 value={userProgress}
                 max={selectedBadge.criteriaValue ?? 100}
+                claimText=""
               />
             </div>
             <p>Progress: {userProgress} / {selectedBadge.criteriaValue ?? 100}</p>
+            {isClaimed && <p style={{ color: 'green', fontWeight: 'bold' }}>Status: Claimed</p>}
           </div>
         </Overlay>
           );

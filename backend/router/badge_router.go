@@ -2,6 +2,7 @@ package router
 
 import (
 	"gamification-api/backend/handlers"
+
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +22,9 @@ func RegisterUserBadgeRoutes(r *mux.Router, h *handlers.UserBadgeHandler) {
 	s.HandleFunc("", h.CreateUserBadgeHandler).Methods("POST")
 
 	// Notera den mer komplexa URL-strukturen här
-	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.GetUserBadgeHandler).Methods("GET")
-	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.UpdateUserBadgeHandler).Methods("PUT")
 	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.DeleteUserBadgeHandler).Methods("DELETE")
+
+	// Routes for a specific user's badges
+	r.HandleFunc("/users/{userId:[0-9]+}/badges", h.GetUserBadgesByUserIDHandler).Methods("GET")
+	r.HandleFunc("/users/{userId:[0-9]+}/badges/{badgeId:[0-9]+}", h.UpdateUserBadgeHandler).Methods("PUT")
 }
