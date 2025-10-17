@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useState } from "react";
 import { useBadges } from "../../hooks/useBadges";
 import { useUserBadges } from "../../hooks/useUserBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";

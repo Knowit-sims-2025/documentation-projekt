@@ -49,13 +49,13 @@ export function ProfileCard({ user }: { user: User }) {
   }
 
   const sortedBadges = badges && userBadges ? sortBadgesByCompletion(badges, userBadges) : [];
-  // Find the first badge in the sorted list that is not yet 100% complete.
+  // Get the badge with the highest progress.
+  // The list is already sorted by completion, so the first item is the top one.
   const topBadge = sortedBadges.find(badge => {
-    const currentUserProgress = userBadges ? getUserProgressForBadge(badge.id, userBadges) : 0;
-    const badgeCriteriaValue = badge.criteriaValue ?? 100;
-    const progress = badgeCriteriaValue > 0 ? currentUserProgress / badgeCriteriaValue : 0;
-    return progress < 1;
-  }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to top badge if all are complete
+    const userProgress = userBadges ? getUserProgressForBadge(badge.id, userBadges) : 0;
+    const criteria = badge.criteriaValue ?? 100;
+    return userProgress < criteria;
+  }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to the top badge if all are complete.
 
   const userProgressForBadge = topBadge && userBadges ? getUserProgressForBadge(topBadge.id, userBadges) : 0;
 
@@ -82,7 +82,7 @@ export function ProfileCard({ user }: { user: User }) {
           value={userProgressForBadge}
           max={topBadge.criteriaValue ?? 100}
           min={0}
-          label={`Next badge: ${topBadge.name}\t${topBadge.description}`}
+          label={`Next badge: ${topBadge.name}`}
           src={topBadge.iconUrl ? iconMap[topBadge.iconUrl] : undefined}
         />
         )}

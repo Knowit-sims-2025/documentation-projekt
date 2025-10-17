@@ -17,6 +17,13 @@ export const sortBadgesByCompletion = (badges: Badge[], userBadges: UserBadge[])
     const progressA = badgeCriteriaValueA > 0 ? userProgressA / badgeCriteriaValueA : 0;
     const progressB = badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
 
+    // For debugging: log the comparison
+    console.log(`Sorting:
+      - Badge A: ${a.name} (Progress: ${userProgressA}/${badgeCriteriaValueA} => ${progressA.toFixed(2)})
+      - Badge B: ${b.name} (Progress: ${userProgressB}/${badgeCriteriaValueB} => ${progressB.toFixed(2)})
+      - Result (B - A): ${(progressB - progressA).toFixed(2)}
+    `);
+
     // Sort descending (from most complete to least complete)
     return progressB - progressA;
   });

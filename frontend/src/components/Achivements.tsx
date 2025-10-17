@@ -1,17 +1,14 @@
 import AchivementCard from "../features/achivements/achievementCard.tsx";
-import { useUsers } from "../hooks/useUsers";
+import { useCurrentUser } from "../hooks/useCurrentUser.ts";
 import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage"; 
 
 
 export default function Achievements() {
-    const { data: users, loading, error } = useUsers();
+    const { user, loading, error } = useCurrentUser();
     
-      if (loading) return <Loading text="Laddar badges..." />;
+      if (loading) return <Loading text="Laddar din profil..." />;
       if (error) return <ErrorMessage message={error} />;
-    
-      // To test with a specific user, find them by their ID from the fetched list.
-      const user = users?.find(u => u.id === 1); // Example: Hardcoding for user with ID 5
 
       return user
         ? <AchivementCard user={user} />
