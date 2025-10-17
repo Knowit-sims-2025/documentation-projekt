@@ -30,9 +30,15 @@ function TeamRank({
   );
 }
 
-export default function TeamLeaderboard() {
+interface TeamLeaderboardProps {
+  onSelectUser: (user: User) => void;
+}
+
+export default function TeamLeaderboard({
+  onSelectUser,
+}: TeamLeaderboardProps) {
   const [selectedTeam, setSelectedTeam] = useState<RankedTeam | null>(null);
-  const { data: teams, loading, error } = useTeams();
+  const { data: teams, loading, error, refetch } = useTeams();
 
   if (loading) {
     return <Loading text="Laddar team..." />;
@@ -61,7 +67,7 @@ export default function TeamLeaderboard() {
         >
           {" "}
           <p>Detta är teamets medlemmar, sorterade efter poäng:</p>
-          <TeamDetails team={selectedTeam} />
+          <TeamDetails team={selectedTeam} onSelectUser={onSelectUser} />
         </Overlay>
       )}
     </div>
