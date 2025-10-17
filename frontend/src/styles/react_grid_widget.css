@@ -118,4 +118,19 @@
   container-type: size;
 }
 
+@container (max-height: 75px) {
+  /* ...göm innehållet och kontrollerna för att spara plats. */
+  .widget__body,
+  .widget__controls {
+    display: none;
+  }
 
+  /* ...och anpassa headern så den fungerar som en etikett. */
+  .widget__header {
+    border-bottom: none;
+    padding: 0; 
+    height: 100%;   
+    font-size: 0.5rem; 
+    justify-content: flex-start;
+  }
+}

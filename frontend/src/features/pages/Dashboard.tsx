@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
 import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
 import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
-import Achivements from "../../components/Achivements";
+import UserAchievements from "../../components/Achivements";
 import {
   layouts as defaultLayouts,
   breakpoints,
@@ -12,6 +12,9 @@ import {
 import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
 import { useAuth } from "../../features/auth/AuthContext";
+import type { User } from "../../types/user";
+import { Overlay } from "./leaderboard/Overlay";
+import { ProfileCard } from "../profile/ProfileCard";
 import Profile from "../../components/Profile";
 import { useAutoRowHeight } from "../../hooks/useAutoRowHeight";
 
@@ -33,6 +36,7 @@ export default function Dashboard() {
   const { currentUser, isLoading: authLoading } = useAuth();
   const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("total");
 
   const myTier = currentUser?.rankTier ?? null;
@@ -71,15 +75,24 @@ export default function Dashboard() {
       content: (
         <UserLeaderBoard
           showMyTierOnly={showMyTierOnly}
+          onSelectUser={setSelectedUser}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
       ),
       headerControls: activeTab === "total" ? individualControls : null,
     },
-    { i: "teams", title: "Team Leaderboard", content: <TeamLeaderboard /> },
-    { i: "competition", title: "Competition", content: <div>Competition</div> },
-    { i: "achievements", title: "Achievements", content: <Achivements /> },
+    {
+      i: "teams",
+      title: "Team Leaderboard",
+      content: <TeamLeaderboard onSelectUser={setSelectedUser} />,
+    },
+    { i: "competition", title: "Statistik", content: <div>Stats</div> },
+    {
+      i: "achievements",
+      title: "Achievements",
+      content: currentUser ? <UserAchievements user={currentUser} /> : null,
+    },
   ];
 
   // Ladda layout från localStorage om den finns
@@ -142,6 +155,26 @@ export default function Dashboard() {
             </div>
           ))}
         </ResponsiveGridLayout>
+
+        {/* Overlay för användarprofil, hanteras nu centralt */}
+        {selectedUser && (
+          <Overlay
+            onClose={() => setSelectedUser(null)}
+            title={selectedUser.displayName}
+          >
+            {/* Använd flexbox för att placera korten sida vid sida */}
+            <div style={{ display: "flex", gap: "1rem", height: "100%" }}>
+              {/* Profilkortet får en fast bredd */}
+              <div style={{ flex: "0 0 320px", overflowY: "auto" }}>
+                <ProfileCard user={selectedUser} />
+              </div>
+              {/* Achievements fyller resten av ytan */}
+              <div style={{ flex: "1 1 auto", minWidth: 0, overflowY: "auto" }}>
+                <UserAchievements user={selectedUser} />
+              </div>
+            </div>
+          </Overlay>
+        )}
       </section>
     </main>
   );

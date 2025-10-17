@@ -1,9 +1,13 @@
 import { toLocalYYYYMMDD } from "./date";
 
-/** Säker lokal parsing av "YYYY-MM-DD" (undvik Date("...") som kan tolkas som UTC) */
+/**
+ * lokal parsing av "YYYY-MM-DD".
+ * new Date("YYYY-MM-DD") kan tolkas som UTC-midnatt, vilket kan leda till fel datum
+ * beroende på tidszon. Denna funktion säkerställer att datumet skapas i lokal tid.
+ */
 export function parseLocalDate(yyyyMmDd: string): Date {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
+  return new Date(y, m - 1, d);
 }
 
 export function isMonday(yyyyMmDd: string): boolean {
