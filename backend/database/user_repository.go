@@ -12,6 +12,10 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
+type UserStatsRepository struct {
+	DB *sql.DB
+}
+
 // GetAllUsers hämtar alla användare från databasen.
 func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	rows, err := repo.DB.Query("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users ORDER BY total_points DESC")
@@ -124,5 +128,36 @@ func (repo *UserRepository) DeleteUser(id int64) error {
 
 func (repo *UserRepository) UpdateUserPoints(id int64, points int) error {
 	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1, lifetime_points = lifetime_points + $1 WHERE id = $2", points, id)
+	return err
+}
+
+func (repo *UserRepository) EmptyUsersPoints(id int64) error {
+	query := `UPDATE users SET total_points = 0 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+// User_stats queries //
+func (repo *UserStatsRepository) UpdateUserStatsComments(id int64) error {
+	query := `UPDATE user_stats SET total_comments = total_comments + 1 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsEditedPages(id int64) error {
+	query := `UPDATE user_stats SET total_edited_pages = total_edited_pages + 1 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsCreatedPages(id int64) error {
+	query := `UPDATE user_stats SET total_created_pages = total_created_pages + 1 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsResolvedComments(id int64) error {
+	query := `UPDATE user_stats SET total_resolved_comments = total_resolved_comments + 1 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
 	return err
 }
