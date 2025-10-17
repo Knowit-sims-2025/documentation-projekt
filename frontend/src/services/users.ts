@@ -9,7 +9,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 type RawUser = Record<string, any>;
 
 /** Hanterar Go:s sql.NullString → string | undefined */
-export function pickString(v: any): string | undefined {
+function pickString(v: any): string | undefined {
   if (typeof v === "string") return v;
   if (v && typeof v.String === "string" && (v.Valid === undefined || v.Valid === true)) {
     return v.String;
@@ -17,7 +17,8 @@ export function pickString(v: any): string | undefined {
   return undefined;
 }
 
-export function pickDateString(v: any): string | undefined {
+/** Parsea datum (sträng/objekt/epoch) → ISO */
+function pickDateString(v: any): string | undefined {
   if (!v) return undefined;
 
   if (typeof v === "string") {

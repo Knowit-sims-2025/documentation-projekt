@@ -1,16 +1,15 @@
-/* =========================
-   widgets.css
-   - RGL-beteende, z-index, kort-höjd i grid-celler
-   - Widget-komponenter (header/controls/body/remove)
-   - Custom resize-handle
-   ========================= */
-
-/* Temavariabler (kan ligga i tokens.css om du vill) */
 :root {
-  --resize-handle-size: 16px;
-  --resize-handle-offset: 6px;
-  --resize-handle-color: var(--border);
+  --resize-handle-size: 16px;              
+  --resize-handle-offset: 6px;             
+  --resize-handle-color: var(--border);    
   --resize-handle-color-hover: var(--accent);
+}
+
+
+/* Tvinga RGL att fylla sin container */
+.react-grid-layout {
+  height: auto;
+  overflow: visible;
 }
 
 /* RGL-bas: låt items kliva över varann vid hover/drag/resize */
@@ -27,7 +26,6 @@
   z-index: 6; 
 }
 
-/* Slå av transform på kortet under drag/resize (för att undvika GPU-artefakter) */
 .react-draggable-dragging .card,
 .react-resizable-resizing .card { 
   transform: none; 
@@ -41,9 +39,8 @@
   flex-direction: column;
 }
 
-/* === Custom resize-handle (SE-hörn) === */
 .react-grid-item .react-resizable-handle {
-  background: none !important;  /* ta bort svart base64-ikon från react-resizable */
+  background: none !important; 
   border: 0 !important;
   position: absolute;
   width: var(--resize-handle-size);
@@ -51,26 +48,15 @@
   right: var(--resize-handle-offset);
   bottom: var(--resize-handle-offset);
   cursor: se-resize;
-  z-index: 10;
+  z-index: 10;       
   touch-action: none;
 }
-.react-grid-item .react-resizable-handle::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-right: 2px solid var(--resize-handle-color);
-  border-bottom: 2px solid var(--resize-handle-color);
-  border-radius: 2px;
-  opacity: .9;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,.25));
-}
+
 .react-grid-item:hover .react-resizable-handle::after,
 .react-grid-item.react-resizable-resizing .react-resizable-handle::after {
   border-color: var(--resize-handle-color-hover);
   opacity: 1;
 }
-
-/* === Widget-komponenter === */
 
 .widget-container {
   /* Höjd från TSX via --widget-height-factor (0..1).
@@ -132,23 +118,4 @@
   container-type: size;
 }
 
-@container (max-height: 75px) {
-  /* Dölj kontroller och innehåll */
-  .widget__header .widget__controls,
-  .widget__body {
-    display: none;
-  }
 
-  /* Anpassa header för minimerat läge */
-  .widget__header {
-    border-bottom: none;
-    margin-bottom: 0;
-    justify-content: center; /* Centrera rubriken horisontellt */
-    height: 100%; /* Fyll ut hela den lilla ytan */
-  }
-
-  /* Skala rubrikens textstorlek med widgetens höjd */
-  .widget__header h3 {
-    font-size: clamp(0.7rem, 4.5cqh, 1rem);
-  }
-}

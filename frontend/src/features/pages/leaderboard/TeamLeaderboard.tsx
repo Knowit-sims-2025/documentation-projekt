@@ -6,8 +6,6 @@ import type { User } from "../../../types/user";
 import type { RankedTeam } from "../../../types/team";
 import { Overlay } from "./Overlay";
 import { TeamDetails } from "./TeamDetails";
-import { ProfileCard } from "../../profile/ProfileCard";
-import UserAchievements from "../../../components/Achivements";
 
 function TeamRank({
   team,
@@ -34,7 +32,6 @@ function TeamRank({
 
 export default function TeamLeaderboard() {
   const [selectedTeam, setSelectedTeam] = useState<RankedTeam | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { data: teams, loading, error } = useTeams();
 
   if (loading) {
@@ -62,18 +59,9 @@ export default function TeamLeaderboard() {
           onClose={() => setSelectedTeam(null)}
           title={`Team: ${selectedTeam.name}`}
         >
-          <TeamDetails team={selectedTeam} onSelectUser={setSelectedUser} />
-        </Overlay>
-      )}
-
-      {/* Overlay för en enskild användare, visas när man klickar i TeamDetails */}
-      {selectedUser && (
-        <Overlay
-          onClose={() => setSelectedUser(null)}
-          title={selectedUser.displayName}
-        >
-          <ProfileCard user={selectedUser} />
-          <UserAchievements user={selectedUser} />
+          {" "}
+          <p>Detta är teamets medlemmar, sorterade efter poäng:</p>
+          <TeamDetails team={selectedTeam} />
         </Overlay>
       )}
     </div>

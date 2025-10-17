@@ -1,7 +1,4 @@
-
-import { pickString, pickDateString } from "./users";
-import { getRankTier } from "./config/rank";
-
+// src/services/auth.ts
 export type MeUser = {
   id: number;
   displayName: string;
@@ -57,33 +54,4 @@ export async function authFetch(input: RequestInfo, init: RequestInit = {}) {
   const headers = new Headers(init.headers || {});
   if (token) headers.set("Authorization", `Bearer ${token}`);
   return fetch(input, { ...init, headers });
-}
-
-function normalizeMe(u: any): MeUser {
-  const totalPoints = Number(u.totalPoints ?? u.TotalPoints ?? u.total_points ?? 0);
-  return {
-    id: Number(u.id ?? u.ID),
-    displayName: String(u.displayName ?? u.DisplayName ?? u.display_name ?? "(unknown)"),
-    avatarUrl:
-      pickString(u.avatarUrl) ??
-      pickString(u.AvatarURL) ??
-      pickString(u.avatar_url) ??
-      null,
-    confluenceAuthorId: String(
-      u.confluenceAuthorId ?? u.ConfluenceAuthorID ?? u.confluence_author_id ?? ""
-    ),
-    totalPoints,
-    isAdmin: Boolean(u.isAdmin ?? u.IsAdmin ?? u.is_admin ?? false),
-    createdAt:
-      pickDateString(u.createdAt) ??
-      pickDateString(u.CreatedAt) ??
-      pickDateString(u.created_at) ??
-      new Date(0).toISOString(),
-    updatedAt:
-      pickDateString(u.updatedAt) ??
-      pickDateString(u.UpdatedAt) ??
-      pickDateString(u.updated_at) ??
-      new Date(0).toISOString(),
-    rankTier: u.rankTier ?? getRankTier(totalPoints),
-  };
 }
