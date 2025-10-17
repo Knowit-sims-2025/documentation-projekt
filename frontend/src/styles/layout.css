@@ -1,5 +1,8 @@
 /* =========================
-   Layout:
+   layout.css
+   - Appens ramverk: header, footer, main-yta
+   - Dashboard-container
+   - Globala kort-stilar (utan tvingande höjd)
    ========================= */
 
    /* Header */
@@ -167,7 +170,37 @@
     background: var(--gradient-hover);
 }
 
-   .card:active {
+/* BAS-KORT
+   (RGL-höjd sätts i widgets.css under .react-grid-item > .card) */
+.card{
+  display: flex;
+  flex-direction: column;
+
+  align-items: stretch;
+  justify-content: flex-start;
+
+  gap: var(--gap);
+  font-weight: 600;
+  padding: 1rem;
+
+  background: var(--gradient);
+  border-radius: var(--border-radius);
+  border: var(--border-card);
+  border-top: solid 1px var(--highlight);
+
+  box-shadow: var(--shadow);
+
+  transition: 
+    transform 120ms ease, 
+    box-shadow 120ms ease, 
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  background: var(--gradient-hover);
+}
+.card:active {
   transform: translateY(0);
   box-shadow: 0 6px 16px color-mix(in oklch, black 65%, transparent);
 }

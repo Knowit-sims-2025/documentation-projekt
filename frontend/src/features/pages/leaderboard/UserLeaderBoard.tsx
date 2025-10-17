@@ -1,10 +1,12 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { useUsers } from "../../../hooks/useUsers";
 import { useAuth } from "../../auth/AuthContext";
 import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Overlay } from "./Overlay";
 import type { User } from "../../../types/user";
+import { ProfileCard } from "../../profile/ProfileCard";
+import UserAchievements from "../../../components/Achivements";
 
 import { useDailyLeaderboard } from "../../../hooks/useDailyLeaderboard";
 import { LeaderboardTabs } from "../../../components/LeaderboardTabs";
@@ -31,9 +33,8 @@ export default function UserLeaderBoard({
   const { currentUser, isLoading: authLoading } = useAuth();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedDailyUserId, setSelectedDailyUserId] = useState<number | null>(
-    null
-  );
+  // State för att fånga ID från Daily/Weekly listorna
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   // Daily datum-state
   const today = toLocalYYYYMMDD();
@@ -64,6 +65,16 @@ export default function UserLeaderBoard({
   const handleDateChange = (value: string) =>
     setDailyDate(clampToToday(value, today));
 
+  // Effekt som körs när ett ID väljs från Daily/Weekly.
+  // Den letar upp hela användarobjektet och sätter 'selectedUser' för att visa overlay.
+  useEffect(() => {
+    if (selectedId !== null) {
+      const userToView = users.find((u) => u.id === selectedId);
+      if (userToView) setSelectedUser(userToView);
+      setSelectedId(null); // Nollställ för att kunna välja samma användare igen
+    }
+  }, [selectedId, users]);
+
   // Gatekeeping
   if (loading || authLoading) return <Loading text="Laddar användare..." />;
   if (error) return <ErrorMessage message={error} />;
@@ -92,20 +103,22 @@ export default function UserLeaderBoard({
           ) : dailyError ? (
             <ErrorMessage message={dailyError} />
           ) : (
-            <DailyList data={daily} onSelectUserId={setSelectedDailyUserId} />
+            <DailyList data={daily} onSelectUserId={setSelectedId} />
           )}
         </>
       )}
 
-      {activeTab === "weekly" && <WeeklyCurrent />}
+      {activeTab === "weekly" && (
+        <WeeklyCurrent onSelectUserId={setSelectedId} />
+      )}
 
-      {/* Overlay – din befintliga för “total” */}
       {selectedUser && (
         <Overlay
           onClose={() => setSelectedUser(null)}
           title={selectedUser.displayName}
         >
-          <p>Poäng: {selectedUser.totalPoints}</p>
+          <ProfileCard user={selectedUser} />
+          <UserAchievements user={selectedUser} />
         </Overlay>
       )}
     </div>

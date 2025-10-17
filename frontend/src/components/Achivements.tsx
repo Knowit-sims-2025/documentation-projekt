@@ -3,7 +3,6 @@ import { useCurrentUser } from "../hooks/useCurrentUser.ts";
 import { Loading } from "./Loading";
 import { ErrorMessage } from "./ErrorMessage"; 
 
-
 export default function Achievements() {
     const { user, loading, error } = useCurrentUser();
     

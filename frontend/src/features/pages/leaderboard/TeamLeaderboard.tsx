@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTeams } from "../../../hooks/useTeams";
 import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
+import type { User } from "../../../types/user";
 import type { RankedTeam } from "../../../types/team";
 import { Overlay } from "./Overlay";
 import { TeamDetails } from "./TeamDetails";
