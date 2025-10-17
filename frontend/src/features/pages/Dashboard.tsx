@@ -163,13 +163,13 @@ export default function Dashboard() {
             title={selectedUser.displayName}
           >
             {/* Använd flexbox för att placera korten sida vid sida */}
-            <div style={{ display: "flex", gap: "1rem", height: "100%" }}>
+            <div>
               {/* Profilkortet får en fast bredd */}
-              <div style={{ flex: "0 0 320px", overflowY: "auto" }}>
+              <div>
                 <ProfileCard user={selectedUser} />
               </div>
               {/* Achievements fyller resten av ytan */}
-              <div style={{ flex: "1 1 auto", minWidth: 0, overflowY: "auto" }}>
+              <div>
                 <UserAchievements user={selectedUser} />
               </div>
             </div>

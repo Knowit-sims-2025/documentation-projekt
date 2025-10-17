@@ -1,3 +1,12 @@
+-- Stäng alla aktiva sessioner mot mål-databasen (annars blockeras DROP DATABASE)
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = :'DB_NAME'
+  AND pid <> pg_backend_pid();
+
+-- Droppa och återskapa databasen
+DROP DATABASE IF EXISTS :DB_NAME;
+CREATE DATABASE :DB_NAME OWNER :DB_OWNER TEMPLATE template0 ENCODING 'UTF8';
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY, -- Unikt internt ID för användaren
