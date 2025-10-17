@@ -1,10 +1,15 @@
 import AchivementCard from "../features/achivements/achievementCard.tsx";
-import type { User } from "../types/user.ts";
+import { useCurrentUser } from "../hooks/useCurrentUser.ts";
+import { Loading } from "./Loading";
+import { ErrorMessage } from "./ErrorMessage"; 
 
-interface UserAchievementsProps {
-  user: User;
-}
+export default function Achievements() {
+    const { user, loading, error } = useCurrentUser();
+    
+      if (loading) return <Loading text="Laddar din profil..." />;
+      if (error) return <ErrorMessage message={error} />;
 
-export default function UserAchievements({ user }: UserAchievementsProps) {
-  return <AchivementCard user={user} />;
+      return user
+        ? <AchivementCard user={user} />
+        : <ErrorMessage message="Inga badges hittades." />;
 }

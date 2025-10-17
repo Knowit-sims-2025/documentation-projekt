@@ -23,7 +23,6 @@ func LoadConfig() *Config {
 		ConfluenceBaseURL:  mustGetEnv("CONFLUENCE_BASE_URL"),
 		ConfluenceEmail:    mustGetEnv("CONFLUENCE_EMAIL"),
 		ConfluenceAPIToken: mustGetEnv("CONFLUENCE_API_TOKEN"),
-		JWTSecret:          mustGetEnv("JWT_SECRET"),
 	}
 }
 

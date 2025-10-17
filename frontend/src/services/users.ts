@@ -91,3 +91,21 @@ const users: User[] = list.map((u, i) => ({
 
   return users;
 }
+
+/* ==========================================================================
+   getMe()
+   --------------------------------------------------------------------------
+   Hämtar den för närvarande inloggade användaren från /api/v1/me.
+   ========================================================================== */
+export async function getMe(): Promise<User> {
+  const res = await authFetch(`${API_BASE}/me`);
+  if (!res.ok) {
+    if (res.status === 401) throw new Error("Not authenticated");
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+
+  const raw: RawUser = await res.json();
+  const user = normalizeUser(raw);
+  // /me endpoint returns a single user, so rank is not applicable here.
+  return { ...user, rank: 0, rankTier: user.rankTier ?? getRankTier(user.totalPoints) };
+}

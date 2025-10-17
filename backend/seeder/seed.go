@@ -152,7 +152,7 @@ func main() {
 		{"Proffesional editor", "Awarded for making your 100th edit.", "edits3", 100},
 	}
 
-	badgeIDs := make([]int, 0)
+	badges := make(map[int]int) // Map to store badgeID -> criteriaValue
 	for _, b := range badgeData {
 		var badgeID int
 		err := db.QueryRow(`
@@ -162,29 +162,31 @@ func main() {
 		if err != nil {
 			log.Fatalf("❌ Kunde inte infoga badge %s: %v", b.Name, err)
 		}
-		badgeIDs = append(badgeIDs, badgeID)
+		badges[badgeID] = b.CriteriaValue
 		fmt.Printf("  → Badge: %s (ID: %d)\n", b.Name, badgeID)
 	}
 
 	// --- STEG 5: Tilldela badges slumpmässigt till användare ---
 	fmt.Println("\n🎯 Tilldelar badges till användare...")
 	userBadgeStmt, err := db.Prepare(`
-		INSERT INTO user_badges (user_id, badge_id, awarded_at)
-		VALUES ($1, $2, $3)
+		INSERT INTO user_badges (user_id, badge_id, awarded_at, progress)
+		VALUES ($1, $2, $3, $4)
 	`)
 	if err != nil {
 		log.Fatalf("Kunde inte förbereda user_badges statement: %v", err)
 	}
 	defer userBadgeStmt.Close()
 
+	// Loop through every user
 	for _, userID := range userIDs {
-		numBadges := rand.Intn(3) + 1 // 1–3 badges per användare
-		for i := 0; i < numBadges; i++ {
-			badgeID := badgeIDs[rand.Intn(len(badgeIDs))]
+		// Loop through every badge to assign it to the user
+		for badgeID, criteria := range badges {
 			awardedAt := time.Now().AddDate(0, 0, -rand.Intn(90)) // senaste 90 dagar
-			_, err := userBadgeStmt.Exec(userID, badgeID, awardedAt)
+			// Generate random progress. Let's make it possible to exceed the criteria.
+			progress := rand.Intn(criteria + criteria/2)
+			_, err := userBadgeStmt.Exec(userID, badgeID, awardedAt, progress)
 			if err != nil {
-				log.Printf("⚠️ Kunde inte tilldela badge %d till user %d: %v", badgeID, userID, err)
+				log.Printf("⚠️ Kunde inte tilldela badge %d till user %d: %v", badgeID, userID, err) // This shouldn't happen with the new logic
 			}
 		}
 	}

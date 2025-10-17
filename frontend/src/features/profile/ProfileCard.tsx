@@ -3,8 +3,8 @@ import Avatar from "../../components/Avatar";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
 import { useBadges } from "../../hooks/useBadges";
-import { sortBadgesByCompletion } from "../achivements/badgeUtils";
-import { HexProgress } from "../achivements/hexProgress";
+import { useUserBadges } from "../../hooks/useUserBadges";
+import { sortBadgesByCompletion, getUserProgressForBadge } from "../achivements/badgeUtils";
 import {
   getNextRankThreshold,
   getNextRankTier,
@@ -41,36 +41,24 @@ const iconMap: { [key: string]: string } = {
 };
 
 export function ProfileCard({ user }: { user: User }) {
-  const { data: badges } = useBadges();
+  const { data: badges, loading: loadingBadges } = useBadges();
+  const { data: userBadges, loading: loadingUserBadges } = useUserBadges(user.id);
 
-  const sortedBadges = badges ? sortBadgesByCompletion(badges, user) : [];
-  // Find the first badge in the sorted list that is not yet 100% complete.
-  const topBadge =
-    sortedBadges.find((badge) => {
-      const currentUserProgress = 5; // TODO: Replace with actual progress calculation
-      const badgeCriteriaValue = badge.criteriaValue ?? 100;
-      const progress =
-        (badge.criteriaValue ?? 0) > 0
-          ? currentUserProgress / badgeCriteriaValue
-          : 0;
-      return progress < 1;
-    }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to top badge if all are complete
-
-  // Declare these variables here to make them accessible to the JSX below.
-  let userProgressForBadge = 0;
-  let topBadgeHexProgress = 0;
-
-  if (topBadge) {
-    // TODO: Replace this with your actual progress calculation logic
-    userProgressForBadge = 5;
-    const maxValue = topBadge.criteriaValue ?? 100;
-    topBadgeHexProgress =
-      maxValue > 0 ? Math.min(userProgressForBadge / maxValue, 1) : 0;
+  if (loadingBadges || loadingUserBadges) {
+    // You might want a more sophisticated loading state here
+    return null;
   }
 
-  {
-    console.log("ProfileCard avatarUrl:", JSON.stringify(user.avatarUrl));
-  }
+  const sortedBadges = badges && userBadges ? sortBadgesByCompletion(badges, userBadges) : [];
+  // Get the badge with the highest progress.
+  // The list is already sorted by completion, so the first item is the top one.
+  const topBadge = sortedBadges.find(badge => {
+    const userProgress = userBadges ? getUserProgressForBadge(badge.id, userBadges) : 0;
+    const criteria = badge.criteriaValue ?? 100;
+    return userProgress < criteria;
+  }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to the top badge if all are complete.
+
+  const userProgressForBadge = topBadge && userBadges ? getUserProgressForBadge(topBadge.id, userBadges) : 0;
 
   return (
     <div className="profile-widget card">

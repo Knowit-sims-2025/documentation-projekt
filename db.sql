@@ -53,6 +53,7 @@ CREATE TABLE user_badges (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     badge_id INTEGER NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
     awarded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    progress INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (user_id, badge_id)
 );
 
