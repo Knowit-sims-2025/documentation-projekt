@@ -10,7 +10,7 @@ const lg: Layout[] = [
   { i: "achievements", x: 14, y: 0, w: 6,  h: 10 },
 ];
 
-/** Tablet: välj 10 kolumner för hyfsad proportionalitet (3/4/2/2/3 ~ 30/40/20/20/30) */
+/** Tablet: välj 10 kolumner */
 const md: Layout[] = [
   { i: "profile",      x: 0, y: 0,  w: 3, h: 10 },
   { i: "individual",   x: 3, y: 0,  w: 4, h: 6  },
@@ -19,7 +19,7 @@ const md: Layout[] = [
   { i: "achievements", x: 7, y: 0,  w: 3, h: 10 },
 ];
 
-/** Mobil: 6 kolumner – stapla allt men håll “känsla” i höjderna */
+/** Mobil: 6 kolumner – staplar allt */
 const sm: Layout[] = [
   { i: "profile",      x: 0, y: 0,  w: 6, h: 10 },
   { i: "individual",   x: 0, y: 10, w: 6, h: 6  },
@@ -30,8 +30,9 @@ const sm: Layout[] = [
 
 export const layouts: Layouts = { lg, md, sm, xs: sm, xxs: sm };
 
+
 /** Breakpoints oförändrade (använd dina befintliga) */
 export const breakpoints = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 
-/** Viktigt: kolumnantal — lg = 20 för exakt procentmappning */
+/** kolumnantal — lg = 20 */
 export const cols = { lg: 20, md: 10, sm: 6, xs: 4, xxs: 2 };

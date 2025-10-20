@@ -53,14 +53,14 @@ export async function getUserBadges(): Promise<UserBadge[]> {
    ========================================================================== */
 export async function getUserBadgesByUserId(userId: number): Promise<UserBadge[]> {
   // For debugging: Log which user we are fetching badges for.
-  console.log(`Fetching badges for userId: ${userId}`);
+  // console.log(`Fetching badges for userId: ${userId}`);
 
   const res = await fetch(`/api/v1/users/${userId}/badges`);
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
   const data = await res.json();
   // For debugging: Log the raw data received from the API.
-  console.log(`Raw data from /api/v1/users/${userId}/badges:`, data);
+  // console.log(`Raw data from /api/v1/users/${userId}/badges:`, data);
 
   const raw: RawUserBadge[] = Array.isArray(data) ? data : [];
   return raw.map(normalizeUserBadge);

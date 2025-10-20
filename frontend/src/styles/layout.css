@@ -1,3 +1,8 @@
+:root{
+   --dash-py: clamp(0.5rem, 1.5dvh, 1rem);
+}
+
+
 /* =========================
    layout.css
    - Appens ramverk: header, footer, main-yta
@@ -110,12 +115,9 @@
     bottom: var(--container-inset-bottom);
     left: 0;
     right: 0;
-
-    /* Höjden är i praktiken redan satt av top/bottom, men lägg gärna med för tydlighet */
     block-size: var(--container-h);
-
-    overflow: auto; /* inre scroll */
-    /* Ingen extra padding-top/bottom här – header/footer är redan borträknade */
+    overflow: auto;
+   
   }
 
    /* Dashboard */

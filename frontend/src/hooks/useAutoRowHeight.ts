@@ -1,56 +1,48 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { Layouts, Layout } from "react-grid-layout";
+import { useLayoutEffect, useState } from "react";
 
-/** Hjälp: maxrader i en layout = max(y + h) */
-function calcRows(layout: Layout[] | undefined): number {
-  if (!layout || layout.length === 0) return 0;
-  return layout.reduce((max, it) => Math.max(max, it.y + it.h), 0);
-}
+/**
+ * Räknar dynamiskt ut rowHeight för React-Grid-Layout utifrån höjden på .app__main.
+ * Ex: rows=10 -> rowHeight = appMainHeight / 10 (klampas mellan min/max).
+ */
+export function useAutoRowHeight(
+  rows: number = 10,
+  min: number = 28,
+  max: number = 140
+) {
+  const [rowHeight, setRowHeight] = useState<number>(40);
 
-/** Hook: räkna ut rowHeight så att grid fyller containerhöjd pixelperfekt */
-function useAutoRowHeight(opts: {
-  containerRef: React.RefObject<HTMLElement>;
-  layouts: Layouts;
-  breakpoint: keyof Layouts;
-  marginY: number;            // samma som RGL `margin[1]`
-  containerPaddingY: number;  // samma som RGL `containerPadding[1]`
-}) {
-  const { containerRef, layouts, breakpoint, marginY, containerPaddingY } = opts;
-  const [availableH, setAvailableH] = useState<number>(0);
-  const rows = useMemo(() => calcRows(layouts[breakpoint]), [layouts, breakpoint]);
-
-  // 1) Mät containerhöjd med ResizeObserver så att dvh/omlayout funkar direkt
   useLayoutEffect(() => {
-    const el = containerRef.current;
+    const el = document.querySelector(".app__main") as HTMLElement | null;
     if (!el) return;
 
-    const measure = () => {
-      const rect = el.getBoundingClientRect();
-      setAvailableH(rect.height);
+    const compute = () => {
+      const h = el.getBoundingClientRect().height;
+      const px = Math.max(min, Math.min(max, Math.round(h / rows)));
+      setRowHeight(px);
     };
 
-    measure(); // initial
-    const ro = new ResizeObserver(measure);
+    // Kör direkt
+    compute();
+
+    // Reagera på container-storleksändring (fönster, adressfält på mobil, temabyten, etc.)
+    const ro = new ResizeObserver(() => compute());
     ro.observe(el);
-    // Fallback mot orientationchange/keyboard UI på mobil
-    window.addEventListener("resize", measure);
+
+    // Extra lyhördhet på mobil (adressfält/tangentbord)
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    vv?.addEventListener("resize", compute);
+    vv?.addEventListener("scroll", compute);
+
+    // Vanlig resize fallback
+    window.addEventListener("resize", compute);
+
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", measure);
+      vv?.removeEventListener("resize", compute);
+      vv?.removeEventListener("scroll", compute);
+      window.removeEventListener("resize", compute);
     };
-  }, [containerRef]);
+  }, [rows, min, max]);
 
-  // 2) Räkna ut rowHeight (pixlar per rad)
-  const rowHeight = useMemo(() => {
-    if (!rows || rows <= 0 || availableH <= 0) return 40; // fallback
-    const totalMargins = Math.max(0, rows - 1) * marginY;
-    const totalPadding = containerPaddingY * 2;
-    const free = availableH - totalPadding - totalMargins;
-    // Skydda mot negativa fall (extremt liten höjd)
-    return Math.max(8, free / rows);
-  }, [rows, availableH, marginY, containerPaddingY]);
-
-  return { rowHeight, rows, availableH };
+  return rowHeight;
 }
-
-export { useAutoRowHeight };
