@@ -126,6 +126,8 @@ export default function Dashboard() {
     return <main className="app__main">Loading user...</main>;
   }
 
+  // TODO: Flytta ut denna knapp till en mer passande plats, t.ex. en inställningsmeny
+
   return (
     <main className="app__main">
       <section className="dashboard">

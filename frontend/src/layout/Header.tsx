@@ -12,6 +12,9 @@ interface HeaderProps {
   setTheme: (theme: Theme) => void;
 }
 
+// Nyckel för dashboard-layouten i localStorage
+const LS_DASHBOARD_KEY = "user-dashboard-layout";
+
 export default function Header({ theme, setTheme }: HeaderProps) {
   const { currentUser, logout, updateCurrentUserAvatar } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,6 +64,13 @@ export default function Header({ theme, setTheme }: HeaderProps) {
     }
   };
 
+  // Funktion för att återställa layouten
+  const handleResetLayout = () => {
+    localStorage.removeItem(LS_DASHBOARD_KEY);
+    window.location.reload();
+    setIsMenuOpen(false); // Stäng menyn efter klick
+  };
+
   return (
     <header className="app__header">
       <div className="container">
@@ -101,6 +111,7 @@ export default function Header({ theme, setTheme }: HeaderProps) {
             )}
 
             <button onClick={handleAvatarButtonClick}>Byt avatar</button>
+            <button onClick={handleResetLayout}>Återställ layout</button>
             <div className="settings-menu__separator" />
             <button onClick={handleLogout}>Logga ut</button>
           </SettingsMenu>
