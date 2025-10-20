@@ -1,10 +1,14 @@
 // import { Avatar } from "../../components/Avatar";
 import Avatar from "../../components/Avatar";
+import { useAuth } from "../auth/AuthContext";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
 import { useBadges } from "../../hooks/useBadges";
 import { useUserBadges } from "../../hooks/useUserBadges";
-import { sortBadgesByCompletion, getUserProgressForBadge } from "../achivements/badgeUtils";
+import {
+  sortBadgesByCompletion,
+  getUserProgressForBadge,
+} from "../achivements/badgeUtils";
 import {
   getNextRankThreshold,
   getNextRankTier,
@@ -42,23 +46,42 @@ const iconMap: { [key: string]: string } = {
 
 export function ProfileCard({ user }: { user: User }) {
   const { data: badges, loading: loadingBadges } = useBadges();
-  const { data: userBadges, loading: loadingUserBadges } = useUserBadges(user.id);
+  const { data: userBadges, loading: loadingUserBadges } = useUserBadges(
+    user.id
+  );
+  const { allUsers } = useAuth();
+
+  // Hitta användarens globala rankning.
+  // Vi sorterar alla användare efter poäng och hittar indexet för den aktuella användaren.
+  // findIndex returnerar -1 om användaren inte hittas, så vi lägger till 1 för att få rank 1, 2, 3...
+  // Om användaren inte hittas (vilket inte borde hända), visas inget.
+  const userRank =
+    allUsers
+      .sort((a, b) => b.totalPoints - a.totalPoints)
+      .findIndex((u) => u.id === user.id) + 1;
 
   if (loadingBadges || loadingUserBadges) {
     // You might want a more sophisticated loading state here
     return null;
   }
 
-  const sortedBadges = badges && userBadges ? sortBadgesByCompletion(badges, userBadges) : [];
+  const sortedBadges =
+    badges && userBadges ? sortBadgesByCompletion(badges, userBadges) : [];
   // Get the badge with the highest progress.
   // The list is already sorted by completion, so the first item is the top one.
-  const topBadge = sortedBadges.find(badge => {
-    const userProgress = userBadges ? getUserProgressForBadge(badge.id, userBadges) : 0;
-    const criteria = badge.criteriaValue ?? 100;
-    return userProgress < criteria;
-  }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to the top badge if all are complete.
+  const topBadge =
+    sortedBadges.find((badge) => {
+      const userProgress = userBadges
+        ? getUserProgressForBadge(badge.id, userBadges)
+        : 0;
+      const criteria = badge.criteriaValue ?? 100;
+      return userProgress < criteria;
+    }) ?? (sortedBadges.length > 0 ? sortedBadges[0] : null); // Fallback to the top badge if all are complete.
 
-  const userProgressForBadge = topBadge && userBadges ? getUserProgressForBadge(topBadge.id, userBadges) : 0;
+  const userProgressForBadge =
+    topBadge && userBadges
+      ? getUserProgressForBadge(topBadge.id, userBadges)
+      : 0;
 
   return (
     <div className="profile-widget card">
@@ -91,6 +114,7 @@ export function ProfileCard({ user }: { user: User }) {
             src={topBadge.iconUrl ? iconMap[topBadge.iconUrl] : undefined}
           />
         )}
+
         <ProgressBar
           value={user.totalPoints}
           max={getNextRankThreshold(user.totalPoints) ?? 1}

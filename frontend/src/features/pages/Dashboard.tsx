@@ -56,14 +56,14 @@ export default function Dashboard() {
       className="leaderboard__filter_button"
       style={{ fontSize: "0.8rem" }}
     >
-      <span className={!showMyTierOnly ? "muted" : ""}>All</span>
+      <span className={showMyTierOnly ? "muted" : ""}>All</span>
       <Switch
         checked={showMyTierOnly}
         onChange={(next) => setShowMyTierOnly(next)}
         ariaLabel="Växla mellan att visa alla användare och bara de i din tier"
         disabled={authLoading}
       />
-      <span className={showMyTierOnly ? "muted" : ""}>My Tier</span>
+      <span className={!showMyTierOnly ? "muted" : ""}>My Tier</span>
     </div>
   );
 
@@ -125,8 +125,6 @@ export default function Dashboard() {
   if (authLoading) {
     return <main className="app__main">Loading user...</main>;
   }
-
-  // TODO: Flytta ut denna knapp till en mer passande plats, t.ex. en inställningsmeny
 
   return (
     <main className="app__main">

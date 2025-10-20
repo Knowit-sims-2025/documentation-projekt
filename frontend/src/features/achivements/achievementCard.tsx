@@ -22,26 +22,29 @@ import edits3 from "../../assets/badges/edits3.svg";
 
 // Create a mapping from the icon key (from the database) to the imported image asset.
 const iconMap: { [key: string]: string } = {
-  "documents0": documents0,
-  "documents1": documents1,
-  "documents2": documents2,
-  "documents3": documents3,
-  "comments0": comments0,
-  "comments1": comments1,
-  "comments2": comments2,
-  "comments3": comments3,
-  "edits0": edits0,
-  "edits1": edits1,
-  "edits2": edits2,
-  "edits3": edits3,
+  documents0: documents0,
+  documents1: documents1,
+  documents2: documents2,
+  documents3: documents3,
+  comments0: comments0,
+  comments1: comments1,
+  comments2: comments2,
+  comments3: comments3,
+  edits0: edits0,
+  edits1: edits1,
+  edits2: edits2,
+  edits3: edits3,
 };
 
 interface AchievementCardProps {
   user: User;
 }
 
-const getUserProgressForBadge = (badgeId: number, userBadges: UserBadge[]): number => {
-  const userBadge = userBadges.find(ub => ub.badgeId === badgeId);
+const getUserProgressForBadge = (
+  badgeId: number,
+  userBadges: UserBadge[]
+): number => {
+  const userBadge = userBadges.find((ub) => ub.badgeId === badgeId);
   return userBadge?.progress ?? 0;
 };
 
@@ -53,8 +56,10 @@ const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
     const badgeCriteriaValueA = a.criteriaValue ?? 100;
     const badgeCriteriaValueB = b.criteriaValue ?? 100;
 
-    const progressA = badgeCriteriaValueA > 0 ? userProgressA / badgeCriteriaValueA : 0;
-    const progressB = badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
+    const progressA =
+      badgeCriteriaValueA > 0 ? userProgressA / badgeCriteriaValueA : 0;
+    const progressB =
+      badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
 
     // Sort descending (from most complete to least complete)
     return progressB - progressA;
@@ -62,16 +67,29 @@ const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
 };
 
 export default function AchievementCard({ user }: AchievementCardProps) {
-  const { data: badges, loading: loadingBadges, error: errorBadges } = useBadges();
-  const { data: userBadges, loading: loadingUserBadges, error: errorUserBadges } = useUserBadges(user.id);
+  const {
+    data: badges,
+    loading: loadingBadges,
+    error: errorBadges,
+  } = useBadges();
+  const {
+    data: userBadges,
+    loading: loadingUserBadges,
+    error: errorUserBadges,
+  } = useUserBadges(user.id);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
   if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
-  if (errorBadges || errorUserBadges) return <ErrorMessage message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges}`} />;
+  if (errorBadges || errorUserBadges)
+    return (
+      <ErrorMessage
+        message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges}`}
+      />
+    );
 
-  const badgeList = sortBadges((badges ?? []), (userBadges ?? []));
+  const badgeList = sortBadges(badges ?? [], userBadges ?? []);
 
-  if(badgeList.length === 0) {
+  if (badgeList.length === 0) {
     return <ErrorMessage message="Inga badges hittades." />;
   }
 
@@ -90,7 +108,9 @@ export default function AchievementCard({ user }: AchievementCardProps) {
               onClick={() => setSelectedBadge(badge)}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") && setSelectedBadge(badge)
+              }
             >
               <ProgressBar
                 value={userProgress}
@@ -103,28 +123,48 @@ export default function AchievementCard({ user }: AchievementCardProps) {
           );
         })}
       </div>
-      {selectedBadge && (
-        (() => { // IIFE to calculate progress for selected badge
-          const userProgress = getUserProgressForBadge(selectedBadge.id, userBadges);
-          return (
-        <Overlay
-          onClose={() => setSelectedBadge(null)}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-            <h2>{selectedBadge.name}</h2>
-            <p>{selectedBadge.description}</p>
-            <img src={selectedBadge.iconUrl ? iconMap[selectedBadge.iconUrl] : undefined} alt={selectedBadge.name} style={{ width: '100px', height: '100px' }} />
-            <div style={{ width: '100%' }}>
-              <ProgressBar
-                value={userProgress}
-                max={selectedBadge.criteriaValue ?? 100}
-              />
-            </div>
-            <p>Progress: {userProgress} / {selectedBadge.criteriaValue ?? 100}</p>
-          </div>
-        </Overlay>
+      {selectedBadge &&
+        (() => {
+          // IIFE to calculate progress for selected badge
+          const userProgress = getUserProgressForBadge(
+            selectedBadge.id,
+            userBadges
           );
-        })()
-      )}
+          return (
+            <Overlay onClose={() => setSelectedBadge(null)}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                <h2>{selectedBadge.name}</h2>
+                <p>{selectedBadge.description}</p>
+                <img
+                  src={
+                    selectedBadge.iconUrl
+                      ? iconMap[selectedBadge.iconUrl]
+                      : undefined
+                  }
+                  alt={selectedBadge.name}
+                  style={{ width: "100px", height: "100px" }}
+                />
+                <div style={{ width: "100%" }}>
+                  <ProgressBar
+                    value={userProgress}
+                    max={selectedBadge.criteriaValue ?? 100}
+                  />
+                </div>
+                <p>
+                  Progress: {userProgress} /{" "}
+                  {selectedBadge.criteriaValue ?? 100}
+                </p>
+              </div>
+            </Overlay>
+          );
+        })()}
     </>
   );
 }
