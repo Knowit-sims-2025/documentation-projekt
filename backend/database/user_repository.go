@@ -139,7 +139,7 @@ func (repo *UserRepository) EmptyUsersPoints(id int64) error {
 
 // User_stats queries //
 func (repo *UserStatsRepository) UpdateUserStatsComments(id int64) error {
-	query := `UPDATE user_stats SET total_comments = total_comments + 1 WHERE id = $1`
+	query := `UPDATE user_stats SET total_comments = total_comments + 1 WHERE user_id = $1`
 	_, err := repo.DB.Exec(query, id)
 	return err
 }
