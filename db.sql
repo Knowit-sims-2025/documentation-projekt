@@ -27,6 +27,15 @@ CREATE TABLE user_teams (
     PRIMARY KEY (user_id, team_id)
 );
 
+-- Tabell för att lagra stats för en viss user
+CREATE TABLE user_stats (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    total_comments INTEGER DEFAULT 0,
+    total_created_pages INTEGER DEFAULT 0,
+    total_edits_made INTEGER DEFAULT 0,
+    total_resolved_comments INTEGER DEFAULT 0
+)
+
 -- Tabell för att logga alla aktiviteter som ger poäng.
 -- Detta är "kvittot" för varje poäng som delas ut.
 CREATE TABLE activities (

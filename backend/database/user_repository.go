@@ -145,19 +145,29 @@ func (repo *UserStatsRepository) UpdateUserStatsComments(id int64) error {
 }
 
 func (repo *UserStatsRepository) UpdateUserStatsEditedPages(id int64) error {
-	query := `UPDATE user_stats SET total_edited_pages = total_edited_pages + 1 WHERE id = $1`
+	query := `UPDATE user_stats SET total_edits_made = total_edits_made + 1 WHERE user_id = $1`
 	_, err := repo.DB.Exec(query, id)
 	return err
 }
 
 func (repo *UserStatsRepository) UpdateUserStatsCreatedPages(id int64) error {
-	query := `UPDATE user_stats SET total_created_pages = total_created_pages + 1 WHERE id = $1`
+	query := `UPDATE user_stats SET total_created_pages = total_created_pages + 1 WHERE user_id = $1`
 	_, err := repo.DB.Exec(query, id)
 	return err
 }
 
 func (repo *UserStatsRepository) UpdateUserStatsResolvedComments(id int64) error {
-	query := `UPDATE user_stats SET total_resolved_comments = total_resolved_comments + 1 WHERE id = $1`
+	query := `UPDATE user_stats SET total_resolved_comments = total_resolved_comments + 1 WHERE user_id = $1`
 	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) CreateStatsForUser(userID int64) error {
+	query := `
+        INSERT INTO user_stats (user_id, total_comments, total_edits_made, total_created_pages, total_resolved_comments)
+        VALUES ($1, 0, 0, 0, 0)
+        ON CONFLICT (user_id) DO NOTHING
+    `
+	_, err := repo.DB.Exec(query, userID)
 	return err
 }

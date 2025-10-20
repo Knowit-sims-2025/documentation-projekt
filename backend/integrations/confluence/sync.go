@@ -10,8 +10,9 @@ import (
 )
 
 type Repositories struct {
-	UserRepo     *database.UserRepository
-	ActivityRepo *database.ActivityRepository
+	UserRepo      *database.UserRepository
+	ActivityRepo  *database.ActivityRepository
+	UserStatsRepo *database.UserStatsRepository
 }
 
 // SyncActivities är huvudfunktionen för att synkronisera data.
@@ -65,12 +66,20 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 		log.Printf("FEL vid hantering av sid-användare %s: %v", userDetails.DisplayName, err)
 		return 0
 	}
+	// Skapa user_stats om den inte finns
+	if err := repos.UserStatsRepo.CreateStatsForUser(user.ID); err != nil {
+		log.Printf("Kunde inte skapa user_stats för user %d: %v", user.ID, err)
+	}
 
 	var activityType string
 	var pointsAwarded int
 	if page.Version.Number == 1 {
 		activityType = "PAGE_CREATED"
 		pointsAwarded = PointsForPageCreated()
+		// Uppdatera user_stats för nya sidor
+		if err := repos.UserStatsRepo.UpdateUserStatsCreatedPages(user.ID); err != nil {
+			log.Printf("Kunde inte uppdatera created pages för user %d: %v", user.ID, err)
+		}
 	} else {
 		activityType = "PAGE_UPDATED"
 
@@ -91,11 +100,14 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 		if err == nil {
 			pointsAwarded = PointsForPageUpdated(oldContent, newContent)
 			log.Printf("Poäng utdelade: %d (diff mellan version %d → %d)", pointsAwarded, oldVersion, page.Version.Number)
+			// Uppdatera user_stats för redigerade sidor
+			if err := repos.UserStatsRepo.UpdateUserStatsEditedPages(user.ID); err != nil {
+				log.Printf("Kunde inte uppdatera edited pages för user %d: %v", user.ID, err)
+			}
 		}
 		log.Printf("NEW version %d content length: %d", page.Version.Number, len(newContent))
 
 	}
-
 	log.Printf("Sida: %s av %s (%s)", page.Title, user.DisplayName, activityType)
 
 	activity := models.Activity{
@@ -164,6 +176,7 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 			activityType = "RESOLVED_COMMENT"
 			points = PointsForResolvedComment()
 			version += 100000
+
 		} else if fullComment.Version.Number == 1 {
 			ownerID = fullComment.Version.By.AccountID
 			userDetails := getCachedUserDetails(client, ownerID, userCache)
@@ -173,6 +186,7 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 			ownerName = userDetails.DisplayName
 			activityType = "COMMENT_CREATED"
 			points = PointsForCommentCreated()
+
 		} else {
 			continue
 		}
