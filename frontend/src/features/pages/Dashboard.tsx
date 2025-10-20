@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
+import AchievementIconDisplay from "../../components/AchievementIconDisplay";
 import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
 import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
 import UserAchievements from "../../components/Achivements";
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("total");
+  const [selectedBadgeId, setSelectedBadgeId] = useState<number | null>(null);
 
   const myTier = currentUser?.rankTier ?? null;
 
@@ -91,7 +93,12 @@ export default function Dashboard() {
     {
       i: "achievements",
       title: "Achievements",
-      content: currentUser ? <UserAchievements user={currentUser} /> : null,
+      content: currentUser ? (
+        <AchievementIconDisplay
+          user={currentUser}
+          onIconClick={(badgeId) => setSelectedBadgeId(badgeId)}
+        />
+      ) : null,
     },
   ];
 
@@ -215,6 +222,19 @@ export default function Dashboard() {
                 <UserAchievements user={selectedUser} />
               </div>
             </div>
+          </Overlay>
+        )}
+
+        {/* Overlay för en specifik achievement */}
+        {selectedBadgeId && currentUser && (
+          <Overlay
+            onClose={() => setSelectedBadgeId(null)}
+            title="Achievement Details"
+          >
+            <UserAchievements
+              user={currentUser}
+              initialSelectedBadgeId={selectedBadgeId}
+            />
           </Overlay>
         )}
       </section>
