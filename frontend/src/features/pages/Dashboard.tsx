@@ -53,17 +53,17 @@ export default function Dashboard() {
   const individualControls = (
     <div
       title="Filter all users by tier"
-      className="leaderboard-filter leaderboard__filter_button"
+      className="leaderboard__filter_button"
+      style={{ fontSize: "0.8rem" }}
     >
-      <span style={{ minWidth: 60, textAlign: "right" }}>
-        {showMyTierOnly ? "Show All" : "Show my tier"}
-      </span>
+      <span className={!showMyTierOnly ? "muted" : ""}>All</span>
       <Switch
         checked={showMyTierOnly}
         onChange={(next) => setShowMyTierOnly(next)}
-        ariaLabel="Filtrera till min tier"
+        ariaLabel="Växla mellan att visa alla användare och bara de i din tier"
         disabled={authLoading}
       />
+      <span className={showMyTierOnly ? "muted" : ""}>My Tier</span>
     </div>
   );
 
