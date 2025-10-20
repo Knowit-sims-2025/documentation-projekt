@@ -97,9 +97,26 @@ export default function Dashboard() {
 
   // Ladda layout från localStorage om den finns
   useEffect(() => {
-    const stored = localStorage.getItem(LS_KEY);
-    if (stored) {
-      setLayouts(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem(LS_KEY);
+      if (stored) {
+        setLayouts(JSON.parse(stored));
+      } else {
+        // Om ingen layout är sparad, sätt default-layouten men med alla widgets låsta
+        const lockedDefaultLayouts: Layouts = {};
+        for (const breakpoint in defaultLayouts) {
+          lockedDefaultLayouts[breakpoint] = defaultLayouts[breakpoint].map(
+            (item) => ({ ...item, isDraggable: false, isResizable: false })
+          );
+        }
+        setLayouts(lockedDefaultLayouts);
+      }
+    } catch (error) {
+      console.error(
+        "Kunde inte ladda eller bearbeta layout från localStorage",
+        error
+      );
+      setLayouts(defaultLayouts); // Fallback till o-låst default vid fel
     }
   }, []);
 
@@ -120,6 +137,27 @@ export default function Dashboard() {
       );
     }
     handleLayoutChange([], newLayouts); // Spara den nya layouten
+  }
+
+  // Funktion för att låsa/låsa upp en widget
+  function handleToggleLock(widgetId: string) {
+    const newLayouts: Layouts = {};
+    for (const breakpoint in layouts) {
+      newLayouts[breakpoint] = layouts[breakpoint].map((item) => {
+        if (item.i === widgetId) {
+          // Om den redan har isDraggable=false, är den låst. Lås upp den.
+          const currentlyLocked = item.isDraggable === false;
+          return {
+            ...item,
+            isDraggable: currentlyLocked,
+            isResizable: currentlyLocked,
+          };
+        }
+        return item;
+      });
+    }
+    // Använd handleLayoutChange för att spara den nya låsta/upplåsta state
+    handleLayoutChange([], newLayouts);
   }
 
   if (authLoading) {
@@ -149,6 +187,10 @@ export default function Dashboard() {
                 title={w.title}
                 onHide={() => handleRemoveWidget(w.i)}
                 headerControls={w.headerControls}
+                isLocked={
+                  layouts.lg?.find((l) => l.i === w.i)?.isDraggable === false
+                }
+                onToggleLock={() => handleToggleLock(w.i)}
               >
                 {w.content}
               </Widget>

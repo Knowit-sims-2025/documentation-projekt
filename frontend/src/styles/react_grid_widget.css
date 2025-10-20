@@ -76,6 +76,22 @@
   cursor: grab;        /* RGL drag-handle */
   user-select: none;
 }
+/* Om widgeten är låst, ändra cursor och dölj resize-handtaget */
+.widget__header.is-locked {
+  cursor: default;
+}
+.card.is-locked .react-resizable-handle {
+  display: none;
+}
+.card.is-locked .widget__remove {
+  display: none;
+}
+
+.widget__lock {
+  all: unset; /* Nollställ knapp-styling */
+  cursor: pointer;
+  /* Ikonen (img) centreras av flexbox i .widget__controls */
+}
 
 .widget__controls {
   display: flex;
