@@ -62,6 +62,7 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description   string `json:"description"`
 		IconUrl       string `json:"iconUrl"`
 		CriteriaValue int    `json:"criteriaValue"`
+		TypeName      string `json:"typeName"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -74,6 +75,7 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
 		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""},
 		CriteriaValue: requestBody.CriteriaValue,
+		TypeName:      sql.NullString{String: requestBody.TypeName, Valid: requestBody.TypeName != ""},
 	}
 
 	newID, err := h.Repo.CreateBadge(badge)
@@ -102,6 +104,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description   string `json:"description"`
 		IconUrl       string `json:"iconUrl"`
 		CriteriaValue int    `json:"criteriaValue"`
+		TypeName      string `json:"typeName"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -115,6 +118,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
 		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""},
 		CriteriaValue: requestBody.CriteriaValue,
+		TypeName:      sql.NullString{String: requestBody.TypeName, Valid: requestBody.TypeName != ""},
 	}
 
 	if err := h.Repo.UpdateBadge(badge); err != nil {
@@ -123,6 +127,18 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// GetAllBadgeTypesHandler hämtar alla definierade badge-typer.
+func (h *BadgeHandler) GetAllBadgeTypesHandler(w http.ResponseWriter, r *http.Request) {
+	badgeTypes, err := h.Repo.GetAllBadgeTypes()
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(badgeTypes)
 }
 
 // DeleteBadgeHandler

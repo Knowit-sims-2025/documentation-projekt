@@ -9,6 +9,7 @@ import (
 func RegisterBadgeRoutes(r *mux.Router, h *handlers.BadgeHandler) {
 	s := r.PathPrefix("/badges").Subrouter()
 	s.HandleFunc("", h.GetAllBadgesHandler).Methods("GET")
+	r.HandleFunc("/badgetypes", h.GetAllBadgeTypesHandler).Methods("GET") // Add this line for badge types
 	s.HandleFunc("", h.CreateBadgeHandler).Methods("POST")
 
 	s.HandleFunc("/{id:[0-9]+}", h.GetBadgeByIDHandler).Methods("GET")

@@ -1,4 +1,6 @@
 import React, { useImperativeHandle } from "react";
+import { getCompletionPercentage } from "../../features/achivements/badgeUtils";
+import type { UserBadge } from "../../types/userBadge";
 
 interface ProgressBarProps {
   value: number;      // current user progress
@@ -20,33 +22,34 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   src = undefined,
   claimText = "",
   onClaim,
-}) => {
+}) => { 
   const percentage = Math.min(Math.max(((value-min) / (max - min)) * 100, 0), 100);
    return (
-    <div className="progress-card">
+    <div className={`progress-card ${claimText === 'Claimed' ? 'true' : 'false'}`}>
       <div className="progress-header">
         {label && <span className="progress-label">{label}</span>}
         {src && <img src={src} alt="badge icon" className="progress-header-icon" />}
-        
       </div>
       
-        {description && <span className="progress-description">{description}</span>}
+      {description && <span className="progress-description">{description}</span>}
       
-          {claimText === "COLLECT" && onClaim ? (
-            <button className="claim-button" onClick={onClaim}>{claimText}</button>
-          ) : (
-            <>
-              <div className="progress-bar-outer">
-                <div className="progress-bar" style={{width: `${percentage}%`}}>
-                </div>
-              </div>
-              <div className="progress-numbers">
-                {label && (min !== 0 ? <span>{min}</span> : <span className="invisible" style={{ visibility: "hidden" }}>0</span>)}
-                {label && <span>{value}/{max}</span>}
-                <p className="claim-status-text">{claimText}</p>
-              </div>
-            </>
-          )}
+      {onClaim && value >= max && claimText !== 'Claimed' ? (
+        <button className="claim-button" onClick={onClaim}>{claimText}</button>
+      ) : (
+        <>
+          <div className="progress-bar-outer">
+            <div className="progress-bar" style={{width: `${percentage}%`}}></div>
+          </div>
+          <div className="progress-numbers">
+            {/* This invisible span pushes the other content to the right */}
+            <span style={{ visibility: "hidden" }} />
+            {claimText && claimText !== "COLLECT" 
+              ? <p className="claim-status-text">{claimText}</p>
+              : <span>{value}/{max}</span>
+            }
+          </div>
+        </>
+      )}
     </div>
   );
 };

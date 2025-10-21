@@ -7,7 +7,9 @@ import type { Badge } from "../../types/badge";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
 import { Overlay } from "../pages/leaderboard/Overlay";
-import type { UserBadge } from "../../types/userBadge";
+import { groupBadgesByType, getNextBadge, getUserBadgeForBadge, sortBadgesByCompletion } from "./badgeUtils";
+import { useBadgeTypes } from "../../hooks/useBadgeTypes";
+import Switch from "../../components/switch";
 import documents0 from "../../assets/badges/documents0.svg";
 import documents1 from "../../assets/badges/documents1.svg";
 import documents2 from "../../assets/badges/documents2.svg";
@@ -41,35 +43,11 @@ interface AchievementCardProps {
   user: User;
 }
 
-const getUserProgressForBadge = (badgeId: number, userBadges: UserBadge[]): number => {
-  const userBadge = userBadges.find(ub => ub.badgeId === badgeId);
-  return userBadge?.progress ?? 0;
-};
-
-const getUserBadgeForBadge = (badgeId: number, userBadges: UserBadge[]): UserBadge | undefined => {
-  const userBadge = userBadges.find(ub => ub.badgeId === badgeId);
-  return userBadge;
-};
-
-const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
-  // Create a copy to avoid mutating the original array
-  return [...badges].sort((a, b) => {
-    const userProgressA = getUserProgressForBadge(a.id, userBadges);
-    const userProgressB = getUserProgressForBadge(b.id, userBadges);
-    const badgeCriteriaValueA = a.criteriaValue ?? 100;
-    const badgeCriteriaValueB = b.criteriaValue ?? 100;
-
-    const progressA = badgeCriteriaValueA > 0 ? userProgressA / badgeCriteriaValueA : 0;
-    const progressB = badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
-
-    // Sort descending (from most complete to least complete)
-    return progressB - progressA;
-  });
-};
-
 export default function AchievementCard({ user }: AchievementCardProps) {
   const { data: badges, loading: loadingBadges, error: errorBadges } = useBadges();
   const { data: userBadges, loading: loadingUserBadges, error: errorUserBadges, mutate } = useUserBadges(user.id);
+  const { data: badgeTypes, loading: loadingBadgeTypes, error: errorBadgeTypes } = useBadgeTypes();
+  const [showAll, setShowAll] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
   // Optimistic Update for claiming a badge
@@ -84,9 +62,6 @@ export default function AchievementCard({ user }: AchievementCardProps) {
     const optimisticBadges = userBadges.map(ub => 
       ub.badgeId === badgeId ? { ...ub, claimStatus: 'claimed' as const } : ub
     );
-
-    // 2. Update the UI immediately, without waiting for the server.
-    //    The `false` flag prevents SWR from re-fetching automatically.
     mutate(optimisticBadges);
 
     try {
@@ -97,54 +72,73 @@ export default function AchievementCard({ user }: AchievementCardProps) {
       // 4. If the request fails, roll back to the original state
       mutate(userBadges); // Revert to the original data
     }
-    
-    
-    console.log("Badge state:", userBadges.find(ub => ub.badgeId === badgeId)?.claimStatus); 
   };
 
-  if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
-  if (errorBadges || errorUserBadges) return <ErrorMessage message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges}`} />;
+  if (loadingBadges || loadingUserBadges || loadingBadgeTypes) return <div>Laddar badges...</div>;
+  if (errorBadges || errorUserBadges || errorBadgeTypes) return <ErrorMessage message={`Kunde inte hämta badges: ${errorBadges ?? errorUserBadges ?? errorBadgeTypes}`} />;
 
-  const badgeList = sortBadges((badges ?? []), (userBadges ?? []));
+  const renderBadge = (badge: Badge) => {
+    const userBadge = getUserBadgeForBadge(badge.id, userBadges ?? []);
+    const userProgress = userBadge?.progress ?? 0;
+    const maxValue = badge.criteriaValue ?? 100;
+    const progressLabel = `${badge.name}`;
+    const isClaimed = userBadge?.claimStatus === 'claimed';
+    const isClaimable = userProgress >= maxValue && !isClaimed;
+    const claimText = isClaimed ? "Claimed" : isClaimable ? "COLLECT" : "";
 
-  if(badgeList.length === 0) {
-    return <ErrorMessage message="Inga badges hittades." />;
-  }
+    return (
+      <div
+        className="achievement-item"
+        key={badge.id}
+        onClick={() => setSelectedBadge(badge)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
+      >
+        <ProgressBar
+          value={userProgress}
+          max={maxValue}
+          label={progressLabel}
+          description={badge.description}
+          src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
+          claimText={claimText}
+          onClaim={isClaimable ? () => handleClaimBadge(badge.id) : undefined}
+        />
+      </div>
+    );
+  };
 
   return (
     <>
       <div className="achievements-list">
-        {badgeList.map((badge) => {
-          const userBadge = getUserBadgeForBadge(badge.id, userBadges ?? []);
-          const userProgress = userBadge?.progress ?? 0;
-          const maxValue = badge.criteriaValue ?? 100;
-          const progressLabel = `${badge.name}`;
-          const isClaimed = userBadge?.claimStatus === 'claimed';
-          const isClaimable = userProgress >= maxValue && !isClaimed;
-
-          const claimText = isClaimed ? "Claimed" : isClaimable ? "COLLECT" : "";
-
-          return (
-            <div
-              className="achievement-item"
-              key={badge.id}
-              onClick={() => setSelectedBadge(badge)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedBadge(badge)}
-            >
-              <ProgressBar
-                value={userProgress}
-                max={maxValue}
-                label={progressLabel}
-                description={badge.description}
-                src={badge.iconUrl ? iconMap[badge.iconUrl] : undefined}
-                claimText={claimText}
-                onClaim={isClaimable ? () => handleClaimBadge(badge.id) : undefined}
-              />
-            </div>
-          );
-        })}
+        <div className="achievements-header">
+          <div className="completed">Completed: {(userBadges ?? []).filter(ub => ub.claimStatus === 'claimed').length} / {(badges ?? []).length}</div>
+          <div
+            title="Filter Achievements"
+            className="leaderboard-filter leaderboard__filter_button"
+          >
+            <span style={{ minWidth: 60, textAlign: "right" }}>
+              {showAll ? "Show Next" : "Show All"}
+            </span>
+            <Switch
+              checked={showAll}
+              onChange={(next) => setShowAll(next)}
+              ariaLabel="Toggle all achievements"
+            />
+          </div>
+        </div>
+        
+        {showAll
+          ? sortBadgesByCompletion(badges ?? [], userBadges ?? []).map(renderBadge)
+          : (() => {
+              const nextBadgesPerType = badgeTypes
+                .map((badgeType) => {
+                  const badgesForThisType = groupBadgesByType(badges ?? [])[badgeType.typeName] ?? [];
+                  return getNextBadge(badgesForThisType, userBadges ?? []);
+                })
+                .filter((b): b is Badge => !!b);
+              return sortBadgesByCompletion(nextBadgesPerType, userBadges ?? []).map(renderBadge);
+            })()}
       </div>
       {selectedBadge && (
         (() => { // IIFE to calculate progress for selected badge

@@ -54,18 +54,25 @@ CREATE TABLE badges (
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT NOT NULL,
     icon_url TEXT,
-    criteria_value INTEGER NOT NULL
+    criteria_value INTEGER NOT NULL,
+    type_name VARCHAR(100) REFERENCES badge_types(type_name) ON DELETE SET NULL
 );
 
-CREATE TYPE claim_status_enum AS ENUM ('CLAIMED', 'UNCLAIMED');
 -- Kopplingstabell för att hålla koll på vilka badges en användare har förtjänat.
+CREATE TYPE claim_status_enum AS ENUM ('CLAIMED', 'UNCLAIMED');
 CREATE TABLE user_badges (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     badge_id INTEGER NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
     awarded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     progress INTEGER NOT NULL DEFAULT 0,
-    claim_status ENUM('CLAIMED', 'UNCLAIMED') NOT NULL DEFAULT 'UNCLAIMED',
+    claim_status claim_status_enum NOT NULL DEFAULT 'UNCLAIMED',
     PRIMARY KEY (user_id, badge_id)
+);
+
+-- Tabell för att definiera olika badge typer
+CREATE TABLE badge_types (
+    id SERIAL PRIMARY KEY,
+    type_name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- NYTT: Tabell för att lagra information om tävlingar.

@@ -28,8 +28,10 @@ function normalizeBadge(b: RawBadge): Badge {
   const description = b.description.String ?? b.Description.String ?? b.description ?? b.Description ?? "unknown description";
   const iconUrl = pickString(b.iconUrl) ?? pickString(b.iconURL) ?? pickString(b.icon_url);
   const criteriaValue = b.criteriaValue ?? b.CriteriaValue ?? b.criteria_value;
-
-  return { id, name, description, iconUrl, criteriaValue };
+  const typeName = pickString(b.typeName) ?? pickString(b.type_name) ?? "Uncategorized";
+  
+  // The property on the frontend Badge object is `typeName`.
+  return { id, name, description, iconUrl, criteriaValue, typeName };
 }
 
 /* ========================================================================== 

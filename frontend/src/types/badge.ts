@@ -4,4 +4,5 @@ export interface Badge {
   description: string;
   iconUrl?: string;
   criteriaValue?: number; // e.g. points or actions needed for badge
+  typeName?: string;
 }

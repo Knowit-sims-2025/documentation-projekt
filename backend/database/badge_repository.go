@@ -15,9 +15,13 @@ type UserBadgeRepository struct {
 	DB *sql.DB
 }
 
+type BadgeTypeRepository struct {
+	DB *sql.DB
+}
+
 // Hämtar alla badges från db
 func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
-	query := `SELECT id, name, description, icon_url, criteria_value FROM badges ORDER BY name DESC` //ordern är just nu by name
+	query := `SELECT id, name, description, icon_url, criteria_value, type_name FROM badges ORDER BY name DESC` //ordern är just nu by name
 	rows, err := r.DB.Query(query)
 
 	if err != nil {
@@ -35,6 +39,7 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 			&badge.Description,
 			&badge.IconUrl,
 			&badge.CriteriaValue,
+			&badge.TypeName,
 		)
 		if err != nil {
 			log.Println("Error scanning badge:", err)
@@ -52,10 +57,10 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 	var id int64
 	err := r.DB.QueryRow(`
-		INSERT INTO badges (name, description, icon_url, criteria_value)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO badges (name, description, icon_url, criteria_value, type_name)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id`,
-		b.Name, b.Description, b.IconUrl, b.CriteriaValue,
+		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.TypeName,
 	).Scan(&id)
 
 	if err != nil {
@@ -68,9 +73,9 @@ func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 func (r *BadgeRepository) UpdateBadge(b *models.Badge) error {
 	_, err := r.DB.Exec(`
 		UPDATE badges
-		SET name = $1, description = $2, icon_url = $3, criteria_value = $4
-		WHERE id = $5`,
-		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.ID,
+		SET name = $1, description = $2, icon_url = $3, criteria_value = $4, type_name = $5
+		WHERE id = $6`,
+		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.TypeName, b.ID,
 	)
 	return err
 }
@@ -91,13 +96,13 @@ func (r *BadgeRepository) DeleteBadge(id int64) error {
 // Hämta badge efter ID
 func (r *BadgeRepository) GetBadgeByID(id int64) (*models.Badge, error) {
 	row := r.DB.QueryRow(`
-		SELECT id, name, description, icon_url, criteria_value
+		SELECT id, name, description, icon_url, criteria_value, type_name
 		FROM badges
 		WHERE id = $1`, id,
 	)
 
 	var b models.Badge
-	err := row.Scan(&b.ID, &b.Name, &b.Description, &b.IconUrl, &b.CriteriaValue)
+	err := row.Scan(&b.ID, &b.Name, &b.Description, &b.IconUrl, &b.CriteriaValue, &b.TypeName)
 	if err != nil {
 		return nil, err
 	}
@@ -212,4 +217,28 @@ func (r *UserBadgeRepository) GetUserBadge(userID, badgeID int64) (*models.UserB
 		return nil, err
 	}
 	return &ub, nil
+}
+
+// GetAllBadgeTypes hämtar alla badge-typer från databasen.
+func (r *BadgeRepository) GetAllBadgeTypes() ([]models.BadgeType, error) {
+	query := `SELECT id, type_name FROM badge_types ORDER BY type_name`
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var badgeTypes []models.BadgeType
+	for rows.Next() {
+		var bt models.BadgeType
+		if err := rows.Scan(&bt.ID, &bt.TypeName); err != nil {
+			log.Printf("Error scanning badge type: %v", err)
+			continue
+		}
+		badgeTypes = append(badgeTypes, bt)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return badgeTypes, nil
 }

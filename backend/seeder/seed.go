@@ -132,33 +132,44 @@ func main() {
 		}
 	}
 
-	// --- STEG 4: Skapa badges ---
+	// --- STEG 4.1: Skapa badge typer ---
+	fmt.Println("\n🏷️ Skapar badge typer...")
+	badgeTypes := []string{"Documents", "Comments", "Edits"}
+	for _, typeName := range badgeTypes {
+		_, err := db.Exec("INSERT INTO badge_types (type_name) VALUES ($1) ON CONFLICT (type_name) DO NOTHING", typeName)
+		if err != nil {
+			log.Fatalf("❌ Kunde inte infoga badge type %s: %v", typeName, err)
+		}
+		fmt.Printf("  → Badge type: %s\n", typeName)
+	}
+
+	// --- STEG 4.2: Skapa badges ---
 	fmt.Println("\n🏅 Skapar badges...")
 	badgeData := []struct {
-		Name, Description, IconURL string
-		CriteriaValue              int
+		Name, Description, IconURL, TypeName string
+		CriteriaValue                        int
 	}{
-		{"Beginner documenter", "Awarded for creating your very first document.", "documents0", 1},
-		{"Novice documenter", "Awarded for creating your 10th document.", "documents1", 10},
-		{"Intermidiate documenter", "Awarded for creating your 50th document.", "documents2", 50},
-		{"Proffesional documenter", "Awarded for creating your 100th document.", "documents3", 100},
-		{"Beginner commenter", "Awarded for making your very first comment.", "comments0", 1},
-		{"Novice commenter", "Awarded for making your 10th comment.", "comments1", 10},
-		{"Intermidiate commenter", "Awarded for mmaking your 50th comment.", "comments2", 50},
-		{"Proffesional commenter", "Awarded for making your 100th comment.", "comments3", 100},
-		{"Beginner editor", "Awarded for making your very first edit.", "edits0", 1},
-		{"Novice editor", "Awarded for making your 10th edit.", "edits1", 10},
-		{"Intermidiate editor", "Awarded for making your 50th edit.", "edits2", 50},
-		{"Proffesional editor", "Awarded for making your 100th edit.", "edits3", 100},
+		{"Beginner documenter", "Awarded for creating your very first document.", "documents0", "Documents", 1},
+		{"Novice documenter", "Awarded for creating your 10th document.", "documents1", "Documents", 10},
+		{"Intermidiate documenter", "Awarded for creating your 50th document.", "documents2", "Documents", 50},
+		{"Proffesional documenter", "Awarded for creating your 100th document.", "documents3", "Documents", 100},
+		{"Beginner commenter", "Awarded for making your very first comment.", "comments0", "Comments", 1},
+		{"Novice commenter", "Awarded for making your 10th comment.", "comments1", "Comments", 10},
+		{"Intermidiate commenter", "Awarded for mmaking your 50th comment.", "comments2", "Comments", 50},
+		{"Proffesional commenter", "Awarded for making your 100th comment.", "comments3", "Comments", 100},
+		{"Beginner editor", "Awarded for making your very first edit.", "edits0", "Edits", 1},
+		{"Novice editor", "Awarded for making your 10th edit.", "edits1", "Edits", 10},
+		{"Intermidiate editor", "Awarded for making your 50th edit.", "edits2", "Edits", 50},
+		{"Proffesional editor", "Awarded for making your 100th edit.", "edits3", "Edits", 100},
 	}
 
 	badges := make(map[int]int) // Map to store badgeID -> criteriaValue
 	for _, b := range badgeData {
 		var badgeID int
 		err := db.QueryRow(`
-			INSERT INTO badges (name, description, icon_url, criteria_value)
-			VALUES ($1, $2, $3, $4) RETURNING id
-		`, b.Name, b.Description, b.IconURL, b.CriteriaValue).Scan(&badgeID)
+			INSERT INTO badges (name, description, icon_url, type_name, criteria_value)
+			VALUES ($1, $2, $3, $4, $5) RETURNING id
+		`, b.Name, b.Description, b.IconURL, b.TypeName, b.CriteriaValue).Scan(&badgeID)
 		if err != nil {
 			log.Fatalf("❌ Kunde inte infoga badge %s: %v", b.Name, err)
 		}
@@ -170,7 +181,7 @@ func main() {
 	fmt.Println("\n🎯 Tilldelar badges till användare...")
 	userBadgeStmt, err := db.Prepare(`
 		INSERT INTO user_badges (user_id, badge_id, awarded_at, progress)
-		VALUES ($1, $2, $3, $4)
+		VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, badge_id) DO NOTHING
 	`)
 	if err != nil {
 		log.Fatalf("Kunde inte förbereda user_badges statement: %v", err)

@@ -10,13 +10,19 @@ type Badge struct {
 	Name          string         `json:"name"`
 	Description   sql.NullString `json:"description"`
 	IconUrl       sql.NullString `json:"icon_url"`
-	CriteriaValue int            `json:"criteria_value"`
+	CriteriaValue int            `json:"criteriaValue"`
+	TypeName      sql.NullString `json:"typeName"`
 }
 
 type UserBadge struct {
-	UserID    int64     `json:"user_id"`
-	BadgeID   int64     `json:"badge_id"`
-	AwardedAt time.Time `json:"awarded_at"`
-	Progress  int       `json:"progress"`
-	ClaimStatus string   `json:"claim_status"` // "unclaimed", "claimed"
+	UserID      int64     `json:"user_id"`
+	BadgeID     int64     `json:"badge_id"`
+	AwardedAt   time.Time `json:"awarded_at"`
+	Progress    int       `json:"progress"`
+	ClaimStatus string    `json:"claim_status"` // "unclaimed", "claimed"
+}
+
+type BadgeType struct {
+	ID       int64  `json:"id"`
+	TypeName string `json:"type_name"`
 }
