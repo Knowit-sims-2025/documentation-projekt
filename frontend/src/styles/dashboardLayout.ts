@@ -3,11 +3,11 @@ import type { Layout, Layouts } from "react-grid-layout";
 
 /** Desktop: 20 kolumner => 30%=6, 40%=8, 20%=4 */
 const lg: Layout[] = [
-  { i: "profile",      x: 0,  y: 0, w: 6,  h: 10 }, 
-  { i: "individual",   x: 6,  y: 0, w: 8,  h: 6  },
-  { i: "teams",        x: 6,  y: 6, w: 4,  h: 4  },
-  { i: "competition",  x: 10, y: 6, w: 4,  h: 4  },
-  { i: "achievements", x: 14, y: 0, w: 6,  h: 10 },
+  { i: "profile",      x: 0,  y: 0, w: 4,  h: 10 }, 
+  { i: "individual",   x: 4,  y: 0, w: 8,  h: 6  },
+  { i: "teams",        x: 4,  y: 6, w: 4,  h: 4  },
+  { i: "competition",  x: 8, y: 6, w: 4,  h: 4  },
+  { i: "achievements", x: 12, y: 0, w: 8,  h: 10 },
 ];
 
 /** Tablet: välj 10 kolumner */
