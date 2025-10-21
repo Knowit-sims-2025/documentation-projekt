@@ -1,5 +1,5 @@
 :root{
-  --z-tooltip: 400;             /* mellan toast(300) och overlay(500) */
+  --z-tooltip: 400;            
   --shadow-lg: 0 10px 24px rgba(0,0,0,.35);
 }
 
@@ -10,9 +10,6 @@
   --ach-card-min: clamp(280px, 44vw, 520px); /* kortbredd (grid kolumn-min) */
   --ach-icon:     clamp(44px,  6vw,  64px);  /* ikonstorlek i kort */
   --ach-bar-h:    clamp(6px,   1.1vw, 10px); /* progressbar-höjd */
-
-  /* (valfritt) gör widgeten container-aware om du vill använda container queries */
-  /* container-type: inline-size; */
 }
 
 /* Responsiv grid som “packar” kort automatiskt */
@@ -21,7 +18,7 @@
   grid-template-columns: repeat(auto-fit, minmax(var(--ach-card-min), 1fr));
   gap: var(--gap);
   align-content: start;
-  /* grid-auto-flow: dense;  /* slå på om du vill fylla luckor tätare */ 
+  /* grid-auto-flow: dense; */
 }
 
 /* Rubriker som spänner full bredd (t.ex. Locked Achievements) */
@@ -146,7 +143,7 @@
 /* ============ Achievement Icon Display (scopad) ============ */
 .achicons{
   /* Kontroll-punkter (ändra fritt) */
-  --icon-size:  clamp(56px, 7vw, 72px);
+  --icon-size:  clamp(56px, 20vw, 92px);
   --gap:        var(--gap, 8px);
   --mini-h:     6px;                 /* höjd på miniprogress */
 }

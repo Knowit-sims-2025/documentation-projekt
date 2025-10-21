@@ -167,10 +167,7 @@
         border-color 120ms ease;
    }
 
-   .card:hover {
-    transform: translateY(-2px);
-    background: var(--gradient-hover);
-}
+
 
 /* BAS-KORT
    (RGL-höjd sätts i widgets.css under .react-grid-item > .card) */
@@ -197,9 +194,10 @@
     box-shadow 120ms ease, 
     background-color 120ms ease,
     border-color 120ms ease;
-}
+} 
 .card:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
+  transform: scale(1.01);
   background: var(--gradient-hover);
 }
 .card:active {

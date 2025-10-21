@@ -74,7 +74,7 @@
     --text-muted:  oklch(0.76 0.05 264);
 
     --highlight:   oklch(0.50 0.05 264);
-    --border:      oklch(0.40 0.05 264);
+    --border:      oklch(0.60 0.05 264);
     --border-muted:oklch(0.30 0.05 264);
 
     --primary:   oklch(0.76 0.10 264);
@@ -169,7 +169,7 @@ body {
     background: var(--bg-dark);
     color: var(--text-muted);
 
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 

@@ -61,7 +61,6 @@ export function ProfileCard({ user }: { user: User }) {
       .findIndex((u) => u.id === user.id) + 1;
 
   if (loadingBadges || loadingUserBadges) {
-    // You might want a more sophisticated loading state here
     return null;
   }
 
@@ -84,7 +83,7 @@ export function ProfileCard({ user }: { user: User }) {
       : 0;
 
   return (
-    <div className="profile-widget card">
+    <div className="profile-widget">
       <div className="profile-cover">
         <div className="profile-avatar-wrapper">
           <Avatar name={user.displayName} src={user.avatarUrl} />
