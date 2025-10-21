@@ -118,3 +118,17 @@ func (r *ActivityRepository) DeleteActivity(id int64) error {
 	_, err := r.DB.Exec(`DELETE FROM activities WHERE id = $1`, id)
 	return err
 }
+
+func (repo *ActivityRepository) ActivityExistsWithType(contentID, activityType string) (bool, error) {
+	query := `SELECT 1 FROM activities WHERE confluence_page_id = $1 AND activity_type = $2 LIMIT 1`
+	row := repo.DB.QueryRow(query, contentID, activityType)
+	var dummy int
+	err := row.Scan(&dummy)
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
