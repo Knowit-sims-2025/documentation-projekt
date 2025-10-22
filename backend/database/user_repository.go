@@ -12,6 +12,10 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
+type UserStatsRepository struct {
+	DB *sql.DB
+}
+
 // GetAllUsers hämtar alla användare från databasen.
 func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	rows, err := repo.DB.Query("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users ORDER BY total_points DESC")
@@ -66,7 +70,7 @@ func (repo *UserRepository) GetUserByConfluenceID(confluenceID string) (*models.
 }
 
 func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
-	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at FROM users WHERE id = $1", id)
+	row := repo.DB.QueryRow("SELECT id, confluence_author_id, display_name, avatar_url, total_points, is_admin, created_at, updated_at, lifetime_points FROM users WHERE id = $1", id)
 	var user models.User
 	err := row.Scan(
 		&user.ID,
@@ -77,6 +81,7 @@ func (repo *UserRepository) GetUserByID(id int64) (*models.User, error) {
 		&user.IsAdmin,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.LifeTimePoints,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -122,6 +127,63 @@ func (repo *UserRepository) DeleteUser(id int64) error {
 }
 
 func (repo *UserRepository) UpdateUserPoints(id int64, points int) error {
-	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1 WHERE id = $2", points, id)
+	_, err := repo.DB.Exec("UPDATE users SET total_points = total_points + $1, lifetime_points = lifetime_points + $1 WHERE id = $2", points, id)
 	return err
+}
+
+func (repo *UserRepository) EmptyUsersPoints(id int64) error {
+	query := `UPDATE users SET total_points = 0 WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+// User_stats queries //
+func (repo *UserStatsRepository) UpdateUserStatsComments(id int64) error {
+	query := `UPDATE user_stats SET total_comments = total_comments + 1 WHERE user_id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsEditedPages(id int64) error {
+	query := `UPDATE user_stats SET total_edits_made = total_edits_made + 1 WHERE user_id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsCreatedPages(id int64) error {
+	query := `UPDATE user_stats SET total_created_pages = total_created_pages + 1 WHERE user_id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) UpdateUserStatsResolvedComments(id int64) error {
+	query := `UPDATE user_stats SET total_resolved_comments = total_resolved_comments + 1 WHERE user_id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
+func (repo *UserStatsRepository) CreateStatsForUser(userID int64) error {
+	query := `
+        INSERT INTO user_stats (user_id, total_comments, total_edits_made, total_created_pages, total_resolved_comments)
+        VALUES ($1, 0, 0, 0, 0)
+        ON CONFLICT (user_id) DO NOTHING
+    `
+	_, err := repo.DB.Exec(query, userID)
+	return err
+}
+
+func (repo * UserStatsRepository) GetUserStatsByUserID(userID int64) (*models.UserStats, error) {
+	row := repo.DB.QueryRow("SELECT user_id, total_comments, total_edits_made, total_created_pages, total_resolved_comments FROM user_stats WHERE user_id = $1", userID)
+	var stats models.UserStats
+	err := row.Scan(
+		&stats.UserID,
+		&stats.TotalComments,
+		&stats.TotalEdits,
+		&stats.TotalCreatedPages,
+		&stats.TotalResolvedComments,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
 }

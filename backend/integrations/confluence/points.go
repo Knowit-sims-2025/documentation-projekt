@@ -1,5 +1,7 @@
 package confluence
 
+import "math"
+
 var basePoints int = 11
 
 // PointsForPageCreated returnerar poäng för skapande av sida.
@@ -33,7 +35,7 @@ func PointsForResolvedComment() int {
 // --- Hjälpfunktioner ---
 // characterDiffCount räknar hur många tecken som skiljer sig mellan två strängar.
 func characterDiffCount(a, b string) int {
-	diff := len(b) - len(a)
+	diff := int(math.Abs(float64(len(b) - len(a)))) // absolutbeloppet av skillnaden då vi vill ge poäng vid radering av text.
 
 	limits := []int{100, 400, 700, 1000, 1300, 1600, 1900, 2200}
 	complexity := 1
