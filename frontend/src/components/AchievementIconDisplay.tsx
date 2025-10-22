@@ -47,10 +47,8 @@ export default function AchievementIconDisplay({ user, onIconClick }: Props) {
     position: { x: number; y: number };
   } | null>(null);
 
-  // ✅ säkrare typ i browser
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 🔒 städa timer vid unmount
   React.useEffect(() => {
     return () => {
       if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -104,7 +102,7 @@ export default function AchievementIconDisplay({ user, onIconClick }: Props) {
     const { clientX, clientY } = e;
     hoverTimer.current = setTimeout(() => {
       setHovered({ badge, position: { x: clientX, y: clientY } });
-    }, 150); // liten fördröjning
+    }, 150);
   };
 
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -116,20 +114,17 @@ export default function AchievementIconDisplay({ user, onIconClick }: Props) {
 
   const handlePointerLeave = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setHovered(null); // göm direkt när man lämnar grid/ikon
+    setHovered(null);
   };
 
   return (
     <section className="achicons">
-      <header className="achicons__summary">
-        <ProgressBar
-          value={summary.unlockedCount}
-          max={summary.total}
-          label={`You've unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
-        />
-      </header>
+      <ProgressBar
+        value={summary.unlockedCount}
+        max={summary.total}
+        label={`${user.displayName} have unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+      />
 
-      {/* ⬇️ Flytta musen i gridet -> tooltip följer */}
       <div
         className="achicons__grid"
         onPointerMove={handlePointerMove}
@@ -175,7 +170,7 @@ export default function AchievementIconDisplay({ user, onIconClick }: Props) {
         <AchievementHoverCard
           badge={hovered.badge}
           userBadges={userBadges}
-          position={hovered.position} // rå musposition – kortet klampar själv
+          position={hovered.position}
         />
       )}
     </section>

@@ -137,16 +137,15 @@ export default function AchievementCard({
     );
   }
 
-  // ✅ LISTVY med SUMMARY som direkt grid-barn (ingen yttre div → inga dubbla ramar)
   return (
     <section className="achievements">
       <div className="achievements-list" ref={listRef}>
-        {/* Direkt barn till grid: .ach-summary */}
         <article className="ach-summary">
           <ProgressBar
             value={summary.unlockedCount}
             max={summary.total}
-            label={`You've unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+            label={`${user.displayName} have unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+            // label={`${user.displayName} har låst upp ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
           />
         </article>
 
