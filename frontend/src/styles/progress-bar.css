@@ -51,7 +51,7 @@
   height: 100%;
   border-radius: 12px;
   transition: width 0.3s ease-in-out;
-  background: linear-gradient(to right, var(--accent), #ed84cd);
+  background: linear-gradient(to right, #f376cd, var(--accent));
   color: white;
 }
 .progress-bar span{
@@ -84,12 +84,8 @@
   width: 100%
 }
 
-.progress-card.false img{
-  opacity: 0,2;
-}
+.progress-card.isClaimed {
 
-.progress-card.true img{
-  opacity: 1;
 }
 
 .claim-button {

@@ -25,7 +25,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => { 
   const percentage = Math.min(Math.max(((value-min) / (max - min)) * 100, 0), 100);
    return (
-    <div className={`progress-card ${claimText === 'Claimed' ? 'true' : 'false'}`}>
+    <div className={`progress-card ${claimText === 'Claimed' ? 'isClaimed' : ''}`}>
       <div className="progress-header">
         {label && <span className="progress-label">{label}</span>}
         {src && <img src={src} alt="badge icon" className="progress-header-icon" />}
