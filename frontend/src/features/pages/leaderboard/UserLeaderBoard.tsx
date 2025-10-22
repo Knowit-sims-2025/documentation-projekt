@@ -10,6 +10,7 @@ import { LeaderboardTabs } from "../../../components/LeaderboardTabs";
 import { DailyControls } from "../../../components/DailyControls";
 import { TotalList } from "../../../components/lists/TotalList";
 import { DailyList } from "../../../components/lists/DailyLists";
+import { StatsDisplay } from "../../../components/StatsDisplay"; // Ny import
 import { toLocalYYYYMMDD, clampToToday } from "../../../utils/date";
 import WeeklyCurrent from "../../../components/WeeklyCurrent";
 
@@ -20,7 +21,7 @@ interface UserLeaderBoardProps {
   onTabChange: (tab: Tab) => void;
 }
 
-type Tab = "daily" | "weekly" | "total";
+type Tab = "daily" | "weekly" | "total" | "stats";
 
 export default function UserLeaderBoard({
   showMyTierOnly,
@@ -105,6 +106,7 @@ export default function UserLeaderBoard({
       {activeTab === "weekly" && (
         <WeeklyCurrent onSelectUserId={setSelectedId} />
       )}
+      {activeTab === "stats" && <StatsDisplay />}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+// src/features/achivements/achievementCard.tsx
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useBadges } from "../../hooks/useBadges";
 import { useUserBadges } from "../../hooks/useUserBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -10,7 +11,7 @@ import { iconMap } from "../../assets/badges/iconMap";
 
 interface AchievementCardProps {
   user: User;
-  /** Om ett ID skickas med, öppnas overlayen för den badgen direkt. */
+  /** Om ett ID skickas med, scrolla till den badgen direkt. */
   initialSelectedBadgeId?: number | null;
 }
 
@@ -23,7 +24,6 @@ const getUserProgressForBadge = (
 };
 
 const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
-  // Create a copy to avoid mutating the original array
   return [...badges].sort((a, b) => {
     const userProgressA = getUserProgressForBadge(a.id, userBadges);
     const userProgressB = getUserProgressForBadge(b.id, userBadges);
@@ -35,7 +35,6 @@ const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
     const progressB =
       badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
 
-    // Sort descending (from most complete to least complete)
     return progressB - progressA;
   });
 };
@@ -54,26 +53,40 @@ export default function AchievementCard({
     loading: loadingUserBadges,
     error: errorUserBadges,
   } = useUserBadges(user.id);
-  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
-  // Ref för att kunna scrolla till ett element
+  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Effekt för att scrolla till den initialt valda badgen, istället för att öppna den.
+  // ➕ Sammanfattning för .ach-summary
+  const summary = useMemo(() => {
+    const list = badges ?? [];
+    const ub = userBadges ?? [];
+    const total = list.length;
+    const unlockedCount = list.reduce((acc, b) => {
+      const v = getUserProgressForBadge(b.id, ub);
+      const m = b.criteriaValue ?? 100;
+      return acc + (v >= m ? 1 : 0);
+    }, 0);
+    return {
+      total,
+      unlockedCount,
+      percent: total ? Math.round((unlockedCount / total) * 100) : 0,
+    };
+  }, [badges, userBadges]);
+
+  // Scrolla till initial badge (utan att öppna overlay)
   useEffect(() => {
-    // Körs bara när listan har renderats och vi har ett ID att leta efter.
     if (initialSelectedBadgeId && listRef.current) {
-      const element = listRef.current.querySelector(
+      const el = listRef.current.querySelector(
         `[data-badge-id="${initialSelectedBadgeId}"]`
-      );
-      if (element) {
-        // Scrolla elementet till mitten av vyn och lägg till en highlight-klass.
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        element.classList.add("highlight-initial");
-        setTimeout(() => element.classList.remove("highlight-initial"), 1500);
+      ) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-initial");
+        setTimeout(() => el.classList.remove("highlight-initial"), 1500);
       }
     }
-  }, [initialSelectedBadgeId, loadingBadges, loadingUserBadges]); // Kör när laddning är klar
+  }, [initialSelectedBadgeId, loadingBadges, loadingUserBadges]);
 
   if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
   if (errorBadges || errorUserBadges)
@@ -84,12 +97,11 @@ export default function AchievementCard({
     );
 
   const badgeList = sortBadges(badges ?? [], userBadges ?? []);
-
   if (badgeList.length === 0) {
     return <ErrorMessage message="Inga badges hittades." />;
   }
 
-  // Om en badge är vald, visa detaljvyn istället för listan.
+  // Detaljvy (oförändrad)
   if (selectedBadge) {
     const userProgress = getUserProgressForBadge(
       selectedBadge.id,
@@ -125,11 +137,24 @@ export default function AchievementCard({
     );
   }
 
+  // ✅ LISTVY med SUMMARY som direkt grid-barn (ingen yttre div → inga dubbla ramar)
   return (
-    <>
+    <section className="achievements">
       <div className="achievements-list" ref={listRef}>
+        {/* Direkt barn till grid: .ach-summary */}
+        <article className="ach-summary">
+          <ProgressBar
+            value={summary.unlockedCount}
+            max={summary.total}
+            label={`You've unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+          />
+        </article>
+
         {badgeList.map((badge) => {
-          const userProgress = getUserProgressForBadge(badge.id, userBadges);
+          const userProgress = getUserProgressForBadge(
+            badge.id,
+            userBadges ?? []
+          );
           const maxValue = badge.criteriaValue ?? 100;
           const progressLabel = `${badge.name}`;
 
@@ -137,7 +162,7 @@ export default function AchievementCard({
             <div
               className="achievement-item"
               key={badge.id}
-              data-badge-id={badge.id} // Lägg till ID för att kunna hitta elementet
+              data-badge-id={badge.id}
               onClick={() => setSelectedBadge(badge)}
               role="button"
               tabIndex={0}
@@ -156,6 +181,6 @@ export default function AchievementCard({
           );
         })}
       </div>
-    </>
+    </section>
   );
 }

@@ -50,7 +50,7 @@ type WidgetMeta = {
   headerControls?: React.ReactNode;
 };
 
-type Tab = "daily" | "weekly" | "total";
+type Tab = "daily" | "weekly" | "total" | "stats";
 
 export default function Dashboard() {
   const { currentUser, isLoading: authLoading } = useAuth();

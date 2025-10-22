@@ -1,6 +1,6 @@
 import React from "react";
 
-type Tab = "daily" | "weekly" | "total";
+type Tab = "daily" | "weekly" | "total" | "stats";
 
 export function LeaderboardTabs({
   active,
@@ -11,7 +11,7 @@ export function LeaderboardTabs({
 }) {
   return (
     <div className="leaderboard__tabs">
-      {(["daily", "weekly", "total"] as Tab[]).map((t) => (
+      {(["daily", "weekly", "total", "stats"] as Tab[]).map((t) => (
         <button
           key={t}
           className={`leaderboard__tab ${active === t ? "is-active" : ""}`}

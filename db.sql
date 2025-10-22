@@ -7,12 +7,11 @@ CREATE SCHEMA public;
 -- ======= SCHEMA =======
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY, -- Unikt internt ID för användaren
-    confluence_author_id VARCHAR(255) UNIQUE NOT NULL, -- Användarens unika ID från Confluence API
+    id SERIAL PRIMARY KEY, 
+    confluence_author_id VARCHAR(255) UNIQUE NOT NULL,
     display_name VARCHAR(255) NOT NULL,
-    avatar_url TEXT, -- URL till användarens profilbild
+    avatar_url TEXT,
     total_points INTEGER DEFAULT 0,
-    -- NYTT: Kolumn för att hantera admin-rättigheter.
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -40,7 +39,7 @@ CREATE TABLE activities (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     confluence_page_id VARCHAR(255) NOT NULL,
     confluence_version_number INTEGER NOT NULL,
-    activity_type VARCHAR(50) NOT NULL, -- t.ex. 'PAGE_CREATED', 'PAGE_UPDATED'
+    activity_type VARCHAR(50) NOT NULL,
     points_awarded INTEGER NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE (confluence_page_id, confluence_version_number)
@@ -71,7 +70,6 @@ CREATE TABLE competitions (
     description TEXT,
     start_date TIMESTAMPTZ NOT NULL,
     end_date   TIMESTAMPTZ NOT NULL,
-    -- Håller koll på vilken admin som skapade tävlingen.
     created_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );

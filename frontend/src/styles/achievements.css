@@ -21,6 +21,8 @@
   /* grid-auto-flow: dense; */
 }
 
+
+
 /* Rubriker som spänner full bredd (t.ex. Locked Achievements) */
 .achievements .ach-section{
   grid-column: 1 / -1;
@@ -51,7 +53,7 @@
   box-shadow: var(--shadow);
 }
 
-/* ===== Kortlayout – bygger vidare på din .progress-card men scopad ===== */
+/* ===== Kortlayout – bygger vidare på .progress-card men scopad ===== */
 .achievements .progress-card{
   display: grid;
   grid-template-columns: var(--ach-icon) 1fr auto; /* ikon | text | meta */
@@ -143,7 +145,7 @@
 /* ============ Achievement Icon Display (scopad) ============ */
 .achicons{
   /* Kontroll-punkter (ändra fritt) */
-  --icon-size:  clamp(56px, 20vw, 92px);
+  --icon-size:  clamp(56px, 10vw, 70px);
   --gap:        var(--gap, 8px);
   --mini-h:     6px;                 /* höjd på miniprogress */
 }
@@ -217,12 +219,14 @@
   background: var(--border-muted);
   border-radius: 999px;
   overflow: hidden;
+
 }
 .achicons__mini-bar{
   height: 100%;
   background: var(--accent);
   width: 0%;
   transition: width .3s ease-in-out;
+
 }
 
 /* Overlay-innehåll */
