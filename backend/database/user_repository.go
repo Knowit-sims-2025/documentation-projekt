@@ -171,3 +171,19 @@ func (repo *UserStatsRepository) CreateStatsForUser(userID int64) error {
 	_, err := repo.DB.Exec(query, userID)
 	return err
 }
+
+func (repo * UserStatsRepository) GetUserStatsByUserID(userID int64) (*models.UserStats, error) {
+	row := repo.DB.QueryRow("SELECT user_id, total_comments, total_edits_made, total_created_pages, total_resolved_comments FROM user_stats WHERE user_id = $1", userID)
+	var stats models.UserStats
+	err := row.Scan(
+		&stats.UserID,
+		&stats.TotalComments,
+		&stats.TotalEdits,
+		&stats.TotalCreatedPages,
+		&stats.TotalResolvedComments,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
+}
