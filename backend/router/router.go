@@ -42,10 +42,11 @@ func InitializeAndGetRouter() *mux.Router {
 	competitionRepo := &database.CompetitionRepository{DB: db}
 	systemRepo := &database.SystemRepository{DB: db}
 	leaderBoardRepo := &database.LeaderBoardRepository{DB: db}
+	userStatsRepo := &database.UserStatsRepository{DB: db}
 
 	// Steg 3: Skapa alla handlers
 	deps := dependencies{
-		UserHandler:        &handlers.UserHandler{Repo: userRepo},
+		UserHandler:        &handlers.UserHandler{Repo: userRepo, UserStatsRepo: userStatsRepo},
 		AuthHandler:        &handlers.AuthHandler{UserRepo: userRepo},
 		BadgeHandler:       &handlers.BadgeHandler{Repo: badgeRepo},
 		UserBadgeHandler:   &handlers.UserBadgeHandler{Repo: userBadgeRepo},

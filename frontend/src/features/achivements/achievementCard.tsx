@@ -25,18 +25,18 @@ import edits3 from "../../assets/badges/edits3.svg";
 
 // Create a mapping from the icon key (from the database) to the imported image asset.
 const iconMap: { [key: string]: string } = {
-  "documents0": documents0,
-  "documents1": documents1,
-  "documents2": documents2,
-  "documents3": documents3,
-  "comments0": comments0,
-  "comments1": comments1,
-  "comments2": comments2,
-  "comments3": comments3,
-  "edits0": edits0,
-  "edits1": edits1,
-  "edits2": edits2,
-  "edits3": edits3,
+  documents0: documents0,
+  documents1: documents1,
+  documents2: documents2,
+  documents3: documents3,
+  comments0: comments0,
+  comments1: comments1,
+  comments2: comments2,
+  comments3: comments3,
+  edits0: edits0,
+  edits1: edits1,
+  edits2: edits2,
+  edits3: edits3,
 };
 
 interface AchievementCardProps {
@@ -164,8 +164,7 @@ export default function AchievementCard({ user }: AchievementCardProps) {
           </div>
         </Overlay>
           );
-        })()
-      )}
+        })()}
     </>
   );
 }

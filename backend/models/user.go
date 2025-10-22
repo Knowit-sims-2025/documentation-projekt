@@ -14,4 +14,13 @@ type User struct {
 	IsAdmin            bool           `json:"isAdmin"`
 	CreatedAt          time.Time      `json:"createdAt"`
 	UpdatedAt          time.Time      `json:"updatedAt"`
+	LifeTimePoints     int            `json:"lifeTimePoints"`
+}
+
+type UserStats struct {
+	UserID                int64 `json:"id"`
+	TotalComments         int   `json:"totalComments"`
+	TotalEdits            int   `json:"totalEdits"`
+	TotalCreatedPages     int   `json:"totalCreatedPages"`
+	TotalResolvedComments int   `json:"totalResolvedComments"`
 }

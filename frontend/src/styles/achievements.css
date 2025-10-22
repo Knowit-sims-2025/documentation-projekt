@@ -1,0 +1,61 @@
+/* =========================
+   Achievements Grid & Card
+   ========================= */
+
+.achievements-grid {
+  display: grid;
+  /* Responsiv magi: Skapa kolumner som är minst 200px breda,
+     men låt dem växa för att fylla utrymmet. `auto-fit`
+     skapar så många som får plats på en rad. */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.achievement-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  opacity: 0.7;
+  filter: grayscale(50%);
+}
+
+.achievement-card:hover,
+.achievement-card:focus {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.achievement-card.completed {
+  opacity: 1;
+  filter: grayscale(0%);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.achievement-card__title {
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+  min-height: 2.2rem; /* Säkerställ samma höjd även om titeln är på en rad */
+}
+
+.achievement-card__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.75rem;
+}
+
+.achievement-card__description {
+  font-size: 0.85rem;
+  flex-grow: 1; /* Se till att progressbaren alltid är längst ner */
+  margin-bottom: 1rem;
+}
+
+.achievement-card__progress {
+  width: 100%;
+}

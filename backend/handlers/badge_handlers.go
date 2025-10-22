@@ -175,7 +175,7 @@ func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *htt
 // GetUserBadgesByUserIDHandler
 func (h *UserBadgeHandler) GetUserBadgesByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	userID, err := strconv.ParseInt(vars["userId"], 10, 64)
+	userID, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return

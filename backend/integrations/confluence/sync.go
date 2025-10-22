@@ -10,8 +10,9 @@ import (
 )
 
 type Repositories struct {
-	UserRepo     *database.UserRepository
-	ActivityRepo *database.ActivityRepository
+	UserRepo      *database.UserRepository
+	ActivityRepo  *database.ActivityRepository
+	UserStatsRepo *database.UserStatsRepository
 }
 
 // SyncActivities är huvudfunktionen för att synkronisera data.
@@ -65,12 +66,20 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 		log.Printf("FEL vid hantering av sid-användare %s: %v", userDetails.DisplayName, err)
 		return 0
 	}
+	// Skapa user_stats om den inte finns
+	if err := repos.UserStatsRepo.CreateStatsForUser(user.ID); err != nil {
+		log.Printf("Kunde inte skapa user_stats för user %d: %v", user.ID, err)
+	}
 
 	var activityType string
 	var pointsAwarded int
 	if page.Version.Number == 1 {
 		activityType = "PAGE_CREATED"
 		pointsAwarded = PointsForPageCreated()
+		// Uppdatera user_stats för nya sidor
+		if err := repos.UserStatsRepo.UpdateUserStatsCreatedPages(user.ID); err != nil {
+			log.Printf("Kunde inte uppdatera created pages för user %d: %v", user.ID, err)
+		}
 	} else {
 		activityType = "PAGE_UPDATED"
 
@@ -91,11 +100,14 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 		if err == nil {
 			pointsAwarded = PointsForPageUpdated(oldContent, newContent)
 			log.Printf("Poäng utdelade: %d (diff mellan version %d → %d)", pointsAwarded, oldVersion, page.Version.Number)
+			// Uppdatera user_stats för redigerade sidor
+			if err := repos.UserStatsRepo.UpdateUserStatsEditedPages(user.ID); err != nil {
+				log.Printf("Kunde inte uppdatera edited pages för user %d: %v", user.ID, err)
+			}
 		}
 		log.Printf("NEW version %d content length: %d", page.Version.Number, len(newContent))
 
 	}
-
 	log.Printf("Sida: %s av %s (%s)", page.Title, user.DisplayName, activityType)
 
 	activity := models.Activity{
@@ -117,7 +129,6 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 	return newActivities
 }
 
-// hanterar “COMMENT_CREATED” och “RESOLVED_COMMENT" activities
 func syncCommentActivities(client *Client, repos Repositories, page Content, userCache map[string]UserResponse) int {
 	var newActivities int
 
@@ -126,24 +137,21 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 	}
 
 	for _, comment := range page.Children.Comment.Results {
-		if comment.Type != "comment" || comment.Version.By.AccountID == "" {
+		if comment.Type != "comment" {
 			continue
 		}
 
 		fullComment, err := client.GetCommentDetails(comment.ID)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				// Kommentaren är troligen borttagen — hoppa tyst över
 				continue
 			}
-			// Något annat gick fel — logga men krascha inte
 			log.Printf("Varning: Kunde inte hämta detaljer för kommentar %s: %v", comment.ID, err)
 			continue
 		}
 
-		activityType := ""
-		points := 0
-		version := fullComment.Version.Number
+		var activityType string
+		var points int
 		var ownerID, ownerName string
 
 		isResolved := fullComment.Extensions != nil &&
@@ -163,8 +171,12 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 			ownerName = userDetails.DisplayName
 			activityType = "RESOLVED_COMMENT"
 			points = PointsForResolvedComment()
-			version += 100000
+
+			// Lägg till offset på versionen för att separera från COMMENT_CREATED
+			fullComment.Version.Number += 100000
+
 		} else if fullComment.Version.Number == 1 {
+			// COMMENT_CREATED
 			ownerID = fullComment.Version.By.AccountID
 			userDetails := getCachedUserDetails(client, ownerID, userCache)
 			if userDetails == nil {
@@ -173,35 +185,56 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 			ownerName = userDetails.DisplayName
 			activityType = "COMMENT_CREATED"
 			points = PointsForCommentCreated()
+
 		} else {
 			continue
 		}
 
-		exists, err := repos.ActivityRepo.ActivityExists(fullComment.ID, version)
-		if err != nil || exists {
-			continue
-		}
-
+		// Hitta eller skapa användare
 		user, err := findOrCreateUser(ownerID, ownerName, repos.UserRepo)
 		if err != nil {
 			continue
 		}
-		log.Printf("Sida: %s av %s (%s), Gav poäng:%d", page.Title, user.DisplayName, activityType, points)
 
+		// Skapa user_stats om den inte finns
+		if err := repos.UserStatsRepo.CreateStatsForUser(user.ID); err != nil {
+			log.Printf("Kunde inte skapa user_stats för user %d: %v", user.ID, err)
+		}
+
+		// Kontrollera om aktiviteten redan finns (unik på CommentID + ActivityType)
+		exists, err := repos.ActivityRepo.ActivityExistsWithType(fullComment.ID, activityType)
+		if err != nil || exists {
+			continue
+		}
+
+		// Skapa aktivitet
 		activity := models.Activity{
 			UserID:                  user.ID,
 			ConfluencePageID:        fullComment.ID,
-			ConfluenceVersionNumber: version,
+			ConfluenceVersionNumber: fullComment.Version.Number,
 			ActivityType:            activityType,
 			PointsAwarded:           points,
 		}
 
 		if _, err := repos.ActivityRepo.CreateActivity(&activity); err == nil {
-			err := repos.UserRepo.UpdateUserPoints(user.ID, points)
-			if err != nil {
-				return 0
+			// Uppdatera poäng direkt
+			if err := repos.UserRepo.UpdateUserPoints(user.ID, points); err != nil {
+				continue
 			}
+
+			// Uppdatera user_stats direkt beroende på aktivitetstyp
+			if activityType == "COMMENT_CREATED" {
+				if err := repos.UserStatsRepo.UpdateUserStatsComments(user.ID); err != nil {
+					log.Printf("Kunde inte uppdatera comments för user %d: %v", user.ID, err)
+				}
+			} else if activityType == "RESOLVED_COMMENT" {
+				if err := repos.UserStatsRepo.UpdateUserStatsResolvedComments(user.ID); err != nil {
+					log.Printf("Kunde inte uppdatera resolved_comments för user %d: %v", user.ID, err)
+				}
+			}
+
 			newActivities++
+			log.Printf("Kommentar: %s av %s (%s), poäng: %d", page.Title, user.DisplayName, activityType, points)
 		}
 	}
 
