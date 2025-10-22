@@ -14,6 +14,7 @@ import (
 
 type UserHandler struct {
 	Repo *database.UserRepository
+	UserStatsRepo *database.UserStatsRepository
 }
 
 func (h *UserHandler) MeHandler(w http.ResponseWriter, r *http.Request) {
@@ -156,4 +157,24 @@ func (h *UserHandler) DeleteUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+
+func (h *UserHandler) GetUserStatsHandler(w http.ResponseWriter, r *http.Request) {
+	// ANVÄND MUX.VARS FÖR ATT HÄMTA 'id' FRÅN URL
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	stats, err := h.UserStatsRepo.GetUserStatsByUserID(id)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(stats)
 }

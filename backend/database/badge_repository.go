@@ -116,7 +116,7 @@ func (r *UserBadgeRepository) RemoveBadge(userID, badgeID int64) error {
 
 // Hämta alla user_badges från db
 func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
-	query := `SELECT user_id, badge_id, awarded_at, progress FROM user_badges ORDER BY awarded_at DESC`
+	query := `SELECT * FROM user_badges ORDER BY awarded_at DESC`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
