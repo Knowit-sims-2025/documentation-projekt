@@ -140,7 +140,7 @@ export default function AchievementCard({ user }: AchievementCardProps) {
               return sortBadgesByCompletion(nextBadgesPerType, userBadges ?? []).map(renderBadge);
             })()}
       </div>
-      {selectedBadge && (
+      {selectedBadge && 
         (() => { // IIFE to calculate progress for selected badge
           const userBadge = getUserBadgeForBadge(selectedBadge.id, userBadges ?? []);
           const userProgress = userBadge?.progress ?? 0;
