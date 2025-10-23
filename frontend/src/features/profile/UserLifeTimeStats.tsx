@@ -23,9 +23,9 @@ interface UserLifeTimeStatsProps {
 export function UserLifeTimeStats({ stats }: UserLifeTimeStatsProps) {
   return (
     <div className="profile-stats-grid">
-      <StatItem label="Total Comments" value={stats.totalComments} />
-      <StatItem label="Pages Created" value={stats.totalCreatedPages} />
-      <StatItem label="Pages Edited" value={stats.totalEditsMade} />
+      <StatItem label=" Total Comments" value={stats.totalComments} />
+      <StatItem label=" Pages Created" value={stats.totalCreatedPages} />
+      <StatItem label=" Pages Edited" value={stats.totalEditsMade} />
       <StatItem
         label=" Total Resolved Comments "
         value={stats.totalResolvedComments}
