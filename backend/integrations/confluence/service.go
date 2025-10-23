@@ -15,13 +15,14 @@ type Service struct {
 }
 
 // NewService skapar och konfigurerar en ny synkroniseringstjänst.
-func NewService(client *Client, userRepo *database.UserRepository, activityRepo *database.ActivityRepository, userStatsRepo *database.UserStatsRepository) *Service {
+func NewService(client *Client, userRepo *database.UserRepository, activityRepo *database.ActivityRepository, userStatsRepo *database.UserStatsRepository, userBadgeRepo *database.UserBadgeRepository) *Service {
 	return &Service{
 		Client: client,
 		Repositories: Repositories{
 			UserRepo:      userRepo,
 			ActivityRepo:  activityRepo,
 			UserStatsRepo: userStatsRepo,
+			UserBadgeRepo: userBadgeRepo,
 		},
 		stop: make(chan bool),
 	}
