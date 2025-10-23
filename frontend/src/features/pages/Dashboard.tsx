@@ -160,7 +160,7 @@ export default function Dashboard() {
       title: "Team Leaderboard",
       content: <TeamLeaderboard onSelectUser={setSelectedUser} />,
     },
-    { i: "competition", title: "Statistik", content: <div>Stats</div> },
+    // { i: "competition", title: "Statistik", content: <div>Stats</div> },
     {
       i: "achievements",
       title: "Achievements",
