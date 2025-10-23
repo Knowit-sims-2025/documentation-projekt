@@ -13,8 +13,9 @@ CREATE TABLE users (
     avatar_url TEXT,
     total_points INTEGER DEFAULT 0,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    lifetime_points INTEGER DEFAULT 0
 );
 
 -- Tabell för att lagra team.
@@ -31,6 +32,15 @@ CREATE TABLE user_teams (
     joined_at TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (user_id, team_id)
 );
+
+-- Tabell för att lagra stats för en viss user
+CREATE TABLE user_stats (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    total_comments INTEGER DEFAULT 0,
+    total_created_pages INTEGER DEFAULT 0,
+    total_edits_made INTEGER DEFAULT 0,
+    total_resolved_comments INTEGER DEFAULT 0
+)
 
 -- Tabell för att logga alla aktiviteter som ger poäng.
 -- Detta är "kvittot" för varje poäng som delas ut.

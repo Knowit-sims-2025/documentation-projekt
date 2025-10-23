@@ -15,12 +15,13 @@ type Service struct {
 }
 
 // NewService skapar och konfigurerar en ny synkroniseringstjänst.
-func NewService(client *Client, userRepo *database.UserRepository, activityRepo *database.ActivityRepository) *Service {
+func NewService(client *Client, userRepo *database.UserRepository, activityRepo *database.ActivityRepository, userStatsRepo *database.UserStatsRepository) *Service {
 	return &Service{
 		Client: client,
 		Repositories: Repositories{
-			UserRepo:     userRepo,
-			ActivityRepo: activityRepo,
+			UserRepo:      userRepo,
+			ActivityRepo:  activityRepo,
+			UserStatsRepo: userStatsRepo,
 		},
 		stop: make(chan bool),
 	}
@@ -56,4 +57,3 @@ func (s *Service) Stop() {
 	log.Println("Stoppar Confluence-tjänsten...")
 	s.stop <- true
 }
-

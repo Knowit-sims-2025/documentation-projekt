@@ -21,5 +21,6 @@ func RegisterUserRoutes(r *mux.Router, userHandler *handlers.UserHandler, userBa
 	s.HandleFunc("/{id:[0-9]+}", userHandler.UpdateUserHandler).Methods("PUT")
 	s.HandleFunc("/{id:[0-9]+}", userHandler.DeleteUserHandler).Methods("DELETE")
 
-	s.HandleFunc("/{userId:[0-9]+}/badges", userBadgeHandler.GetUserBadgesByUserIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}/badges", userBadgeHandler.GetUserBadgesByUserIDHandler).Methods("GET")
+	s.HandleFunc("/{id:[0-9]+}/stats", userHandler.GetUserStatsHandler).Methods("GET")
 }
