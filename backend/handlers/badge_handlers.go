@@ -61,6 +61,7 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description   string `json:"description"`
 		IconUrl       string `json:"iconUrl"`
 		CriteriaValue int    `json:"criteriaValue"`
+		CriteriaType  string `json:"criteriaType"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -73,6 +74,7 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
 		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""},
 		CriteriaValue: requestBody.CriteriaValue,
+		CriteriaType:  requestBody.CriteriaType,
 	}
 
 	newID, err := h.Repo.CreateBadge(badge)
@@ -101,6 +103,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description   string `json:"description"`
 		IconUrl       string `json:"iconUrl"`
 		CriteriaValue int    `json:"criteriaValue"`
+		CriteriaType  string `json:"criteriaType"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
@@ -114,6 +117,7 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
 		IconUrl:       sql.NullString{String: requestBody.IconUrl, Valid: requestBody.IconUrl != ""},
 		CriteriaValue: requestBody.CriteriaValue,
+		CriteriaType:  requestBody.CriteriaType,
 	}
 
 	if err := h.Repo.UpdateBadge(badge); err != nil {

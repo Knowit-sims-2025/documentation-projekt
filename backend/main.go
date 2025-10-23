@@ -29,10 +29,11 @@ func main() {
 	userRepo := &database.UserRepository{DB: db}
 	activityRepo := &database.ActivityRepository{DB: db}
 	userStatsRepo := &database.UserStatsRepository{DB: db}
+	userBadgeRepo := &database.UserBadgeRepository{DB: db}
 
 	// Skapa och starta Confluence-tjänsten
 	confluenceClient := confluence.NewClient(cfg.ConfluenceBaseURL, cfg.ConfluenceEmail, cfg.ConfluenceAPIToken)
-	confluenceService := confluence.NewService(confluenceClient, userRepo, activityRepo, userStatsRepo)
+	confluenceService := confluence.NewService(confluenceClient, userRepo, activityRepo, userStatsRepo, userBadgeRepo)
 	confluenceService.Start(30 * time.Second) // Rimligt intervall för normal drift
 
 	// Hämta och starta routern
