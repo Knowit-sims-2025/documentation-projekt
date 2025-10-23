@@ -1,0 +1,47 @@
+/* =========================
+   User Lifetime Stats
+   ========================= */
+
+/* Grid-container för statistiken. */
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  cursor: default;
+  border: var(--border-card);
+  border-radius: var(--border-radius);
+}
+
+/* Ta bort hover-effekten från .progress-card för denna specifika komponent */
+.profile-stats-grid:hover {
+  transform: translateY(-2px);
+  background: var(--gradient-hover);
+}
+
+/* Varje enskild statistik-item (t.ex. "Total Comments") */
+.profile-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--bg-light) 20%, transparent);
+}
+
+.profile-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.profile-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+

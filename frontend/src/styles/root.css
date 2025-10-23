@@ -103,7 +103,7 @@
   --border:      hsl(220 20% 60%);
   --border-muted:hsl(220 20% 70%);
 
-  --border-card: solid 1px var(--bg);
+  --border-card: solid 1px var(--border);
 
   --bar-bg: color-mix(in srgb, var(--bg) 92%, transparent);
 

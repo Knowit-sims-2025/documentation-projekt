@@ -1,4 +1,3 @@
-// src/services/auth.ts
 export type MeUser = {
   id: number;
   displayName: string;

@@ -47,6 +47,7 @@ export function ProfileCard({ user }: { user: User }) {
 
       {stats && !loadingStats && <UserLifeTimeStats stats={stats} />}
 
+      {/* Rankningsinformation och progressbar */}
       <div className="profile-progress">
         <ProgressBar
           value={user.totalPoints}
