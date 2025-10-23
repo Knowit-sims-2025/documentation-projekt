@@ -11,6 +11,7 @@ type Badge struct {
 	Description   sql.NullString `json:"description"`
 	IconUrl       sql.NullString `json:"icon_url"`
 	CriteriaValue int            `json:"criteria_value"`
+	CriteriaType  string         `json:"criteria_type"`
 }
 
 type UserBadge struct {

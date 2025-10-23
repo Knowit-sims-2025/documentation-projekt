@@ -17,7 +17,7 @@ type UserBadgeRepository struct {
 
 // Hämtar alla badges från db
 func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
-	query := `SELECT id, name, description, icon_url, criteria_value FROM badges ORDER BY name DESC` //ordern är just nu by name
+	query := `SELECT id, name, description, icon_url, criteria_value, criteria_type FROM badges ORDER BY name DESC` //ordern är just nu by name
 	rows, err := r.DB.Query(query)
 
 	if err != nil {
@@ -35,6 +35,7 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 			&badge.Description,
 			&badge.IconUrl,
 			&badge.CriteriaValue,
+			&badge.CriteriaType,
 		)
 		if err != nil {
 			log.Println("Error scanning badge:", err)
@@ -52,8 +53,8 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 	var id int64
 	err := r.DB.QueryRow(`
-		INSERT INTO badges (name, description, icon_url, criteria_value)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO badges (name, description, icon_url, criteria_value, criteria_type)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id`,
 		b.Name, b.Description, b.IconUrl, b.CriteriaValue,
 	).Scan(&id)
@@ -68,9 +69,9 @@ func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 func (r *BadgeRepository) UpdateBadge(b *models.Badge) error {
 	_, err := r.DB.Exec(`
 		UPDATE badges
-		SET name = $1, description = $2, icon_url = $3, criteria_value = $4
-		WHERE id = $5`,
-		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.ID,
+		SET name = $1, description = $2, icon_url = $3, criteria_value = $4, criteria_type = $5
+		WHERE id = $6`,
+		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.CriteriaType, b.ID,
 	)
 	return err
 }
@@ -91,7 +92,7 @@ func (r *BadgeRepository) DeleteBadge(id int64) error {
 // Hämta badge efter ID
 func (r *BadgeRepository) GetBadgeByID(id int64) (*models.Badge, error) {
 	row := r.DB.QueryRow(`
-		SELECT id, name, description, icon_url, criteria_value
+		SELECT id, name, description, icon_url, criteria_value, criteria_type
 		FROM badges
 		WHERE id = $1`, id,
 	)
@@ -211,4 +212,91 @@ func (r *UserBadgeRepository) GetUserBadge(userID, badgeID int64) (*models.UserB
 		return nil, err
 	}
 	return &ub, nil
+}
+
+// CheckAndAwardBadges kontrollerar om en användare uppfyller kraven för nya badges och tilldelar dem.
+func (r *UserBadgeRepository) CheckAndAwardBadges(userID int64) error {
+	// 1. Hämta user_stats
+	var stats struct {
+		TotalComments         int
+		TotalCreatedPages     int
+		TotalEditsMade        int
+		TotalResolvedComments int
+	}
+
+	err := r.DB.QueryRow(`
+		SELECT total_comments, total_created_pages, total_edits_made, total_resolved_comments
+		FROM user_stats WHERE user_id = $1
+	`, userID).Scan(&stats.TotalComments, &stats.TotalCreatedPages, &stats.TotalEditsMade, &stats.TotalResolvedComments)
+
+	if err != nil {
+		return err
+	}
+
+	// 2. Hämta alla badges
+	rows, err := r.DB.Query(`
+		SELECT id, criteria_type, criteria_value
+		FROM badges
+	`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	type badgeCheck struct {
+		ID            int64
+		CriteriaType  string
+		CriteriaValue int
+	}
+	var allBadges []badgeCheck
+
+	for rows.Next() {
+		var b badgeCheck
+		if err := rows.Scan(&b.ID, &b.CriteriaType, &b.CriteriaValue); err == nil {
+			allBadges = append(allBadges, b)
+		}
+	}
+
+	// 3. Gå igenom varje badge och kolla om användaren kvalificerar sig
+	for _, b := range allBadges {
+		var userValue int
+		switch b.CriteriaType {
+		case "total_comments":
+			userValue = stats.TotalComments
+		case "total_created_pages":
+			userValue = stats.TotalCreatedPages
+		case "total_edits_made":
+			userValue = stats.TotalEditsMade
+		case "total_resolved_comments":
+			userValue = stats.TotalResolvedComments
+		default:
+			continue
+		}
+
+		if userValue >= b.CriteriaValue {
+			// Kolla om användaren redan har badge:n
+			var exists bool
+			err := r.DB.QueryRow(`
+				SELECT EXISTS (
+					SELECT 1 FROM user_badges WHERE user_id = $1 AND badge_id = $2
+				)
+			`, userID, b.ID).Scan(&exists)
+			if err != nil {
+				return err
+			}
+
+			if !exists {
+				// Tilldela badge
+				_, err := r.DB.Exec(`
+					INSERT INTO user_badges (user_id, badge_id)
+					VALUES ($1, $2)
+				`, userID, b.ID)
+				if err != nil {
+					return err
+				}
+				log.Printf("User %d awarded badge %d\n", userID, b.ID)
+			}
+		}
+	}
+	return nil
 }
