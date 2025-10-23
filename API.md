@@ -9,6 +9,7 @@ Detta dokument beskriver API:et för **Gamification-appen** och fungerar som ett
 ## 🧩 Datamodeller
 
 ### 🧑 User
+
 Representerar en användare i systemet.
 
 ```json
@@ -26,6 +27,7 @@ Representerar en användare i systemet.
 ---
 
 ### ⚡ Activity
+
 Representerar en händelse som har genererat poäng.
 
 ```json
@@ -41,6 +43,7 @@ Representerar en händelse som har genererat poäng.
 ---
 
 ### 👥 Team
+
 Representerar ett team av användare.
 
 ```json
@@ -54,6 +57,7 @@ Representerar ett team av användare.
 ---
 
 ### 🏅 Badge
+
 Representerar en utmärkelse som en användare kan tjäna.
 
 ```json
@@ -69,6 +73,7 @@ Representerar en utmärkelse som en användare kan tjäna.
 ---
 
 ### 🏆 Competition
+
 Representerar en tävling inom en viss tidsram.
 
 ```json
@@ -90,10 +95,12 @@ Representerar en tävling inom en viss tidsram.
 ## 🔧 System
 
 ### `GET /api/v1`
+
 **Beskrivning:** Hämtar rot-endpointen för API:et.  
 Returnerar ett välkomstmeddelande och en lista över tillgängliga resurser och exempelanrop.
 
 **Svar (200 OK):**
+
 ```json
 {
   "message": "Welcome to the Gamification API v1",
@@ -114,12 +121,15 @@ Returnerar ett välkomstmeddelande och en lista över tillgängliga resurser och
 ## 👤 Users (Användare)
 
 ### `GET /api/v1/users`
+
 Hämtar en lista över alla användare, sorterade efter poäng i fallande ordning.
 
 ### `POST /api/v1/users`
+
 Skapar en ny användare.
 
 **Request Body:**
+
 ```json
 {
   "confluenceAuthorId": "anna.andersson.id",
@@ -129,12 +139,15 @@ Skapar en ny användare.
 ```
 
 ### `GET /api/v1/users/{id}`
+
 Hämtar en specifik användare baserat på ID.
 
 ### `PUT /api/v1/users/{id}`
+
 Uppdaterar en användares information.
 
 **Request Body:**
+
 ```json
 {
   "displayName": "Anna A. (Uppdaterad)",
@@ -143,6 +156,7 @@ Uppdaterar en användares information.
 ```
 
 ### `DELETE /api/v1/users/{id}`
+
 Tar bort en specifik användare.
 
 ---
@@ -150,12 +164,15 @@ Tar bort en specifik användare.
 ## 👥 Teams
 
 ### `GET /api/v1/teams`
+
 Hämtar en lista över alla team.
 
 ### `POST /api/v1/teams`
+
 Skapar ett nytt team.
 
 **Request Body:**
+
 ```json
 {
   "name": "Frontend Wizards"
@@ -163,12 +180,15 @@ Skapar ett nytt team.
 ```
 
 ### `GET /api/v1/teams/{id}`
+
 Hämtar ett specifikt team baserat på ID.
 
 ### `PUT /api/v1/teams/{id}`
+
 Uppdaterar ett teams namn.
 
 ### `DELETE /api/v1/teams/{id}`
+
 Tar bort ett team.
 
 ---
@@ -176,12 +196,15 @@ Tar bort ett team.
 ## 🧑‍🤝‍🧑 User & Team Management (`userteams`)
 
 ### `GET /api/v1/userteams/team/{teamId}`
+
 Hämtar alla användare som är medlemmar i ett specifikt team.
 
 ### `POST /api/v1/userteams`
+
 Lägger till en användare i ett team.
 
 **Request Body:**
+
 ```json
 {
   "user_id": 1,
@@ -190,6 +213,7 @@ Lägger till en användare i ett team.
 ```
 
 ### `DELETE /api/v1/userteams/user/{userId}/team/{teamId}`
+
 Tar bort en användare från ett team.
 
 ---
@@ -197,12 +221,15 @@ Tar bort en användare från ett team.
 ## 🏅 Badges (Utmärkelser)
 
 ### `GET /api/v1/badges`
+
 Hämtar en lista över alla tillgängliga badges.
 
 ### `POST /api/v1/badges`
+
 Skapar en ny badge.
 
 **Request Body:**
+
 ```json
 {
   "name": "Team Player",
@@ -213,12 +240,15 @@ Skapar en ny badge.
 ```
 
 ### `GET /api/v1/badges/{id}`
+
 Hämtar en specifik badge.
 
 ### `PUT /api/v1/badges/{id}`
+
 Uppdaterar en badge.
 
 ### `DELETE /api/v1/badges/{id}`
+
 Tar bort en badge.
 
 ---
@@ -226,9 +256,11 @@ Tar bort en badge.
 ## 🎖️ User & Badge Management (`userbadges`)
 
 ### `POST /api/v1/userbadges`
+
 Tilldelar en badge till en användare.
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
@@ -237,9 +269,11 @@ Tilldelar en badge till en användare.
 ```
 
 ### `GET /api/v1/userbadges/{userId}/{badgeId}`
+
 Kontrollerar om en användare har en specifik badge.
 
 ### `DELETE /api/v1/userbadges/{userId}/{badgeId}`
+
 Tar bort en badge från en användare.
 
 ---
@@ -247,12 +281,15 @@ Tar bort en badge från en användare.
 ## 📈 Activities (Aktiviteter)
 
 ### `GET /api/v1/activities`
+
 Hämtar en lista över alla poänggivande aktiviteter.
 
 ### `POST /api/v1/activities`
+
 Skapar en ny aktivitet (t.ex. när en sida skapas i Confluence).
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
@@ -268,12 +305,15 @@ Skapar en ny aktivitet (t.ex. när en sida skapas i Confluence).
 ## 🏆 Competitions (Tävlingar)
 
 ### `GET /api/v1/competitions`
+
 Hämtar en lista över alla tävlingar.
 
 ### `POST /api/v1/competitions`
+
 Skapar en ny tävling.
 
 **Request Body:**
+
 ```json
 {
   "name": "November-utmaningen",
@@ -284,9 +324,11 @@ Skapar en ny tävling.
 ```
 
 ### `GET /api/v1/competitions/{id}`
+
 Hämtar en specifik tävling.
 
 ### `DELETE /api/v1/competitions/{id}`
+
 Tar bort en tävling.
 
 ---
@@ -294,14 +336,17 @@ Tar bort en tävling.
 ## 📤 File Uploads
 
 ### `POST /api/v1/upload/avatar`
+
 Laddar upp en avatar för en användare.  
 Använder **multipart/form-data**.
 
 **Form-data fält:**
+
 - `userId` (t.ex. `11`)
 - `uploadFile` (filen som ska laddas upp)
 
 **Svar (200 OK):**
+
 ```json
 {
   "avatarUrl": "/static/avatars/avatar_11_2025-10-08_15-45-00.png"
@@ -311,14 +356,17 @@ Använder **multipart/form-data**.
 ---
 
 ### `POST /api/v1/upload/badge`
+
 Laddar upp en ikon för en badge.  
 Använder **multipart/form-data**.
 
 **Form-data fält:**
+
 - `badgeId` (t.ex. `5`)
 - `uploadFile` (filen som ska laddas upp)
 
 **Svar (200 OK):**
+
 ```json
 {
   "iconUrl": "/static/badges/badge_5_2025-10-08_15-50-00.png"
