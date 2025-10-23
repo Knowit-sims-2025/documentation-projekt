@@ -17,7 +17,7 @@ type UserBadgeRepository struct {
 
 // Hämtar alla badges från db
 func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
-	query := `SELECT id, name, description, icon_url, criteria_value FROM badges ORDER BY name DESC` //ordern är just nu by name
+	query := `SELECT id, name, description, icon_url, criteria_value, criteria_type FROM badges ORDER BY name DESC` //ordern är just nu by name
 	rows, err := r.DB.Query(query)
 
 	if err != nil {
@@ -35,6 +35,7 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 			&badge.Description,
 			&badge.IconUrl,
 			&badge.CriteriaValue,
+			&badge.CriteriaType,
 		)
 		if err != nil {
 			log.Println("Error scanning badge:", err)
@@ -52,8 +53,8 @@ func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 	var id int64
 	err := r.DB.QueryRow(`
-		INSERT INTO badges (name, description, icon_url, criteria_value)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO badges (name, description, icon_url, criteria_value, criteria_type)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id`,
 		b.Name, b.Description, b.IconUrl, b.CriteriaValue,
 	).Scan(&id)
@@ -68,9 +69,9 @@ func (r *BadgeRepository) CreateBadge(b *models.Badge) (int64, error) {
 func (r *BadgeRepository) UpdateBadge(b *models.Badge) error {
 	_, err := r.DB.Exec(`
 		UPDATE badges
-		SET name = $1, description = $2, icon_url = $3, criteria_value = $4
-		WHERE id = $5`,
-		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.ID,
+		SET name = $1, description = $2, icon_url = $3, criteria_value = $4, criteria_type = $5
+		WHERE id = $6`,
+		b.Name, b.Description, b.IconUrl, b.CriteriaValue, b.CriteriaType, b.ID,
 	)
 	return err
 }
@@ -91,7 +92,7 @@ func (r *BadgeRepository) DeleteBadge(id int64) error {
 // Hämta badge efter ID
 func (r *BadgeRepository) GetBadgeByID(id int64) (*models.Badge, error) {
 	row := r.DB.QueryRow(`
-		SELECT id, name, description, icon_url, criteria_value
+		SELECT id, name, description, icon_url, criteria_value, criteria_type
 		FROM badges
 		WHERE id = $1`, id,
 	)
