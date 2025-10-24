@@ -1,11 +1,18 @@
-/* =========================
-   User Lifetime Stats
-   ========================= */
+/* Gör omslag till en egen layout-container */
+.profile-stats {
+  container-type: inline-size;
+}
 
-/* Grid-container för statistiken. */
+/* === Grid: exakt 1/2/4 kolumner, aldrig 3 === */
 .profile-stats-grid {
+  /* TA BORT hover-effekten (din kommentar sa remove) */
+  transform: none;
+  background: transparent;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  /* Styr kolumnantal via en var; starta på 1 */
+  --cols: 1;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: 8px;
   padding: 12px;
   cursor: default;
@@ -13,13 +20,17 @@
   border-radius: var(--border-radius);
 }
 
-/* Ta bort hover-effekten från .progress-card för denna specifika komponent */
-.profile-stats-grid:hover {
-  transform: translateY(-2px);
-  background: var(--gradient-hover);
+/* 2 kolumner när containern är rimligt bred (justera trösklar efter smak) */
+@container (min-width: 360px) {
+  .profile-stats-grid { --cols: 2; }
 }
 
-/* Varje enskild statistik-item (t.ex. "Total Comments") */
+/* 4 kolumner när containern är ännu bredare */
+@container (min-width: 720px) {
+  .profile-stats-grid { --cols: 4; }
+}
+
+/* --- DINA ITEM-STILAR OFÖRÄNDRADE --- */
 .profile-stat-item {
   display: flex;
   flex-direction: column;
@@ -44,4 +55,3 @@
   color: var(--text-muted);
   font-weight: 500;
 }
-

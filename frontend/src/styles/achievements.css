@@ -43,24 +43,32 @@
   color: var(--text);
 }
 
-/* Sammanfattningskortet (“You’ve unlocked …”) – full bredd */
-.achievements .ach-summary{
+/* Sammanfattningskortet (“You’ve unlocked …”) – full bredd (för rullistan)*/
+.achievements >.ach-summary{
   grid-column: 1 / -1;
-  border-radius: var(--border-radius);
-  border: var(--border-card);
-  background: var(--gradient);
-  padding: .75rem 1rem;
-  box-shadow: var(--shadow);
+  border-radius: 12px;             
+  border: 1px solid var(--border); 
+  background: var(--gradient);     
+  padding: 10px;                   
+  box-shadow: 0 2px 8px hsl(220 50% 2% / 0.12);
+  transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
+  margin-bottom: var(--gap);
 }
+
+/* Samma hover-känsla som övriga kort */
+.achievements >.ach-summary:hover{
+  transform: translateY(-2px);
+  background: var(--gradient-hover);
+  /* Om den INTE är klickbar, kommentera nästa rad så muspekaren inte blir “hand” */
+  /* cursor: pointer; */
+}
+
 
 /* ===== Kortlayout – bygger vidare på .progress-card men scopad ===== */
 .achievements .progress-card{
-  display: grid;
-  grid-template-columns: var(--ach-icon) 1fr auto; /* ikon | text | meta */
-  grid-template-rows: auto auto auto;              /* label | desc | bar */
-  column-gap: 12px;
-  row-gap: 6px;
-
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--gradient);
@@ -138,80 +146,97 @@
   color: var(--text-muted);
 }
 
-/* (Valfritt) kompakt tema där siffrorna döljs: */
+
+/* kompakt tema där siffrorna döljs: */
 /* .achievements .progress-numbers{ display:none; } */
 
 
 /* ============ Achievement Icon Display (scopad) ============ */
 .achicons{
-  /* Kontroll-punkter (ändra fritt) */
-  --icon-size:  clamp(56px, 10vw, 70px);
-  --gap:        var(--gap, 8px);
-  --mini-h:     6px;                 /* höjd på miniprogress */
+  /* Basstorlek du redan styr */
+  --icon-size: clamp(56px, 7vw, 80px);
+
+  /* All spacing från en gemensam bas  så det växer/krymper gemensamt*/
+  --cell-pad: clamp(2px, 0.9vw, 8px);
+  --cell-gap: clamp(2px, 0.8vw, 8px);
+  --cell-radius: clamp(10px, 1vw, 14px);
+  --mini-h: clamp(2px, calc(var(--icon-size)*0.12), 6px);
+
+  /* Minsta kolumnbredd = ikon + 2*pad + 2px (border vänster+höger) */
+  --cell-min: calc(var(--icon-size) + (2 * var(--cell-pad)) + 2px);
 }
 
-/* Header: återanvänd ProgressBar men göm siffrorna */
-.achicons__summary{
+
+
+/* Header kort (you've unlocked)*/
+.achicons > .progress-card{
   border-radius: var(--border-radius);
   border: var(--border-card);
   background: var(--gradient);
   padding: .75rem 1rem;
   box-shadow: var(--shadow);
-  margin-bottom: var(--gap);
+  margin: 0 0 var(--cell-gap, var(--gap)) 0;
 }
-.achicons__summary .progress-numbers{ display: none; }
+.achicons .progress-numbers{ display: none; }
+.achicons > .progress-card:hover{
+  transform: none;
+  background: var(--gradient); 
+}
 
-/* Grid med ikoner – auto-fit efter tillgänglig bredd */
+/* Grid med fasta "brickor" som packas snyggt från vänster */
 .achicons__grid{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--icon-size) + 8px), 1fr));
-  gap: calc(var(--gap) + 4px);
+  grid-template-columns: repeat(auto-fill, minmax(var(--cell-min), 1fr));
+  gap: var(--cell-gap);
   align-content: start;
+  justify-content: start; /* viktigt ihop med auto-fill */
 }
 
-/* Ikon-knapp */
+/* Ikon-knapp (hela kortet) */
 .achicons__btn{
   appearance: none;
   border: 1px solid var(--border);
   background: var(--bg);
-  border-radius: 12px;
-  padding: 8px;
+  border-radius: var(--cell-radius);
+  padding: var(--cell-pad);
   display: grid;
-  grid-template-rows: auto var(--mini-h);
-  gap: 6px;
+  grid-template-rows: 1fr var(--mini-h); /* bildyta tar all plats ovanför baren */
+  gap: clamp(4px, 0.6vw, 8px);
   place-items: center;
   box-shadow: 0 2px 8px hsl(220 50% 2% / 0.12);
   transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
   cursor: pointer;
 }
-.achicons__btn:hover{
-  transform: translateY(-2px);
-  background: var(--gradient-hover);
-  border-color: var(--highlight);
+@media (hover: hover) {
+  .achicons__btn:hover{
+    transform: translateY(-2px);
+    background: var(--gradient-hover);
+    border-color: var(--highlight);
+  }
 }
 .achicons__btn:focus-visible{
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Ikonbild */
+/* Bilden fyller bredden och håller kvadratisk ratio – skalar med cellen */
 .achicons__img{
-  width: var(--icon-size);
-  height: var(--icon-size);
+  inline-size: 100%;
+  aspect-ratio: 1;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: calc(var(--cell-radius) - 2px);
   background: color-mix(in oklch, var(--bg-light) 25%, transparent);
   border: 1px solid var(--border);
   box-shadow: 0 1px 2px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.04);
 }
 
-/* Locked → gråskala + lite dämpad opacitet för “låst” känsla */
+/* Låsta ikoner – samma som tidigare */
 .achicons__btn[data-state="locked"] .achicons__img{
   filter: grayscale(1) brightness(.85);
   opacity: .9;
 }
 
-/* Minimal progressbar under ikonen */
+/* Progressbaren under ikonen */
 .achicons__mini{
   justify-self: stretch;
   width: 100%;
@@ -219,16 +244,13 @@
   background: var(--border-muted);
   border-radius: 999px;
   overflow: hidden;
-
 }
 .achicons__mini-bar{
   height: 100%;
   background: var(--accent);
   width: 0%;
   transition: width .3s ease-in-out;
-
 }
-
 /* Overlay-innehåll */
 .achicons__overlay{
   display: flex;
