@@ -172,7 +172,7 @@ func (repo *UserStatsRepository) CreateStatsForUser(userID int64) error {
 	return err
 }
 
-func (repo * UserStatsRepository) GetUserStatsByUserID(userID int64) (*models.UserStats, error) {
+func (repo *UserStatsRepository) GetUserStatsByUserID(userID int64) (*models.UserStats, error) {
 	row := repo.DB.QueryRow("SELECT user_id, total_comments, total_edits_made, total_created_pages, total_resolved_comments FROM user_stats WHERE user_id = $1", userID)
 	var stats models.UserStats
 	err := row.Scan(
@@ -186,4 +186,72 @@ func (repo * UserStatsRepository) GetUserStatsByUserID(userID int64) (*models.Us
 		return nil, err
 	}
 	return &stats, nil
+}
+
+// GetTopCommenter returnerar användaren med flest kommentarer.
+func (repo *UserStatsRepository) GetTopCommenter() (*models.UserTopStat, error) {
+	query := `
+		SELECT u.display_name, u.avatar_url, s.total_comments AS count
+		FROM user_stats s
+		JOIN users u ON u.id = s.user_id
+		ORDER BY s.total_comments DESC
+		LIMIT 1;
+	`
+	var top models.UserTopStat
+	err := repo.DB.QueryRow(query).Scan(&top.DisplayName, &top.AvatarURL, &top.Count)
+	if err != nil {
+		return nil, err
+	}
+	return &top, nil
+}
+
+// GetTopEditor returnerar användaren med flest redigeringar.
+func (repo *UserStatsRepository) GetTopEditor() (*models.UserTopStat, error) {
+	query := `
+		SELECT u.display_name, u.avatar_url, s.total_edits_made AS count
+		FROM user_stats s
+		JOIN users u ON u.id = s.user_id
+		ORDER BY s.total_edits_made DESC
+		LIMIT 1;
+	`
+	var top models.UserTopStat
+	err := repo.DB.QueryRow(query).Scan(&top.DisplayName, &top.AvatarURL, &top.Count)
+	if err != nil {
+		return nil, err
+	}
+	return &top, nil
+}
+
+// GetTopCreator returnerar användaren med flest skapade sidor.
+func (repo *UserStatsRepository) GetTopCreator() (*models.UserTopStat, error) {
+	query := `
+		SELECT u.display_name, u.avatar_url, s.total_created_pages AS count
+		FROM user_stats s
+		JOIN users u ON u.id = s.user_id
+		ORDER BY s.total_created_pages DESC
+		LIMIT 1;
+	`
+	var top models.UserTopStat
+	err := repo.DB.QueryRow(query).Scan(&top.DisplayName, &top.AvatarURL, &top.Count)
+	if err != nil {
+		return nil, err
+	}
+	return &top, nil
+}
+
+// GetTopResolvedCommenter returnerar användaren med flest lösta kommentarer.
+func (repo *UserStatsRepository) GetTopResolvedCommenter() (*models.UserTopStat, error) {
+	query := `
+		SELECT u.display_name, u.avatar_url, s.total_resolved_comments AS count
+		FROM user_stats s
+		JOIN users u ON u.id = s.user_id
+		ORDER BY s.total_resolved_comments DESC
+		LIMIT 1;
+	`
+	var top models.UserTopStat
+	err := repo.DB.QueryRow(query).Scan(&top.DisplayName, &top.AvatarURL, &top.Count)
+	if err != nil {
+		return nil, err
+	}
+	return &top, nil
 }
