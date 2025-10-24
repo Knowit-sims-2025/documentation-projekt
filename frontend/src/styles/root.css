@@ -15,6 +15,9 @@
   --footer-h: 3rem;
   --border-radius: 1rem;
 
+ 
+  
+
   /* Z-index */
   --z-header: 100;
   --z-overlay: 500;
@@ -22,16 +25,16 @@
 
 
   /* sRGB/HSL fallback-färger */
-  --bg-dark: hsl(220 25% 10%);
-  --bg:      hsl(220 20% 15%);
-  --bg-light:hsl(220 20% 20%);
+  --bg-dark: hsl(220 25% 12%);
+  --bg:      hsl(220 20% 17%);
+  --bg-light:hsl(220 20% 22%);
 
-  --text:        hsl(210 20% 92%);
-  --text-muted:  hsl(215 12% 62%);
+  --text:        hsl(210 20% 94%);
+  --text-muted:  hsl(215 12% 68%);
 
-  --highlight:   hsl(220 10% 50%);
-  --border:      hsl(220 12% 40%);
-  --border-muted:hsl(220 10% 30%);
+  --highlight:   hsl(220 10% 54%);
+  --border:      hsl(220 12% 42%);
+  --border-muted:hsl(220 10% 34%);
   --border-card: solid 1px var(--border);
 
   --bar-bg: rgba(0,0,0,0.08);
@@ -41,14 +44,14 @@
 
   --shadow: 0 2px 2px rgba(0,0,0,.07), 0 4px 4px rgba(0,0,0,.04);
 
-  --primary:   hsl(264 70% 70%);
-  --secondary: hsl(84  70% 70%);
-  --accent:    hsl(103, 94%, 58%);
+  --primary:   hsl(264 70% 72%);
+  --secondary: hsl(84  70% 72%);
+  --accent:    hsl(216 81% 69%);
 
-  --danger:  hsl( 30 60% 60%);
-  --warning: hsl( 50 60% 60%);
-  --success: hsl(160 60% 60%);
-  --info:    hsl(260 60% 60%);
+  --danger:  hsl( 30 60% 62%);
+  --warning: hsl( 50 60% 62%);
+  --success: hsl(160 60% 62%);
+  --info:    hsl(260 70% 62%);
 
 
   color-scheme: dark;
@@ -63,15 +66,15 @@
 /* Modernare uppgradering – OKLCH + color-mix(in oklch, ...) */
 @supports (color: oklch(0.5 0.1 264)) {
   :root {
-    --bg-dark:  oklch(0.10 0.025 264);
-    --bg:       oklch(0.15 0.025 264);
-    --bg-light: oklch(0.20 0.025 264);
+    --bg-dark:  oklch(0.05 0.025 264);
+    --bg:       oklch(0.20 0.025 264);
+    --bg-light: oklch(0.30 0.025 264);
 
     --text:        oklch(0.96 0.05 264);
     --text-muted:  oklch(0.76 0.05 264);
 
     --highlight:   oklch(0.50 0.05 264);
-    --border:      oklch(0.40 0.05 264);
+    --border:      oklch(0.60 0.05 264);
     --border-muted:oklch(0.30 0.05 264);
 
     --primary:   oklch(0.76 0.10 264);
@@ -100,7 +103,7 @@
   --border:      hsl(220 20% 60%);
   --border-muted:hsl(220 20% 70%);
 
-  --border-card: solid 1px var(--bg);
+  --border-card: solid 1px var(--border);
 
   --bar-bg: color-mix(in srgb, var(--bg) 92%, transparent);
 
@@ -166,7 +169,7 @@ body {
     background: var(--bg-dark);
     color: var(--text-muted);
 
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 

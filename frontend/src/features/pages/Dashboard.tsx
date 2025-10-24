@@ -1,14 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+// src/features/pages/Dashboard.tsx
+import React, { useEffect, useState } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import type { Layout, Layouts } from "react-grid-layout";
+
+import AchievementIconDisplay from "../../components/AchievementIconDisplay";
 import UserLeaderBoard from "./leaderboard/UserLeaderBoard";
-import TeamLeaderboard from "./leaderboard/TeamLeaderboard"; // <-- NY: Importera
+import TeamLeaderboard from "./leaderboard/TeamLeaderboard";
 import UserAchievements from "../../components/Achivements";
+
 import {
   layouts as defaultLayouts,
   breakpoints,
   cols,
 } from "../../styles/dashboardLayout";
+
 import Widget from "../../components/Widget";
 import Switch from "../../components/switch";
 import { useAuth } from "../../features/auth/AuthContext";
@@ -16,31 +21,99 @@ import type { User } from "../../types/user";
 import { Overlay } from "./leaderboard/Overlay";
 import { ProfileCard } from "../profile/ProfileCard";
 import Profile from "../../components/Profile";
-import { useAutoRowHeight } from "../../hooks/useAutoRowHeight";
+
+import { rowsFromLayout } from "../../utils/rowsFromLayout";
+import { useRGLRowHeight } from "../../hooks/useRGLRowHeight";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-type Widget = {
+// Lokal storage-nyckel
+const LS_DASHBOARD_KEY = "user-dashboard-layout";
+
+// Hjälpare: lås alla widgets (ej draggable/resizable)
+function lockLayouts(source: Layouts): Layouts {
+  const out: Layouts = {};
+  for (const bp in source) {
+    out[bp] = source[bp].map((it) => ({
+      ...it,
+      isDraggable: false,
+      isResizable: false,
+    }));
+  }
+  return out;
+}
+
+type WidgetMeta = {
   i: string;
   title: React.ReactNode;
   content: React.ReactNode;
   headerControls?: React.ReactNode;
 };
 
-type Tab = "daily" | "weekly" | "total";
-
-// Key för localStorage
-const LS_KEY = "user-dashboard-layout";
+type Tab = "daily" | "weekly" | "total" | "stats";
 
 export default function Dashboard() {
   const { currentUser, isLoading: authLoading } = useAuth();
+
   const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
+  const [bp, setBp] = useState<keyof typeof breakpoints>("lg"); // följ aktuellt breakpoint
+  const [rows, setRows] = useState<number>(rowsFromLayout(defaultLayouts.lg));
+
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("total");
+  const [selectedBadgeId, setSelectedBadgeId] = useState<number | null>(null);
 
+  // RGL parametrar som måste hållas i synk med hooken
+  const MARGIN_Y = 8;
+  const CONTAINER_PADDING_Y = 0;
+
+  // Dynamisk rowHeight som exakt fyller utrymmet mellan header/footer
+  const [rowHeight, kickRow] = useRGLRowHeight(rows, {
+    marginY: MARGIN_Y,
+    containerPaddingY: CONTAINER_PADDING_Y,
+    outerSel: ".app__main",
+    innerSel: ".dashboard",
+    min: 28,
+    max: 140,
+  });
+
+  // Debuggning av rowHeight
+  // useEffect(() => {
+  //   const appMain = document.querySelector(".app__main") as HTMLElement | null;
+  //   const appMainHeight = appMain?.getBoundingClientRect().height ?? 0;
+  //   const expectedGridHeight = rows * rowHeight + (rows - 1) * MARGIN_Y + 2 * CONTAINER_PADDING_Y;
+  //   console.log({ bp, rows, rowHeight, expectedGridHeight, appMainHeight });
+  // }, [bp, rows, rowHeight]);
+
+  // Ladda ev. sparad layout (och lås default annars)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LS_DASHBOARD_KEY);
+      if (stored) {
+        const parsed: Layouts = JSON.parse(stored);
+        setLayouts(parsed);
+        // beräkna rows utifrån aktuellt breakpoint direkt
+        const current = parsed[bp] ?? parsed.lg ?? defaultLayouts.lg;
+        setRows(rowsFromLayout(current));
+      } else {
+        const locked = lockLayouts(defaultLayouts);
+        setLayouts(locked);
+        const current = locked[bp] ?? locked.lg ?? defaultLayouts.lg;
+        setRows(rowsFromLayout(current));
+      }
+    } catch (error) {
+      console.error("Kunde inte ladda layout, fallback till default.", error);
+      const locked = lockLayouts(defaultLayouts);
+      setLayouts(locked);
+      setRows(rowsFromLayout(locked[bp] ?? locked.lg));
+    }
+    // Efter första mount, säkerställ korrekt mätning
+    requestAnimationFrame(() => kickRow());
+  }, [bp, kickRow]);
+
+  // UI-texter
   const myTier = currentUser?.rankTier ?? null;
-
   const individualTitle = (
     <>
       Individual Ranking{" "}
@@ -49,7 +122,6 @@ export default function Dashboard() {
       </span>
     </>
   );
-
   const individualControls = (
     <div
       title="Filter all users by tier"
@@ -67,7 +139,8 @@ export default function Dashboard() {
     </div>
   );
 
-  const widgets: Widget[] = [
+  // Widget-listan
+  const widgets: WidgetMeta[] = [
     { i: "profile", title: "Profile", content: <Profile /> },
     {
       i: "individual",
@@ -87,65 +160,53 @@ export default function Dashboard() {
       title: "Team Leaderboard",
       content: <TeamLeaderboard onSelectUser={setSelectedUser} />,
     },
-    { i: "competition", title: "Statistik", content: <div>Stats</div> },
+    // { i: "competition", title: "Statistik", content: <div>Stats</div> },
     {
       i: "achievements",
       title: "Achievements",
-      content: currentUser ? <UserAchievements user={currentUser} /> : null,
+      content: currentUser ? (
+        <AchievementIconDisplay
+          user={currentUser}
+          onIconClick={(badgeId) => setSelectedBadgeId(badgeId)}
+        />
+      ) : null,
     },
   ];
 
-  // Ladda layout från localStorage om den finns
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(LS_KEY);
-      if (stored) {
-        setLayouts(JSON.parse(stored));
-      } else {
-        // Om ingen layout är sparad, sätt default-layouten men med alla widgets låsta
-        const lockedDefaultLayouts: Layouts = {};
-        for (const breakpoint in defaultLayouts) {
-          lockedDefaultLayouts[breakpoint] = defaultLayouts[breakpoint].map(
-            (item) => ({ ...item, isDraggable: false, isResizable: false })
-          );
-        }
-        setLayouts(lockedDefaultLayouts);
-      }
-    } catch (error) {
-      console.error(
-        "Kunde inte ladda eller bearbeta layout från localStorage",
-        error
-      );
-      setLayouts(defaultLayouts); // Fallback till o-låst default vid fel
-    }
-  }, []);
-
-  // Spara layout när användaren flyttar/ändrar storlek
+  // Runtime: spara layout + räkna rader från live-layouten
   function handleLayoutChange(currentLayout: Layout[], allLayouts: Layouts) {
     setLayouts(allLayouts);
-    localStorage.setItem(LS_KEY, JSON.stringify(allLayouts));
+    localStorage.setItem(LS_DASHBOARD_KEY, JSON.stringify(allLayouts));
+    setRows(rowsFromLayout(currentLayout));
+    requestAnimationFrame(() => kickRow());
   }
 
-  // Funktion för att ta bort en widget från alla layouts
+  // Breakpoint-bytare – påverkar vilken layout som används och hur många rader den har
+  function handleBreakpointChange(next: string) {
+    const key = next as keyof typeof breakpoints;
+    setBp(key);
+    const lay = layouts[key] ?? layouts.lg ?? defaultLayouts.lg;
+    setRows(rowsFromLayout(lay));
+    requestAnimationFrame(() => kickRow());
+  }
+
+  // Ta bort widget från alla breakpoints
   function handleRemoveWidget(widgetId: string) {
     const newLayouts: Layouts = {};
-    // Gå igenom varje breakpoint (lg, md, sm...)
     for (const breakpoint in layouts) {
-      // Filtrera bort den widget som ska tas bort
       newLayouts[breakpoint] = layouts[breakpoint].filter(
         (item) => item.i !== widgetId
       );
     }
-    handleLayoutChange([], newLayouts); // Spara den nya layouten
+    handleLayoutChange([], newLayouts);
   }
 
-  // Funktion för att låsa/låsa upp en widget
+  // Lås/lås upp widget
   function handleToggleLock(widgetId: string) {
     const newLayouts: Layouts = {};
     for (const breakpoint in layouts) {
       newLayouts[breakpoint] = layouts[breakpoint].map((item) => {
         if (item.i === widgetId) {
-          // Om den redan har isDraggable=false, är den låst. Lås upp den.
           const currentlyLocked = item.isDraggable === false;
           return {
             ...item,
@@ -156,10 +217,56 @@ export default function Dashboard() {
         return item;
       });
     }
-    // Använd handleLayoutChange för att spara den nya låsta/upplåsta state
     handleLayoutChange([], newLayouts);
   }
+  useEffect(() => {
+    const onReset = () => {
+      // 1) Rensa lagrad layout
+      localStorage.removeItem("user-dashboard-layout");
 
+      // 2) Sätt tillbaka låst default-layout
+      const locked: Layouts = {};
+      for (const bp in defaultLayouts) {
+        locked[bp] = defaultLayouts[bp].map((it) => ({
+          ...it,
+          isDraggable: false,
+          isResizable: false,
+        }));
+      }
+      setLayouts(locked);
+
+      // 3) Räkna rader för aktuellt breakpoint (bp) så rowHeight blir rätt direkt
+      const current = locked[bp] ?? locked.lg ?? defaultLayouts.lg;
+      setRows(rowsFromLayout(current));
+
+      // 4) Kicka ommätning efter att DOM/CSS hunnit landa
+      requestAnimationFrame(() => {
+        // om du använder min hook som returnerar kickRow:
+        // kickRow();
+        // annars: trigga resize (fallback)
+        window.dispatchEvent(new Event("resize"));
+      });
+    };
+
+    window.addEventListener("dashboard:reset", onReset);
+    return () => window.removeEventListener("dashboard:reset", onReset);
+  }, [bp /*, kickRow om du har den */]);
+
+  // 🔁 Mjuk reset (ingen reload) + kick för korrekt mätning efteråt
+  // function handleResetLayout() {
+  //   localStorage.removeItem(LS_DASHBOARD_KEY);
+
+  //   const locked = lockLayouts(defaultLayouts);
+  //   setLayouts(locked);
+
+  //   const current = locked[bp] ?? locked.lg ?? defaultLayouts.lg;
+  //   setRows(rowsFromLayout(current));
+
+  //   requestAnimationFrame(() => kickRow());
+  //   // Om du har en meny: stäng den här (ex. setIsMenuOpen(false))
+  // }
+
+  // Tidig return efter att ALLA hooks är definierade
   if (authLoading) {
     return <main className="app__main">Loading user...</main>;
   }
@@ -167,15 +274,20 @@ export default function Dashboard() {
   return (
     <main className="app__main">
       <section className="dashboard">
+        {/* Exempel: lägg en liten reset-knapp i headern på sidan om du vill testa */}
+        {/* <button onClick={handleResetLayout}>Reset UI</button> */}
+
         <ResponsiveGridLayout
           className="layout"
           layouts={layouts}
           breakpoints={breakpoints}
           cols={cols}
-          rowHeight={40}
-          margin={[8, 8]}
+          rowHeight={rowHeight}
+          margin={[8, 8]} // MÅSTE matcha hookens marginY
+          containerPadding={[0, 0]} // MÅSTE matcha hookens containerPaddingY
           compactType="vertical"
           onLayoutChange={handleLayoutChange}
+          onBreakpointChange={handleBreakpointChange}
           draggableHandle=".widget__header"
           useCSSTransforms={false}
           // preventCollision={true}
@@ -198,23 +310,33 @@ export default function Dashboard() {
           ))}
         </ResponsiveGridLayout>
 
-        {/* Overlay för användarprofil, hanteras nu centralt */}
+        {/* Overlay för användarprofil */}
         {selectedUser && (
           <Overlay
             onClose={() => setSelectedUser(null)}
             title={selectedUser.displayName}
           >
-            {/* Använd flexbox för att placera korten sida vid sida */}
             <div>
-              {/* Profilkortet får en fast bredd */}
               <div>
                 <ProfileCard user={selectedUser} />
               </div>
-              {/* Achievements fyller resten av ytan */}
               <div>
                 <UserAchievements user={selectedUser} />
               </div>
             </div>
+          </Overlay>
+        )}
+
+        {/* Overlay för en specifik achievement */}
+        {selectedBadgeId && currentUser && (
+          <Overlay
+            onClose={() => setSelectedBadgeId(null)}
+            title="Achievement Details"
+          >
+            <UserAchievements
+              user={currentUser}
+              initialSelectedBadgeId={selectedBadgeId}
+            />
           </Overlay>
         )}
       </section>

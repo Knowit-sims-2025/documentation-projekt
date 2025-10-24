@@ -1,0 +1,57 @@
+/* Gör omslag till en egen layout-container */
+.profile-stats {
+  container-type: inline-size;
+}
+
+/* === Grid: exakt 1/2/4 kolumner, aldrig 3 === */
+.profile-stats-grid {
+  /* TA BORT hover-effekten (din kommentar sa remove) */
+  transform: none;
+  background: transparent;
+
+  display: grid;
+  /* Styr kolumnantal via en var; starta på 1 */
+  --cols: 1;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+  cursor: default;
+  border: var(--border-card);
+  border-radius: var(--border-radius);
+}
+
+/* 2 kolumner när containern är rimligt bred (justera trösklar efter smak) */
+@container (min-width: 360px) {
+  .profile-stats-grid { --cols: 2; }
+}
+
+/* 4 kolumner när containern är ännu bredare */
+@container (min-width: 720px) {
+  .profile-stats-grid { --cols: 4; }
+}
+
+/* --- DINA ITEM-STILAR OFÖRÄNDRADE --- */
+.profile-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--bg-light) 20%, transparent);
+}
+
+.profile-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.profile-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}

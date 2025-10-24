@@ -1,3 +1,8 @@
+:root{
+   --dash-py: clamp(0.5rem, 1.5dvh, 1rem);
+}
+
+
 /* =========================
    layout.css
    - Appens ramverk: header, footer, main-yta
@@ -110,12 +115,9 @@
     bottom: var(--container-inset-bottom);
     left: 0;
     right: 0;
-
-    /* Höjden är i praktiken redan satt av top/bottom, men lägg gärna med för tydlighet */
     block-size: var(--container-h);
-
-    overflow: auto; /* inre scroll */
-    /* Ingen extra padding-top/bottom här – header/footer är redan borträknade */
+    overflow: auto;
+   
   }
 
    /* Dashboard */
@@ -165,10 +167,7 @@
         border-color 120ms ease;
    }
 
-   .card:hover {
-    transform: translateY(-2px);
-    background: var(--gradient-hover);
-}
+
 
 /* BAS-KORT
    (RGL-höjd sätts i widgets.css under .react-grid-item > .card) */
@@ -195,9 +194,10 @@
     box-shadow 120ms ease, 
     background-color 120ms ease,
     border-color 120ms ease;
-}
+} 
 .card:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
+  transform: scale(1.01);
   background: var(--gradient-hover);
 }
 .card:active {

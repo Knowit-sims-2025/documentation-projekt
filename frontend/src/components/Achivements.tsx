@@ -1,15 +1,24 @@
 import AchivementCard from "../features/achivements/achievementCard.tsx";
-import { useCurrentUser } from "../hooks/useCurrentUser.ts";
-import { Loading } from "./Loading";
-import { ErrorMessage } from "./ErrorMessage"; 
+import type { User } from "../types/user.ts";
 
-export default function Achievements() {
-    const { user, loading, error } = useCurrentUser();
-    
-      if (loading) return <Loading text="Laddar din profil..." />;
-      if (error) return <ErrorMessage message={error} />;
+interface UserAchievementsProps {
+  user: User;
+  /** Om ett ID skickas med, öppnas overlayen för den badgen direkt. */
+  initialSelectedBadgeId?: number | null;
+}
 
-      return user
-        ? <AchivementCard user={user} />
-        : <ErrorMessage message="Inga badges hittades." />;
+/**
+ * En wrapper-komponent som renderar AchievementCard för en specifik användare.
+ * Den kan också ta emot ett initialt valt badge-ID för att visa detaljer direkt.
+ */
+export default function UserAchievements({
+  user,
+  initialSelectedBadgeId,
+}: UserAchievementsProps) {
+  return (
+    <AchivementCard
+      user={user}
+      initialSelectedBadgeId={initialSelectedBadgeId}
+    />
+  );
 }

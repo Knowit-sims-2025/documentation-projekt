@@ -1,4 +1,3 @@
-// src/features/auth/LoginOverlay.tsx
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -30,7 +29,7 @@ export function LoginOverlay({
 
   const overlayMarkup = (
     <div
-      className="overlay"
+      className="overlay overlay--login"
       role="dialog"
       aria-modal="true"
       aria-label={title ?? "Login"}

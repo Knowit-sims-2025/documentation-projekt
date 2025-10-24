@@ -1,43 +1,18 @@
-import { useState } from "react";
+// src/features/achivements/achievementCard.tsx
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useBadges } from "../../hooks/useBadges";
 import { useUserBadges } from "../../hooks/useUserBadges";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import type { Badge } from "../../types/badge";
 import type { User } from "../../types/user";
 import ProgressBar from "../../components/progressbar/progressbar";
-import { Overlay } from "../pages/leaderboard/Overlay";
 import type { UserBadge } from "../../types/userBadge";
-import documents0 from "../../assets/badges/documents0.svg";
-import documents1 from "../../assets/badges/documents1.svg";
-import documents2 from "../../assets/badges/documents2.svg";
-import documents3 from "../../assets/badges/documents3.svg";
-import comments0 from "../../assets/badges/comments0.svg";
-import comments1 from "../../assets/badges/comments1.svg";
-import comments2 from "../../assets/badges/comments2.svg";
-import comments3 from "../../assets/badges/comments3.svg";
-import edits0 from "../../assets/badges/edits0.svg";
-import edits1 from "../../assets/badges/edits1.svg";
-import edits2 from "../../assets/badges/edits2.svg";
-import edits3 from "../../assets/badges/edits3.svg";
-
-// Create a mapping from the icon key (from the database) to the imported image asset.
-const iconMap: { [key: string]: string } = {
-  documents0: documents0,
-  documents1: documents1,
-  documents2: documents2,
-  documents3: documents3,
-  comments0: comments0,
-  comments1: comments1,
-  comments2: comments2,
-  comments3: comments3,
-  edits0: edits0,
-  edits1: edits1,
-  edits2: edits2,
-  edits3: edits3,
-};
+import { iconMap } from "../../assets/badges/iconMap";
 
 interface AchievementCardProps {
   user: User;
+  /** Om ett ID skickas med, scrolla till den badgen direkt. */
+  initialSelectedBadgeId?: number | null;
 }
 
 const getUserProgressForBadge = (
@@ -49,7 +24,6 @@ const getUserProgressForBadge = (
 };
 
 const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
-  // Create a copy to avoid mutating the original array
   return [...badges].sort((a, b) => {
     const userProgressA = getUserProgressForBadge(a.id, userBadges);
     const userProgressB = getUserProgressForBadge(b.id, userBadges);
@@ -61,12 +35,14 @@ const sortBadges = (badges: Badge[], userBadges: UserBadge[]): Badge[] => {
     const progressB =
       badgeCriteriaValueB > 0 ? userProgressB / badgeCriteriaValueB : 0;
 
-    // Sort descending (from most complete to least complete)
     return progressB - progressA;
   });
 };
 
-export default function AchievementCard({ user }: AchievementCardProps) {
+export default function AchievementCard({
+  user,
+  initialSelectedBadgeId,
+}: AchievementCardProps) {
   const {
     data: badges,
     loading: loadingBadges,
@@ -77,7 +53,40 @@ export default function AchievementCard({ user }: AchievementCardProps) {
     loading: loadingUserBadges,
     error: errorUserBadges,
   } = useUserBadges(user.id);
+
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // ➕ Sammanfattning för .ach-summary
+  const summary = useMemo(() => {
+    const list = badges ?? [];
+    const ub = userBadges ?? [];
+    const total = list.length;
+    const unlockedCount = list.reduce((acc, b) => {
+      const v = getUserProgressForBadge(b.id, ub);
+      const m = b.criteriaValue ?? 100;
+      return acc + (v >= m ? 1 : 0);
+    }, 0);
+    return {
+      total,
+      unlockedCount,
+      percent: total ? Math.round((unlockedCount / total) * 100) : 0,
+    };
+  }, [badges, userBadges]);
+
+  // Scrolla till initial badge (utan att öppna overlay)
+  useEffect(() => {
+    if (initialSelectedBadgeId && listRef.current) {
+      const el = listRef.current.querySelector(
+        `[data-badge-id="${initialSelectedBadgeId}"]`
+      ) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-initial");
+        setTimeout(() => el.classList.remove("highlight-initial"), 1500);
+      }
+    }
+  }, [initialSelectedBadgeId, loadingBadges, loadingUserBadges]);
 
   if (loadingBadges || loadingUserBadges) return <div>Laddar badges...</div>;
   if (errorBadges || errorUserBadges)
@@ -88,16 +97,63 @@ export default function AchievementCard({ user }: AchievementCardProps) {
     );
 
   const badgeList = sortBadges(badges ?? [], userBadges ?? []);
-
   if (badgeList.length === 0) {
     return <ErrorMessage message="Inga badges hittades." />;
   }
 
+  // Detaljvy (oförändrad)
+  if (selectedBadge) {
+    const userProgress = getUserProgressForBadge(
+      selectedBadge.id,
+      userBadges ?? []
+    );
+    return (
+      <div className="achievements-detail-view">
+        <button
+          onClick={() => setSelectedBadge(null)}
+          className="achievements-detail-view__back-btn"
+        >
+          &larr; Tillbaka till listan
+        </button>
+        <h2>{selectedBadge.name}</h2>
+        <p>{selectedBadge.description}</p>
+        <img
+          src={
+            selectedBadge.iconUrl ? iconMap[selectedBadge.iconUrl] : undefined
+          }
+          alt={selectedBadge.name}
+          className="achievements-detail-view__img"
+        />
+        <div style={{ width: "100%" }}>
+          <ProgressBar
+            value={userProgress}
+            max={selectedBadge.criteriaValue ?? 100}
+          />
+        </div>
+        <p>
+          Progress: {userProgress} / {selectedBadge.criteriaValue ?? 100}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="achievements-list">
+    <section className="achievements">
+      <div className="achievements-list" ref={listRef}>
+        <article className="ach-summary">
+          <ProgressBar
+            value={summary.unlockedCount}
+            max={summary.total}
+            label={`${user.displayName} have unlocked ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+            // label={`${user.displayName} har låst upp ${summary.unlockedCount}/${summary.total} (${summary.percent}%)`}
+          />
+        </article>
+
         {badgeList.map((badge) => {
-          const userProgress = getUserProgressForBadge(badge.id, userBadges);
+          const userProgress = getUserProgressForBadge(
+            badge.id,
+            userBadges ?? []
+          );
           const maxValue = badge.criteriaValue ?? 100;
           const progressLabel = `${badge.name}`;
 
@@ -105,6 +161,7 @@ export default function AchievementCard({ user }: AchievementCardProps) {
             <div
               className="achievement-item"
               key={badge.id}
+              data-badge-id={badge.id}
               onClick={() => setSelectedBadge(badge)}
               role="button"
               tabIndex={0}
@@ -123,48 +180,6 @@ export default function AchievementCard({ user }: AchievementCardProps) {
           );
         })}
       </div>
-      {selectedBadge &&
-        (() => {
-          // IIFE to calculate progress for selected badge
-          const userProgress = getUserProgressForBadge(
-            selectedBadge.id,
-            userBadges
-          );
-          return (
-            <Overlay onClose={() => setSelectedBadge(null)}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}
-              >
-                <h2>{selectedBadge.name}</h2>
-                <p>{selectedBadge.description}</p>
-                <img
-                  src={
-                    selectedBadge.iconUrl
-                      ? iconMap[selectedBadge.iconUrl]
-                      : undefined
-                  }
-                  alt={selectedBadge.name}
-                  style={{ width: "100px", height: "100px" }}
-                />
-                <div style={{ width: "100%" }}>
-                  <ProgressBar
-                    value={userProgress}
-                    max={selectedBadge.criteriaValue ?? 100}
-                  />
-                </div>
-                <p>
-                  Progress: {userProgress} /{" "}
-                  {selectedBadge.criteriaValue ?? 100}
-                </p>
-              </div>
-            </Overlay>
-          );
-        })()}
-    </>
+    </section>
   );
 }

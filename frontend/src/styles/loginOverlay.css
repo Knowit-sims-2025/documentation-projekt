@@ -1,0 +1,18 @@
+/* Centrera barnen horisontellt inne i overlay-kortets body */
+
+.overlay--login .overlay__body {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;    
+  padding: 1rem;        
+}
+
+.overlay--login .overlay__body > .card {
+  width: min(100%, 460px);  
+  margin: 0 auto;         
+  text-align: left;  
+}
+
+.overlay--login .overlay__header {
+  justify-content: center;
+}
