@@ -316,12 +316,21 @@ export default function Dashboard() {
             onClose={() => setSelectedUser(null)}
             title={selectedUser.displayName}
           >
-            <div>
-              <div>
+            <div
+              style={{
+                display: "flex",
+                gap: "16px",
+                alignItems: "flex-start",
+              }}
+            >
+              <div style={{ flex: "0 0 320px" }}>
                 <ProfileCard user={selectedUser} />
               </div>
-              <div>
-                <UserAchievements user={selectedUser} />
+              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                <AchievementIconDisplay
+                  onIconClick={(badgeId) => setSelectedBadgeId(badgeId)}
+                  user={selectedUser}
+                />
               </div>
             </div>
           </Overlay>
