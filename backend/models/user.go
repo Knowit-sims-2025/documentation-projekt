@@ -24,3 +24,10 @@ type UserStats struct {
 	TotalCreatedPages     int   `json:"totalCreatedPages"`
 	TotalResolvedComments int   `json:"totalResolvedComments"`
 }
+
+// UserTopStat Den här används för top-användarna (Top Commenter, Top Editor osv)
+type UserTopStat struct {
+	DisplayName string `json:"display_name"`
+	AvatarURL   string `json:"avatar_url"`
+	Count       int    `json:"count"`
+}
