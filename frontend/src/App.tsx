@@ -3,7 +3,7 @@ import React from "react";
 import { useTheme } from "./hooks/useTheme";
 
 import Header from "./layout/Header";
-import Dashboard from "./features/pages/Dashboard";
+import Dashboard from "./features/dashboard/Dashboard";
 import Footer from "./layout/Footer";
 
 import { AuthProvider, useAuth } from "./features/auth/AuthContext";

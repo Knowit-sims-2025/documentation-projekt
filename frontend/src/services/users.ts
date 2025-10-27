@@ -1,5 +1,5 @@
 // src/services/users.ts
-import type { User } from "../types/user";
+import type { User } from "../types/types";
 import { getRankTier } from "./config/rank";
 import { authFetch } from "./auth";
 

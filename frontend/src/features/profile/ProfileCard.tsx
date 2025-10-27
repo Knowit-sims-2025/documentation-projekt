@@ -1,9 +1,9 @@
 // import { Avatar } from "../../components/Avatar";
-import Avatar from "../../components/Avatar";
+import Avatar from "../../components/ui/Avatar";
 import { useAuth } from "../auth/AuthContext";
-import type { User } from "../../types/user";
-import ProgressBar from "../../components/progressbar/progressbar";
-import { useUserStats } from "../../hooks/useUserStats";
+import type { User } from "../../types/types";
+import ProgressBar from "../../components/ui/progressbar";
+import { useUserStats } from "./useUserStats";
 import { UserLifeTimeStats } from "./UserLifeTimeStats";
 import {
   getNextRankThreshold,

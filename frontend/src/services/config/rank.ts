@@ -1,4 +1,4 @@
-import type { RankTier } from "../../types/user";
+import type { RankTier } from "../../types/types";
 
 // Poängtrösklar, från högst till lägst
 export const RANK_THRESHOLDS: { min: number; tier: RankTier }[] = [

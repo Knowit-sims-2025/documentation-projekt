@@ -1,6 +1,5 @@
-// src/services/teams.ts
-import type { Team, RankedTeam } from "../types/team";
-import type { User } from "../types/user";
+
+import type { Team, RankedTeam,User } from "../types/types";
 import { normalizeUser } from "./users";
 import { authFetch } from "./auth";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import type { UserStats } from "../../types/userStats";
+import type { UserStats } from "../../types/types";
 
 /**
  * En liten, lokal komponent för att visa en enskild statistikpost.

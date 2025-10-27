@@ -1,4 +1,4 @@
-import type { UserBadge } from "../types/userBadge";
+import type { UserBadge } from "../types/types";
 
 // Typalias för råa JSON-objekt från backend (okända fält och format)
 type RawUserBadge = Record<string, any>;

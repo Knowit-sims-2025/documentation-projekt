@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import type { Theme } from "../hooks/useTheme";
-import ThemeToggle from "../components/ThemeToggle";
-import SettingsButton from "../components/buttons/SettingsButton";
+import ThemeToggle from "../components/ui/ThemeToggle";
+import SettingsButton from "../components/ui/SettingsButton";
 import SettingsMenu from "../components/SettingsMenu";
 import { useAuth } from "../features/auth/AuthContext";
-import { Avatar } from "../components/Avatar";
-import { authFetch } from "../services/auth"; // ← för att skicka Authorization på upload
+import { Avatar } from "../components/ui/Avatar";
+import { authFetch } from "../services/auth";
 
 interface HeaderProps {
   theme: Theme;

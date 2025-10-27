@@ -1,5 +1,5 @@
 import { authFetch } from "./auth";
-import type { UserStats } from "../types/userStats";
+import type { UserStats } from "../types/types";
 
 /**
  * Normaliserar rådata från API:et till en UserStats-typ.

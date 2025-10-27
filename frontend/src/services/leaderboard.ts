@@ -1,5 +1,5 @@
 // src/services/leaderboard.ts
-import type { LeaderboardEntry } from "../types/leaderboard";
+import type { LeaderboardEntry } from "../types/types";
 import { authFetch } from "./auth";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
