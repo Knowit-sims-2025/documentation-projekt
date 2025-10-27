@@ -50,7 +50,7 @@
   height: 100%;
   border-radius: 12px;
   transition: width 0.3s ease-in-out;
-  background: var(--accent, #4a3fd7);
+  background: var(--progress-bar);
   color: white;
 }
 .progress-bar span{
