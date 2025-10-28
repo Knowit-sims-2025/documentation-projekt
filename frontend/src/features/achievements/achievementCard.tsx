@@ -1,4 +1,3 @@
-// src/features/achivements/achievementCard.tsx
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useBadges } from "./useBadges";
 import { useUserBadges } from "./useUserBadges";

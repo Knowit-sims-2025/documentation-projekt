@@ -1,12 +1,10 @@
-// src/App.tsx
 import React from "react";
 import { useTheme } from "./hooks/useTheme";
 
 import Header from "./layout/Header";
 import Dashboard from "./features/dashboard/Dashboard";
 import Footer from "./layout/Footer";
-
-import { AuthProvider, useAuth } from "./features/auth/AuthContext";
+import { useAuth } from "./features/auth/AuthContext";
 import { LoginOverlay } from "./features/auth/LoginOverlay";
 import LoginForm from "./features/auth/LoginForm";
 
@@ -31,9 +29,5 @@ function Shell() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <Shell />
-    </AuthProvider>
-  );
+  return <Shell />;
 }

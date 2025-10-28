@@ -1,5 +1,5 @@
 import AchivementCard from "./achievementCard.tsx";
-import type { User } from "../../types/user.ts";
+import type { User } from "../../types/types";
 
 interface UserAchievementsProps {
   user: User;

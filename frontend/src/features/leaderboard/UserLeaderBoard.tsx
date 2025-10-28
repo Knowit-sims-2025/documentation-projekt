@@ -10,7 +10,7 @@ import { LeaderboardTabs } from "./LeaderboardTabs";
 import { DailyControls } from "./DailyControls";
 import { TotalList } from "./lists/TotalList";
 import { DailyList } from "./lists/DailyLists";
-import { StatsDisplay } from "../../components/StatsDisplay"; // Ny import
+import { StatsDisplay } from "../stats/StatsDisplay"; // Ny import
 import { toLocalYYYYMMDD, clampToToday } from "../../utils/date";
 import WeeklyCurrent from "./WeeklyCurrent";
 

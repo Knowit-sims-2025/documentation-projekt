@@ -30,7 +30,7 @@ export interface Team {
   name: string;
   createdAt: string;
   totalPoints: number;
-  members: User[]; // User är definierad nedan
+  members: User[]; 
 }
 
 /**

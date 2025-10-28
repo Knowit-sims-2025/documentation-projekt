@@ -1,0 +1,130 @@
+// datasource och generator är standard för Prisma, även om du inte använder Prisma Client i Go.
+datasource db {
+  provider = "postgresql" // Baserat på din SQL-syntax (SERIAL, etc.)
+  url      = env("DATABASE_URL")
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  // Du kan lägga till output-inställningar här, t.ex. för att generera en SVG-fil.
+  // output = "./databas-diagram.svg" 
+}
+
+/// Representerar en användare i systemet.
+model User {
+  id                 Int          @id @default(autoincrement())
+  confluenceAuthorId String       @unique @map("confluence_author_id")
+  displayName        String       @map("display_name")
+  avatarUrl          String?      @map("avatar_url")
+  totalPoints        Int          @default(0) @map("total_points")
+  isAdmin            Boolean      @default(false) @map("is_admin")
+  isActive           Boolean      @default(true) @map("is_active")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+
+  // Relationer
+  activities         Activity[]
+  userBadges         UserBadge[]
+  userTeams          UserTeam[]
+  stats              UserStats?
+
+  @@map("users")
+}
+
+/// Representerar ett team av användare.
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relationer
+  userTeams UserTeam[]
+
+  @@map("teams")
+}
+
+/// Kopplingstabell mellan User och Team.
+model UserTeam {
+  userId Int @map("user_id")
+  teamId Int @map("team_id")
+
+  // Relationer
+  user   User @relation(fields: [userId], references: [id])
+  team   Team @relation(fields: [teamId], references: [id])
+
+  @@id([userId, teamId])
+  @@map("user_teams")
+}
+
+/// Representerar en utmärkelse som en användare kan tjäna.
+model Badge {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  iconUrl       String?  @map("icon_url")
+  criteriaValue Int      @map("criteria_value")
+  criteriaType  String   @map("criteria_type") // t.ex. "total_comments"
+
+  // Relationer
+  userBadges    UserBadge[]
+
+  @@map("badges")
+}
+
+/// Kopplingstabell som visar vilka badges en användare har.
+model UserBadge {
+  userId    Int      @map("user_id")
+  badgeId   Int      @map("badge_id")
+  awardedAt DateTime @default(now()) @map("awarded_at")
+  progress  Int?     // För badges som har delmål
+
+  // Relationer
+  user      User     @relation(fields: [userId], references: [id])
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+
+  @@id([userId, badgeId])
+  @@map("user_badges")
+}
+
+/// Representerar en händelse som har genererat poäng.
+model Activity {
+  id                    Int      @id @default(autoincrement())
+  userId                Int      @map("user_id")
+  activityType          String   @map("activity_type") // t.ex. "PAGE_CREATED"
+  pointsAwarded         Int      @map("points_awarded")
+  confluencePageId      String?  @map("confluence_page_id")
+  confluenceVersion     Int?     @map("confluence_version")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  // Relationer
+  user                  User     @relation(fields: [userId], references: [id])
+
+  @@map("activities")
+}
+
+/// Representerar en tävling inom en viss tidsram.
+model Competition {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  status      String   // t.ex. "active", "upcoming", "finished"
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("competitions")
+}
+
+/// Lagrar aggregerad statistik för en användare.
+model UserStats {
+  userId                Int @id @map("user_id")
+  totalComments         Int @default(0) @map("total_comments")
+  totalCreatedPages     Int @default(0) @map("total_created_pages")
+  totalEditsMade        Int @default(0) @map("total_edits_made")
+  totalResolvedComments Int @default(0) @map("total_resolved_comments")
+
+  // Relation
+  user                  User @relation(fields: [userId], references: [id])
+
+  @@map("user_stats")
+}

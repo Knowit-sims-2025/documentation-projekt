@@ -32,7 +32,7 @@ export function WeeklyControlsWeek({
     const el = inputRef.current;
     if (!el) return;
     // Chrome/Safari m.fl.
-    // @ts-expect-error: showPicker finns inte i TS-typerna för alla inputs
+    // ts-expect-error: showPicker finns inte i TS-typerna för alla inputs
     if (typeof el.showPicker === "function") el.showPicker();
     else el.click(); // fallback
   };

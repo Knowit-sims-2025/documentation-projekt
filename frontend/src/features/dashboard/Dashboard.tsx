@@ -5,7 +5,7 @@ import type { Layout, Layouts } from "react-grid-layout";
 import AchievementIconDisplay from "../achievements/AchievementIconDisplay";
 import UserLeaderBoard from "../leaderboard/UserLeaderBoard";
 import TeamLeaderboard from "../leaderboard/TeamLeaderboard";
-import UserAchievements from "../achievements/Achivements";
+import UserAchievements from "../achievements/Achievements";
 
 import {
   layouts as defaultLayouts,

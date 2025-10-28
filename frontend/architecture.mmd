@@ -1,0 +1,106 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#22272e', 'primaryTextColor': '#adbac7', 'lineColor': '#444c56', 'fontSize': '14px', 'mainBkg': '#2d333b', 'nodeBorder': '#444c56', 'clusterBkg': '#22272e'}}}%%
+graph TD
+    subgraph "Entry Point"
+        main_tsx["main.tsx"]
+    end
+
+    subgraph "Application Shell"
+        App_tsx["App.tsx"]
+        Shell_component["Shell (component)"]
+        Header_tsx["Header"]
+        Dashboard_tsx["Dashboard.tsx"]
+        Footer_tsx["Footer"]
+        LoginOverlay_tsx["LoginOverlay"]
+    end
+
+    subgraph "Features"
+        direction LR
+        subgraph "auth"
+            AuthContext_ts["AuthContext"]
+            useAuth_hook["useAuth()"]
+            LoginForm_tsx["LoginForm"]
+        end
+        subgraph "dashboard"
+            Profile_tsx["Profile"]
+            UserLeaderBoard_tsx["UserLeaderBoard"]
+            TeamLeaderboard_tsx["TeamLeaderboard"]
+            AchievementIconDisplay_tsx["AchievementIconDisplay"]
+        end
+        subgraph "profile"
+            ProfileCard_tsx["ProfileCard"]
+        end
+        subgraph "achievements"
+            UserAchievements_tsx["UserAchievements"]
+            AchievementCard_tsx["AchievementCard"]
+        end
+    end
+
+    subgraph "Services & Hooks (Data Layer)"
+        direction LR
+        subgraph "Service Files"
+            users_ts["services/users.ts"]
+            teams_ts["services/teams.ts"]
+            userStats_ts["services/userStats.ts"]
+            badges_ts["services/badges.ts"]
+            userBadge_ts["services/userBadge.ts"]
+        end
+        subgraph "Custom Hooks"
+            useUsers_hook["hooks/useUsers"]
+            useTeams_hook["hooks/useTeams"]
+            useUserStats_hook["hooks/useUserStats"]
+        end
+    end
+    
+    subgraph "API Endpoints (Backend)"
+        direction LR
+        api_users["GET /api/v1/users"]
+        api_teams["GET /api/v1/teams"]
+        api_team_points["GET /api/v1/teams/:id/points"]
+        api_user_stats["GET /api/v1/users/:id/stats"]
+    end
+
+    subgraph "UI Components"
+        direction LR
+        Widget_tsx["components/ui/Widget"]
+        Overlay_tsx["components/ui/Overlay"]
+    end
+
+    %% Relationships
+    main_tsx -- "renders" --> App_tsx
+    main_tsx -- "provides" --> AuthContext_ts
+    App_tsx -- "defines & renders" --> Shell_component
+    Shell_component -- "uses" --> useAuth_hook
+    Shell_component -- "renders" --> Dashboard_tsx
+
+    Dashboard_tsx -- "renders as widget" --> Profile_tsx
+    Dashboard_tsx -- "renders as widget" --> UserLeaderBoard_tsx
+    Dashboard_tsx -- "renders as widget" --> TeamLeaderboard_tsx
+    Dashboard_tsx -- "renders as widget" --> AchievementIconDisplay_tsx
+    Dashboard_tsx -- "opens" --> Overlay_tsx
+
+    %% Data Flow for Leaderboards & Profile
+    UserLeaderBoard_tsx -- "uses" --> useUsers_hook
+    useUsers_hook -- "calls" --> users_ts
+    users_ts -- "fetches from" --> api_users
+
+    TeamLeaderboard_tsx -- "uses" --> useTeams_hook
+    useTeams_hook -- "calls" --> teams_ts
+    teams_ts -- "fetches from" --> api_teams
+    teams_ts -- "fetches from" --> api_team_points
+
+    Profile_tsx -- "uses" --> useAuth_hook
+    Profile_tsx -- "renders" --> ProfileCard_tsx
+    
+    ProfileCard_tsx -- "uses" --> useUserStats_hook
+    useUserStats_hook -- "calls" --> userStats_ts
+    userStats_ts -- "fetches from" --> api_user_stats
+    
+    ProfileCard_tsx -- "gets allUsers from" --> useAuth_hook
+    AuthContext_ts -- "fetches all users via" --> users_ts
+
+    %% Other relationships
+    AchievementIconDisplay_tsx -- "fetches data via" --> userBadge_ts
+    AchievementCard_tsx -- "fetches data via" --> badges_ts
+    AchievementCard_tsx -- "fetches data via" --> userBadge_ts
+
+    classDef default fill:#2d333b,stroke:#888,color:#fff;
