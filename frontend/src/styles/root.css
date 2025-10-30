@@ -39,8 +39,9 @@
 
   --bar-bg: rgba(0,0,0,0.08);
 
-  --gradient:       linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
-  --gradient-hover: linear-gradient(0deg, var(--bg) 0%,  var(--bg-light) 100%);
+  --gradient:       linear-gradient(0deg, var(--bg) 95%, var(--header-bg) 100%);
+  --gradient-hover: linear-gradient(0deg, var(--bg) 95%,  var(--bg-light) 100%);
+  --gradient-translucent: linear-gradient(0deg, color-mix(in srgb, var(--bg) 10%, transparent) 95%, color-mix(in srgb, var(--bg-light) 10%, transparent));
 
   --shadow: 0 2px 2px rgba(0,0,0,.07), 0 4px 4px rgba(0,0,0,.04);
 
@@ -54,6 +55,12 @@
   --info:    hsl(260 70% 62%);
 
 
+  /* Header & Body Backgrounds */
+  --header-bg: rgb(8, 13, 18);
+  --body-gradient: linear-gradient(20deg, hsl(230, 45%, 27%), hsl(260, 30%, 15%));
+  --main-bg-gradient: linear-gradient(20deg, var(--main-bg), var(--main-bg-light));
+
+  
   color-scheme: dark;
 }
 
@@ -68,7 +75,7 @@
   :root {
     --bg-dark:  oklch(0.05 0.025 264);
     --bg:       oklch(0.20 0.025 264);
-    --bg-light: oklch(0.30 0.025 264);
+    --bg-light: oklch(27.129% 0.0206 260.624);
 
     --text:        oklch(0.96 0.05 264);
     --text-muted:  oklch(0.76 0.05 264);
@@ -79,12 +86,18 @@
 
     --primary:   oklch(0.76 0.10 264);
     --secondary: oklch(0.76 0.10 84);
-    --accent:    oklch(71.466% 0.12452 258.169);
+    --accent:    oklch(96.852% 0.01496 260.813);
+
+    --progress-bar: linear-gradient(90deg, hsl(243, 94%, 70%), hsl(176, 62%, 51%));
 
     --danger:  oklch(0.70 0.05  30);
     --warning: oklch(0.70 0.05 100);
     --success: oklch(0.70 0.05 160);
     --info:    oklch(0.70 0.05 260);
+
+    --body-gradient: linear-gradient(20deg, oklch(33.378% 0.09041 259.15), oklch(17.853% 0.05866 288.183));
+    --main-bg-gradient: linear-gradient(190deg, oklch(20% 0.05 270), oklch(33.41% 0.11259 259.654));
+    --gradient-translucent: linear-gradient(0deg, color-mix(in oklch, var(--bg) 10%, transparent) 95%, color-mix(in oklch, var(--bg-light) 10%, transparent));
 
     --bar-bg: color-mix(in oklch, var(--bg) 90%, transparent);
   }
@@ -109,12 +122,23 @@
 
   --primary:   hsl(264 60% 40%);
   --secondary: hsl( 84 60% 40%);
-  --accent:    hsl(224, 94%, 58%);
+  --accent:    hsl(240, 100%, 99%);
+  
+  --progress-bar: linear-gradient(90deg, hsl(243, 94%, 70%), hsl(176, 62%, 51%));
 
   --danger:  hsl( 30 60% 50%);
   --warning: hsl( 50 60% 50%);
   --success: hsl(160 60% 50%);
   --info:    hsl(260 60% 50%);
+
+  --main-bg: hsl(232, 83%, 61%);
+  --main-bg-light: hsl(212, 100%, 83%);
+
+
+  /* Header & Body Backgrounds */
+  --header-bg: aliceblue; /* Alice blue for light mode */
+  --body-gradient: linear-gradient(20deg, var(--main-bg-light), var(--main-bg));
+  --main-bg-gradient: linear-gradient(190deg, var(--main-bg), var(--main-bg-light));
 
   color-scheme: light;
 }
@@ -136,7 +160,9 @@
 
     --primary:   oklch(0.40 0.10 264);
     --secondary: oklch(0.40 0.10  84);
-    --accent:    oklch(46.697% 0.30114 265.18);
+    --accent:    oklch(61.258% 0.19879 275.665);
+
+    --progress-bar: linear-gradient(90deg, hsl(243, 94%, 70%), hsl(176, 62%, 51%));
 
     --danger:  oklch(0.50 0.05  30);
     --warning: oklch(0.50 0.05 100);
@@ -166,7 +192,7 @@ html, body {
 
 body {
 
-    background: var(--bg-dark);
+    background: var(--body-gradient);
     color: var(--text-muted);
 
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
