@@ -131,14 +131,14 @@
   --success: hsl(160 60% 50%);
   --info:    hsl(260 60% 50%);
 
-  --main-bg-light: hsl(230, 100%, 72%);
-  --main-bg: hsl(221, 100%, 96%);
+  --main-bg: hsl(232, 83%, 61%);
+  --main-bg-light: hsl(212, 100%, 83%);
 
 
   /* Header & Body Backgrounds */
   --header-bg: aliceblue; /* Alice blue for light mode */
   --body-gradient: linear-gradient(20deg, var(--main-bg-light), var(--main-bg));
-  --main-bg-gradient: linear-gradient(20deg, var(--main-bg), var(--main-bg-light));
+  --main-bg-gradient: linear-gradient(190deg, var(--main-bg), var(--main-bg-light));
 
   color-scheme: light;
 }
