@@ -13,12 +13,13 @@ import (
 )
 
 type ActivityHandler struct {
-	Repo *database.ActivityRepository
+	ActivityRepo  *database.ActivityRepository
+	UserBadgeRepo *database.UserBadgeRepository
 }
 
 // GetAllActivitiesHandler
 func (h *ActivityHandler) GetAllActivitiesHandler(w http.ResponseWriter, r *http.Request) {
-	activities, err := h.Repo.GetAllActivities()
+	activities, err := h.ActivityRepo.GetAllActivities()
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -36,7 +37,7 @@ func (h *ActivityHandler) GetActivityByIDHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	activity, err := h.Repo.GetActivityByID(id)
+	activity, err := h.ActivityRepo.GetActivityByID(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "Activity not found", http.StatusNotFound)
@@ -74,12 +75,21 @@ func (h *ActivityHandler) CreateActivityHandler(w http.ResponseWriter, r *http.R
 		CreatedAt:               time.Now().UTC(),
 	}
 
-	id, err := h.Repo.CreateActivity(activity)
+	id, err := h.ActivityRepo.CreateActivity(activity)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	activity.ID = id
+
+	// After creating an activity, check and award badges for the user
+	if err := h.UserBadgeRepo.CheckAndAwardBadges(activity.UserID); err != nil {
+		// Log the error but don't return an HTTP error, as the activity was successfully created.
+		// Badge awarding can be a background process or less critical than activity creation.
+		// Depending on requirements, this could be made more robust (e.g., retry mechanism).
+		http.Error(w, "Activity created, but failed to check/award badges: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -117,7 +127,7 @@ func (h *ActivityHandler) UpdateActivityHandler(w http.ResponseWriter, r *http.R
 		PointsAwarded:           requestBody.PointsAwarded,
 	}
 
-	if err := h.Repo.UpdateActivity(activity); err != nil {
+	if err := h.ActivityRepo.UpdateActivity(activity); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -134,7 +144,7 @@ func (h *ActivityHandler) DeleteActivityHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if err := h.Repo.DeleteActivity(id); err != nil {
+	if err := h.ActivityRepo.DeleteActivity(id); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

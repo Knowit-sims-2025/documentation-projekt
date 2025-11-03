@@ -14,6 +14,8 @@ export function useUserBadges(userId: number) {
       try {
         setLoading(true);
         const userBadges = await getUserBadgesByUserId(userId);
+        //debugging
+        console.log("Fetched user badges:", userBadges);
         setData(userBadges);
       } catch (e: any) {
         setError(e.message || "An unknown error occurred");

@@ -61,6 +61,7 @@ CREATE TABLE badges (
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT NOT NULL,
     icon_url TEXT,
+    criteria_type VARCHAR(50) NOT NULL, -- t.ex. 'total_comments', 'total_created_pages'
     criteria_value INTEGER NOT NULL
 );
 
@@ -68,7 +69,7 @@ CREATE TABLE badges (
 CREATE TABLE user_badges (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     badge_id INTEGER NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
-    awarded_at TIMESTAMPTZ DEFAULT NOW(),
+    awarded_at TIMESTAMPTZ, -- Sätts när badgen faktiskt delas ut, annars NULL
     progress INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (user_id, badge_id)
 );
@@ -88,4 +89,31 @@ CREATE TABLE competitions (
 CREATE INDEX idx_users_confluence_id ON users(confluence_author_id);
 CREATE INDEX idx_activities_user_id ON activities(user_id);
 
+
 COMMIT;
+
+
+-- ======= SEED BADGES =======
+
+BEGIN;
+
+-- Badges för kommentarer
+INSERT INTO badges (name, description, icon_url, criteria_type, criteria_value) VALUES
+('Commentator Bronze', 'Awarded for writing 1 comment.', 'comments1', 'total_comments', 1),
+('Commentator Silver', 'Awarded for writing 10 comments.', 'comments2', 'total_comments', 10),
+('Commentator Gold', 'Awarded for writing 50 comments.', 'comments3', 'total_comments', 50);
+
+-- Badges för skapade sidor
+INSERT INTO badges (name, description, icon_url, criteria_type, criteria_value) VALUES
+('Creator Bronze', 'Awarded for creating 1 page.', 'documents1', 'total_created_pages', 1),
+('Creator Silver', 'Awarded for creating 5 pages.', 'documents2', 'total_created_pages', 5),
+('Creator Gold', 'Awarded for creating 20 pages.', 'documents3', 'total_created_pages', 20);
+
+-- Badges för redigeringar
+INSERT INTO badges (name, description, icon_url, criteria_type, criteria_value) VALUES
+('Editor Bronze', 'Awarded for making 5 edits.', 'edits1', 'total_edits_made', 5),
+('Editor Silver', 'Awarded for making 25 edits.', 'edits2', 'total_edits_made', 25),
+('Editor Gold', 'Awarded for making 100 edits.', 'edits3', 'total_edits_made', 100);
+
+COMMIT;
+

@@ -18,6 +18,7 @@ type UserBadgeRepository struct {
 // Hämtar alla badges från db
 func (r *BadgeRepository) GetAllBadges() ([]models.Badge, error) {
 	query := `SELECT id, name, description, icon_url, criteria_value, criteria_type FROM badges ORDER BY name DESC` //ordern är just nu by name
+
 	rows, err := r.DB.Query(query)
 
 	if err != nil {
@@ -118,6 +119,7 @@ func (r *UserBadgeRepository) RemoveBadge(userID, badgeID int64) error {
 // Hämta alla user_badges från db
 func (r *UserBadgeRepository) GetAllUserBadges() ([]models.UserBadge, error) {
 	query := `SELECT * FROM user_badges ORDER BY awarded_at DESC`
+
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -172,6 +174,7 @@ func (r *UserBadgeRepository) UpdateUserBadge(ub *models.UserBadge) error {
 // Hämta alla badges för en specifik användare
 func (r *UserBadgeRepository) GetUserBadgesByUserID(userID int64) ([]models.UserBadge, error) {
 	query := `SELECT user_id, badge_id, awarded_at, progress FROM user_badges WHERE user_id = $1 ORDER BY awarded_at DESC`
+
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
 		return nil, err
@@ -216,6 +219,8 @@ func (r *UserBadgeRepository) GetUserBadge(userID, badgeID int64) (*models.UserB
 
 // CheckAndAwardBadges kontrollerar om en användare uppfyller kraven för nya badges och tilldelar dem.
 func (r *UserBadgeRepository) CheckAndAwardBadges(userID int64) error {
+	log.Printf("Checking and awarding badges for user ID: %d", userID)
+
 	// 1. Hämta user_stats
 	var stats struct {
 		TotalComments         int
@@ -230,10 +235,14 @@ func (r *UserBadgeRepository) CheckAndAwardBadges(userID int64) error {
 	`, userID).Scan(&stats.TotalComments, &stats.TotalCreatedPages, &stats.TotalEditsMade, &stats.TotalResolvedComments)
 
 	if err != nil {
+		log.Printf("Error fetching user stats for user %d: %v", userID, err)
 		return err
 	}
+	log.Printf("User %d stats: Comments=%d, Pages=%d, Edits=%d, ResolvedComments=%d",
+		userID, stats.TotalComments, stats.TotalCreatedPages, stats.TotalEditsMade, stats.TotalResolvedComments)
 
 	// 2. Hämta alla badges
+
 	rows, err := r.DB.Query(`
 		SELECT id, criteria_type, criteria_value
 		FROM badges
@@ -259,6 +268,7 @@ func (r *UserBadgeRepository) CheckAndAwardBadges(userID int64) error {
 
 	// 3. Gå igenom varje badge och kolla om användaren kvalificerar sig
 	for _, b := range allBadges {
+		log.Printf("Evaluating badge ID %d (Type: %s, Criteria: %d) for user %d", b.ID, b.CriteriaType, b.CriteriaValue, userID)
 		var userValue int
 		switch b.CriteriaType {
 		case "total_comments":
@@ -270,32 +280,30 @@ func (r *UserBadgeRepository) CheckAndAwardBadges(userID int64) error {
 		case "total_resolved_comments":
 			userValue = stats.TotalResolvedComments
 		default:
+			log.Printf("Unknown criteria type '%s' for badge ID %d. Skipping.", b.CriteriaType, b.ID)
 			continue
 		}
 
 		if userValue >= b.CriteriaValue {
-			// Kolla om användaren redan har badge:n
-			var exists bool
-			err := r.DB.QueryRow(`
-				SELECT EXISTS (
-					SELECT 1 FROM user_badges WHERE user_id = $1 AND badge_id = $2
-				)
-			`, userID, b.ID).Scan(&exists)
+			log.Printf("User %d qualifies for badge %d. User value: %d, Criteria value: %d", userID, b.ID, userValue, b.CriteriaValue)
+			// Använda UPSERT (INSERT ... ON CONFLICT) för att antingen skapa eller uppdatera.
+			// Detta hanterar fallet där en rad redan finns men behöver uppdateras (t.ex. sätta awarded_at).
+			query := `
+				INSERT INTO user_badges (user_id, badge_id, progress, awarded_at)
+				VALUES ($1, $2, $3, NOW())
+				ON CONFLICT (user_id, badge_id) DO UPDATE SET
+				progress = GREATEST(user_badges.progress, $3),
+				awarded_at = COALESCE(user_badges.awarded_at, NOW());
+			`
+			_, err := r.DB.Exec(query, userID, b.ID, userValue)
 			if err != nil {
-				return err
+				log.Printf("Failed to upsert badge %d for user %d: %v", b.ID, userID, err)
+				// Fortsätt till nästa badge istället för att avbryta hela loopen
+				continue
 			}
-
-			if !exists {
-				// Tilldela badge
-				_, err := r.DB.Exec(`
-					INSERT INTO user_badges (user_id, badge_id)
-					VALUES ($1, $2)
-				`, userID, b.ID)
-				if err != nil {
-					return err
-				}
-				log.Printf("User %d awarded badge %d\n", userID, b.ID)
-			}
+			log.Printf("User %d awarded or updated badge %d with progress %d\n", userID, b.ID, userValue)
+		} else {
+			log.Printf("User %d does not yet qualify for badge %d. User value: %d, Criteria value: %d", userID, b.ID, userValue, b.CriteriaValue)
 		}
 	}
 	return nil

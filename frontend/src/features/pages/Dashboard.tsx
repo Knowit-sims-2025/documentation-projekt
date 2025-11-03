@@ -56,7 +56,7 @@ export default function Dashboard() {
   const { currentUser, isLoading: authLoading } = useAuth();
 
   const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
-  const [bp, setBp] = useState<keyof typeof breakpoints>("lg"); // följ aktuellt breakpoint
+  const [bp, setBp] = useState<keyof typeof breakpoints>("lg");
   const [rows, setRows] = useState<number>(rowsFromLayout(defaultLayouts.lg));
 
   const [showMyTierOnly, setShowMyTierOnly] = useState(true);
@@ -252,7 +252,7 @@ export default function Dashboard() {
     return () => window.removeEventListener("dashboard:reset", onReset);
   }, [bp /*, kickRow om du har den */]);
 
-  // 🔁 Mjuk reset (ingen reload) + kick för korrekt mätning efteråt
+  //  Mjuk reset (ingen reload) + kick för korrekt mätning efteråt
   // function handleResetLayout() {
   //   localStorage.removeItem(LS_DASHBOARD_KEY);
 

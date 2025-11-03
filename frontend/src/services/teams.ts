@@ -1,4 +1,4 @@
-// src/services/teams.ts
+
 import type { Team, RankedTeam } from "../types/team";
 import type { User } from "../types/user";
 import { normalizeUser } from "./users";

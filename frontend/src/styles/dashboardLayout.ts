@@ -1,4 +1,3 @@
-// styles/dashboardLayout.ts
 import type { Layout, Layouts } from "react-grid-layout";
 
 /** Desktop: 20 kolumner => 20/50/30 */

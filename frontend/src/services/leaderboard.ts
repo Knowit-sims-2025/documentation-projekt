@@ -1,4 +1,3 @@
-// src/services/leaderboard.ts
 import type { LeaderboardEntry } from "../types/leaderboard";
 import { authFetch } from "./auth";
 

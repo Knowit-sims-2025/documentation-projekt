@@ -50,7 +50,7 @@ func InitializeAndGetRouter() *mux.Router {
 		AuthHandler:        &handlers.AuthHandler{UserRepo: userRepo},
 		BadgeHandler:       &handlers.BadgeHandler{Repo: badgeRepo},
 		UserBadgeHandler:   &handlers.UserBadgeHandler{Repo: userBadgeRepo},
-		ActivityHandler:    &handlers.ActivityHandler{Repo: activityRepo},
+		ActivityHandler:    &handlers.ActivityHandler{ActivityRepo: activityRepo, UserBadgeRepo: userBadgeRepo},
 		TeamHandler:        &handlers.TeamHandler{Repo: teamRepo, UserTeamRepo: userTeamRepo},
 		UserTeamHandler:    &handlers.UserTeamHandler{Repo: userTeamRepo},
 		CompetitionHandler: &handlers.CompetitionHandler{Repo: competitionRepo},

@@ -20,6 +20,9 @@ func RegisterUserBadgeRoutes(r *mux.Router, h *handlers.UserBadgeHandler) {
 	s.HandleFunc("", h.GetAllUserBadgesHandler).Methods("GET")
 	s.HandleFunc("", h.CreateUserBadgeHandler).Methods("POST")
 
+	// Manuell trigger för att kolla badges
+	s.HandleFunc("/check/{id:[0-9]+}", h.CheckUserBadgesHandler).Methods("POST")
+
 	// Notera den mer komplexa URL-strukturen här
 	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.GetUserBadgeHandler).Methods("GET")
 	s.HandleFunc("/{userId:[0-9]+}/{badgeId:[0-9]+}", h.UpdateUserBadgeHandler).Methods("PUT")

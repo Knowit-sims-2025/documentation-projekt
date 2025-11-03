@@ -60,7 +60,7 @@ export async function getUserBadgesByUserId(userId: number): Promise<UserBadge[]
 
   const data = await res.json();
   // For debugging: Log the raw data received from the API.
-  // console.log(`Raw data from /api/v1/users/${userId}/badges:`, data);
+  console.log(`Raw data from /api/v1/users/${userId}/badges:`, data);
 
   const raw: RawUserBadge[] = Array.isArray(data) ? data : [];
   return raw.map(normalizeUserBadge);

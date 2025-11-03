@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"gamification-api/backend/database"
 	"gamification-api/backend/models"
 	"net/http"
@@ -20,15 +21,23 @@ type UserBadgeHandler struct {
 	Repo *database.UserBadgeRepository
 }
 
+// badgeRequest represents the payload for creating or updating a badge.
+type badgeRequest struct {
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	IconUrl       string `json:"iconUrl"`
+	CriteriaValue int    `json:"criteriaValue"`
+	CriteriaType  string `json:"criteriaType"`
+}
+
 // GetAllBadgesHandler
 func (h *BadgeHandler) GetAllBadgesHandler(w http.ResponseWriter, r *http.Request) {
 	badges, err := h.Repo.GetAllBadges()
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(badges)
+	respondWithJSON(w, http.StatusOK, badges)
 }
 
 // GetBadgeByIDHandler
@@ -36,39 +45,31 @@ func (h *BadgeHandler) GetBadgeByIDHandler(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid badge ID")
 		return
 	}
 
 	badge, err := h.Repo.GetBadgeByID(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "Badge not found", http.StatusNotFound)
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "Badge not found")
 			return
 		}
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(badge)
+	respondWithJSON(w, http.StatusOK, badge)
 }
 
 // CreateBadgeHandler
 func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request) {
-	var requestBody struct {
-		Name          string `json:"name"`
-		Description   string `json:"description"`
-		IconUrl       string `json:"iconUrl"`
-		CriteriaValue int    `json:"criteriaValue"`
-		CriteriaType  string `json:"criteriaType"`
-	}
+	var requestBody badgeRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid Request Body")
 		return
 	}
-
 	badge := &models.Badge{
 		Name:          requestBody.Name,
 		Description:   sql.NullString{String: requestBody.Description, Valid: requestBody.Description != ""},
@@ -79,14 +80,12 @@ func (h *BadgeHandler) CreateBadgeHandler(w http.ResponseWriter, r *http.Request
 
 	newID, err := h.Repo.CreateBadge(badge)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to create badge")
 		return
 	}
 	badge.ID = newID
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(badge)
+	respondWithJSON(w, http.StatusCreated, badge)
 }
 
 // UpdateBadgeHandler
@@ -94,20 +93,14 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid badge ID")
 		return
 	}
 
-	var requestBody struct {
-		Name          string `json:"name"`
-		Description   string `json:"description"`
-		IconUrl       string `json:"iconUrl"`
-		CriteriaValue int    `json:"criteriaValue"`
-		CriteriaType  string `json:"criteriaType"`
-	}
+	var requestBody badgeRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid Request Body")
 		return
 	}
 
@@ -121,7 +114,12 @@ func (h *BadgeHandler) UpdateBadgeHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := h.Repo.UpdateBadge(badge); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Check if the error is because the badge was not found
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "Badge not found")
+			return
+		}
+		respondWithError(w, http.StatusInternalServerError, "Failed to update badge")
 		return
 	}
 
@@ -133,12 +131,12 @@ func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid badge ID")
 		return
 	}
 
 	if err := h.Repo.DeleteBadge(id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to delete badge")
 		return
 	}
 
@@ -149,14 +147,11 @@ func (h *BadgeHandler) DeleteBadgeHandler(w http.ResponseWriter, r *http.Request
 func (h *UserBadgeHandler) GetAllUserBadgesHandler(w http.ResponseWriter, r *http.Request) {
 	userBadges, err := h.Repo.GetAllUserBadges()
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	// Encode the slice directly, not inside a map.
-	// The frontend expects an array: `[...]` not an object: `{"userBadges": [...]}`
-	json.NewEncoder(w).Encode(userBadges)
+	respondWithJSON(w, http.StatusOK, userBadges)
 }
 
 // GetUserBadgesByUserIDHandler
@@ -164,21 +159,33 @@ func (h *UserBadgeHandler) GetUserBadgesByUserIDHandler(w http.ResponseWriter, r
 	vars := mux.Vars(r)
 	userID, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID")
 		return
+	}
+
+	// First, run a check to award any newly earned badges.
+	// This ensures the data is up-to-date before we fetch it.
+	if err := h.Repo.CheckAndAwardBadges(userID); err != nil {
+		// We can log this error but shouldn't block the request.
+		// The user should still see their existing badges even if the check fails.
+		// For a production system, you would add logging here.
+		// log.Printf("WARNING: Could not check/award badges for user %d: %v", userID, err)
 	}
 
 	userBadges, err := h.Repo.GetUserBadgesByUserID(userID)
 	if err != nil {
-		// Om inga rader hittas är det inte nödvändigtvis ett serverfel,
-		// det kan bara betyda att användaren inte har några badges än.
-		// Returnera en tom lista i det fallet.
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode([]models.UserBadge{})
+		// It's not an error if a user has no badges, just an empty result.
+		// We should only return an error for actual database problems.
+		// If the repository returns sql.ErrNoRows, we return an empty list.
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithJSON(w, http.StatusOK, []models.UserBadge{})
+			return
+		}
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userBadges)
+
+	respondWithJSON(w, http.StatusOK, userBadges)
 }
 
 // CreateUserBadgeHandler
@@ -191,7 +198,7 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid Request Body")
 		return
 	}
 
@@ -208,13 +215,11 @@ func (h *UserBadgeHandler) CreateUserBadgeHandler(w http.ResponseWriter, r *http
 	}
 
 	if err := h.Repo.AwardBadge(userBadge); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to award badge")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(userBadge)
+	respondWithJSON(w, http.StatusCreated, userBadge)
 }
 
 // GetUserBadgeHandler
@@ -224,22 +229,21 @@ func (h *UserBadgeHandler) GetUserBadgeHandler(w http.ResponseWriter, r *http.Re
 	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid user or badge ID")
 		return
 	}
 
 	ub, err := h.Repo.GetUserBadge(userID, badgeID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "User badge not found", http.StatusNotFound)
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "User badge not found")
 			return
 		}
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ub)
+	respondWithJSON(w, http.StatusOK, ub)
 }
 
 // UpdateUserBadgeHandler
@@ -248,7 +252,7 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
 	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid user or badge ID")
 		return
 	}
 
@@ -257,15 +261,20 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 		Progress  *int       `json:"progress,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid Request Body")
 		return
 	}
 
-	// Hämta befintlig user-badge för att ha default-värden
+	// Get existing user-badge to have default values
 	existingUB, err := h.Repo.GetUserBadge(userID, badgeID)
-	if err != nil || existingUB == nil {
-		http.Error(w, "User badge not found", http.StatusNotFound)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "User badge not found")
+			return
+		}
+		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
+
 	}
 
 	if requestBody.AwardedAt != nil {
@@ -276,7 +285,7 @@ func (h *UserBadgeHandler) UpdateUserBadgeHandler(w http.ResponseWriter, r *http
 	}
 
 	if err := h.Repo.UpdateUserBadge(existingUB); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to update user badge")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -288,13 +297,43 @@ func (h *UserBadgeHandler) DeleteUserBadgeHandler(w http.ResponseWriter, r *http
 	userID, err1 := strconv.ParseInt(vars["userId"], 10, 64)
 	badgeID, err2 := strconv.ParseInt(vars["badgeId"], 10, 64)
 	if err1 != nil || err2 != nil {
-		http.Error(w, "Invalid user or badge ID", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid user or badge ID")
 		return
 	}
 
 	if err := h.Repo.RemoveBadge(userID, badgeID); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to remove user badge")
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// CheckUserBadgesHandler triggers a manual check to award badges.
+func (h *UserBadgeHandler) CheckUserBadgesHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, err := strconv.ParseInt(vars["id"], 10, 64)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+		return
+	}
+
+	if err := h.Repo.CheckAndAwardBadges(userID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to check or award badges")
+		return
+	}
+
+	message := "Badge check completed successfully for user " + strconv.FormatInt(userID, 10)
+	respondWithJSON(w, http.StatusOK, map[string]string{"message": message})
+}
+
+// --- Helper Functions ---
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	respondWithJSON(w, code, map[string]string{"error": message})
+}
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(payload)
 }
