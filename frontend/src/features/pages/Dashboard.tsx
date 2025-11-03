@@ -116,7 +116,7 @@ export default function Dashboard() {
   const myTier = currentUser?.rankTier ?? null;
   const individualTitle = (
     <>
-      Individual Ranking{" "}
+      Leaderboard {" "}
       <span style={{ color: "var(--text-muted)" }}>
         ({showMyTierOnly ? myTier ?? "—" : "All"})
       </span>
@@ -157,13 +157,13 @@ export default function Dashboard() {
     },
     {
       i: "teams",
-      title: "Team Leaderboard",
+      title: "Team leaderboard",
       content: <TeamLeaderboard onSelectUser={setSelectedUser} />,
     },
     // { i: "competition", title: "Statistik", content: <div>Stats</div> },
     {
       i: "achievements",
-      title: "Achievements",
+      title: "Achievments",
       content: currentUser ? (
         <AchievementIconDisplay
           user={currentUser}

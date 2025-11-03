@@ -74,7 +74,7 @@
 /* Aktiv användare */
 .leaderboard__item.is-current-user,
 .leaderboard__item--current {
-  background-color: color-mix(in oklch, oklch(0.85 0.12 95) 15%, transparent);
+  background-color: color-mix(in oklch, var(--accent) 15%, transparent);
   font-weight: 600;
 }
 

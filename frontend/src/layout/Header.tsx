@@ -6,6 +6,8 @@ import SettingsMenu from "../components/SettingsMenu";
 import { useAuth } from "../features/auth/AuthContext";
 import { Avatar } from "../components/Avatar";
 import { authFetch } from "../services/auth"; // ← för att skicka Authorization på upload
+import docuify_white_colour from "../assets/logo/docuify_white_colour.svg"
+import docuify_black_colour from "../assets/logo/docuify_black_colour.svg"
 
 interface HeaderProps {
   theme: Theme;
@@ -115,8 +117,9 @@ export default function Header({ theme, setTheme }: HeaderProps) {
           </SettingsMenu>
         </div>
 
-        <h1 className="header__center">Dashboard</h1>
-
+        <div className="header__center">
+          <img src={theme === "light" ? docuify_black_colour : docuify_white_colour} alt="Docuify"/>
+        </div>
         <div className="header__right">
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
