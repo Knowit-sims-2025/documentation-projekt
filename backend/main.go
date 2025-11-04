@@ -7,6 +7,7 @@ import (
 	"gamification-api/backend/database"
 	"gamification-api/backend/integrations/confluence"
 	"gamification-api/backend/router"
+	"gamification-api/backend/seeder"
 	"log"
 	"net/http"
 	"time"
@@ -23,6 +24,12 @@ func main() {
 	db, err := database.ConnectDB()
 	if err != nil {
 		log.Fatalf("FATAL: Kunde inte ansluta till databasen: %v", err)
+	}
+	if err := database.InitializeSchema(db); err != nil {
+		log.Fatalf("FATAL: Kunde inte initiera databas-schema: %v", err)
+	}
+	if err := seeder.SeedBadges(db); err != nil {
+		log.Fatalf("FATAL: Kunde inte seeda badges: %v", err)
 	}
 
 	// Skapa repositories

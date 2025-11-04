@@ -62,6 +62,7 @@ CREATE TABLE badges (
     description TEXT NOT NULL,
     icon_url TEXT,
     criteria_value INTEGER NOT NULL
+    criteria_type VARCHAR(50) NOT NULL 
 );
 
 -- Kopplingstabell för badges per användare (+ progress)

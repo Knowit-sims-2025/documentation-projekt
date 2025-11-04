@@ -81,9 +81,6 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 		if err := repos.UserStatsRepo.UpdateUserStatsCreatedPages(user.ID); err != nil {
 			log.Printf("Kunde inte uppdatera created pages för user %d: %v", user.ID, err)
 		}
-		if err := repos.UserBadgeRepo.CheckAndAwardBadges(user.ID); err != nil {
-			log.Printf("Kunde inte kolla/uppdatera badges för user %d: %v", user.ID, err)
-		}
 	} else {
 		activityType = "PAGE_UPDATED"
 
@@ -107,9 +104,6 @@ func syncPageActivities(client *Client, repos Repositories, page Content, userCa
 			// Uppdatera user_stats för redigerade sidor
 			if err := repos.UserStatsRepo.UpdateUserStatsEditedPages(user.ID); err != nil {
 				log.Printf("Kunde inte uppdatera edited pages för user %d: %v", user.ID, err)
-			}
-			if err := repos.UserBadgeRepo.CheckAndAwardBadges(user.ID); err != nil {
-				log.Printf("Kunde inte kolla/uppdatera badges för user %d: %v", user.ID, err)
 			}
 		}
 		log.Printf("NEW version %d content length: %d", page.Version.Number, len(newContent))
@@ -234,15 +228,9 @@ func syncCommentActivities(client *Client, repos Repositories, page Content, use
 				if err := repos.UserStatsRepo.UpdateUserStatsComments(user.ID); err != nil {
 					log.Printf("Kunde inte uppdatera comments för user %d: %v", user.ID, err)
 				}
-				if err := repos.UserBadgeRepo.CheckAndAwardBadges(user.ID); err != nil {
-					log.Printf("Kunde inte kolla/uppdatera badges för user %d: %v", user.ID, err)
-				}
 			} else if activityType == "RESOLVED_COMMENT" {
 				if err := repos.UserStatsRepo.UpdateUserStatsResolvedComments(user.ID); err != nil {
 					log.Printf("Kunde inte uppdatera resolved_comments för user %d: %v", user.ID, err)
-				}
-				if err := repos.UserBadgeRepo.CheckAndAwardBadges(user.ID); err != nil {
-					log.Printf("Kunde inte kolla/uppdatera badges för user %d: %v", user.ID, err)
 				}
 			}
 
