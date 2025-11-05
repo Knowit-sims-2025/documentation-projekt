@@ -282,7 +282,8 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-lg);
   padding: 1rem;
-  z-index: var(--z-tooltip);
+  /* z-index: var(--z-tooltip); */
+  z-index: 1000;
   pointer-events: none; /* Kortet ska inte kunna interageras med */
 
   display: flex;

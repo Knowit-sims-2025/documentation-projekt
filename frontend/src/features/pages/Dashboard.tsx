@@ -21,6 +21,7 @@ import type { User } from "../../types/user";
 import { Overlay } from "./leaderboard/Overlay";
 import { ProfileCard } from "../profile/ProfileCard";
 import Profile from "../../components/Profile";
+import RankInfo from "../../components/RankInfo";
 
 import { rowsFromLayout } from "../../utils/rowsFromLayout";
 import { useRGLRowHeight } from "../../hooks/useRGLRowHeight";
@@ -63,6 +64,7 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("total");
   const [selectedBadgeId, setSelectedBadgeId] = useState<number | null>(null);
+  const [showRankInfo, setShowRankInfo] = useState(false);
 
   // RGL parametrar som måste hållas i synk med hooken
   const MARGIN_Y = 8;
@@ -115,12 +117,16 @@ export default function Dashboard() {
   // UI-texter
   const myTier = currentUser?.rankTier ?? null;
   const individualTitle = (
-    <>
+    <div
+      onClick={() => setShowRankInfo(true)}
+      style={{ cursor: "pointer" }}
+      title="Click for rank tier info"
+    >
       Leaderboard{" "}
       <span style={{ color: "var(--text-muted)" }}>
         ({showMyTierOnly ? myTier ?? "—" : "All"})
       </span>
-    </>
+    </div>
   );
   const individualControls = (
     <div
@@ -151,6 +157,7 @@ export default function Dashboard() {
           onSelectUser={setSelectedUser}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          onShowRankInfo={() => setShowRankInfo(true)}
         />
       ),
       headerControls: activeTab === "total" ? individualControls : null,
@@ -346,6 +353,13 @@ export default function Dashboard() {
               user={currentUser}
               initialSelectedBadgeId={selectedBadgeId}
             />
+          </Overlay>
+        )}
+
+        {/* Overlay för RankInfo */}
+        {showRankInfo && (
+          <Overlay onClose={() => setShowRankInfo(false)} title="Rank Tiers">
+            <RankInfo />
           </Overlay>
         )}
       </section>

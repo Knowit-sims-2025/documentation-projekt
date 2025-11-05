@@ -5,9 +5,14 @@ import { useAuth } from "../../auth/AuthContext";
 interface IndividualRankProps {
   user: User;
   onSelect: (user: User) => void;
+  onShowRankInfo: () => void;
 }
 
-export function IndividualRank({ user, onSelect }: IndividualRankProps) {
+export function IndividualRank({
+  user,
+  onSelect,
+  onShowRankInfo,
+}: IndividualRankProps) {
   const { currentUser } = useAuth();
   const isCurrentUser = !!currentUser && currentUser.id === user.id;
 
@@ -52,7 +57,12 @@ export function IndividualRank({ user, onSelect }: IndividualRankProps) {
 
       <span
         className="leaderboard__points"
-        title={`${user.displayName} is rank: ${user.rankTier} `}
+        title={`${user.displayName} is rank: ${user.rankTier}. Click on points to view rank tiers.`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onShowRankInfo();
+        }}
+        style={{ cursor: "pointer" }}
       >
         {user.totalPoints} p
       </span>
