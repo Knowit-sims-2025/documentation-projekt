@@ -19,6 +19,7 @@ interface UserLeaderBoardProps {
   activeTab: Tab;
   onSelectUser: (user: User) => void;
   onTabChange: (tab: Tab) => void;
+  onShowRankInfo: () => void;
 }
 
 type Tab = "daily" | "weekly" | "total" | "stats";
@@ -28,6 +29,7 @@ export default function UserLeaderBoard({
   activeTab,
   onSelectUser,
   onTabChange,
+  onShowRankInfo,
 }: UserLeaderBoardProps) {
   const { data: users, loading, error } = useUsers();
   const { currentUser, isLoading: authLoading } = useAuth();
@@ -80,7 +82,11 @@ export default function UserLeaderBoard({
       <LeaderboardTabs active={activeTab} onChange={onTabChange} />
 
       {activeTab === "total" && (
-        <TotalList users={visibleUsers} onSelect={onSelectUser} />
+        <TotalList
+          users={visibleUsers}
+          onSelect={onSelectUser}
+          onShowRankInfo={onShowRankInfo}
+        />
       )}
 
       {activeTab === "daily" && (

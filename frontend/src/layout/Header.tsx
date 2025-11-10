@@ -9,6 +9,9 @@ import { authFetch } from "../services/auth"; // ← för att skicka Authorizati
 import docuify_white_colour from "../assets/logo/docuify_white_colour.svg"
 import docuify_black_colour from "../assets/logo/docuify_black_colour.svg"
 
+import RankInfo from "../components/RankInfo";
+import { Overlay } from "../features/pages/leaderboard/Overlay";
+
 interface HeaderProps {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -17,6 +20,7 @@ interface HeaderProps {
 export default function Header({ theme, setTheme }: HeaderProps) {
   const { currentUser, logout, updateCurrentUserAvatar } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRankInfoOpen, setIsRankInfoOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Riktig utloggning
@@ -110,6 +114,7 @@ export default function Header({ theme, setTheme }: HeaderProps) {
               </>
             )}
 
+            <button onClick={() => setIsRankInfoOpen(true)}>Visa ranker</button>
             <button onClick={handleAvatarButtonClick}>Byt avatar</button>
             <button onClick={handleResetLayout}>Återställ layout</button>
             <div className="settings-menu__separator" />
@@ -124,6 +129,12 @@ export default function Header({ theme, setTheme }: HeaderProps) {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
       </div>
+
+      {isRankInfoOpen && (
+        <Overlay onClose={() => setIsRankInfoOpen(false)} title="Rank Tiers">
+          <RankInfo />
+        </Overlay>
+      )}
 
       {/* Dold filväljare */}
       <input
