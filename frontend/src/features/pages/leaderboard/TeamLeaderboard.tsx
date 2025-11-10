@@ -4,44 +4,34 @@ import { Loading } from "../../../components/Loading";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import type { User } from "../../../types/user";
 import type { RankedTeam } from "../../../types/team";
-import { Overlay } from "./Overlay";
-import { TeamDetails } from "./TeamDetails";
 
-function TeamRank({
-  team,
-  onSelect,
-}: {
-  team: RankedTeam;
-  onSelect: () => void;
-}) {
-  // Enkel rad-komponent för ett team
-  return (
-    <li
-      className="leaderboard__item"
-      onClick={onSelect}
-      style={{ cursor: "pointer" }}
-      title={`${team.name} har ${team.members.length} medlemmar`}
-    >
-      <span className="leaderboard__rank">{team.rank}.</span>
-      {/* Här kan vi lägga till en team-avatar i framtiden */}
-      <span className="leaderboard__name">{team.name}</span>
-      <span className="leaderboard__points">{team.totalPoints} p</span>
-    </li>
-  );
-}
+// Import sub-components
+import { TeamListTab } from "./TeamListTab";
+import { JoinTeamTab } from "./JoinTeamTab";
+import { CreateTeamTab } from "./CreateTeamTab";
+
+// --- Main Component ---
 
 interface TeamLeaderboardProps {
   onSelectUser: (user: User) => void;
 }
 
+type TeamTab = "teams" | "join" | "create";
+
+const TABS: { id: TeamTab; label: string }[] = [
+  { id: "teams", label: "Teams" },
+  { id: "join", label: "Join a team" },
+  { id: "create", label: "Create a team" },
+];
+
 export default function TeamLeaderboard({
   onSelectUser,
 }: TeamLeaderboardProps) {
-  const [selectedTeam, setSelectedTeam] = useState<RankedTeam | null>(null);
-  const { data: teams, loading, error, refetch } = useTeams();
+  const { data: teams, loading, error } = useTeams();
+  const [activeTab, setActiveTab] = useState<TeamTab>("teams");
 
   if (loading) {
-    return <Loading text="Laddar team..." />;
+    return <Loading text="Loading teams..." />;
   }
 
   if (error) {
@@ -50,25 +40,28 @@ export default function TeamLeaderboard({
 
   return (
     <div className="leaderboard">
-      <ul className="leaderboard__list">
-        {teams.map((team) => (
-          <TeamRank
-            key={team.id}
-            team={team}
-            onSelect={() => setSelectedTeam(team)}
-          />
+      {/* Tabs */}
+      <div className="leaderboard__tabs">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            className={`leaderboard__tab ${
+              activeTab === tab.id ? "is-active" : ""
+            }`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
         ))}
-      </ul>
+      </div>
 
-      {selectedTeam && (
-        <Overlay
-          onClose={() => setSelectedTeam(null)}
-          title={`Team: ${selectedTeam.name}`}
-        >
-          {" "}
-          <p>Detta är teamets medlemmar, sorterade efter poäng:</p>
-          <TeamDetails team={selectedTeam} onSelectUser={onSelectUser} />
-        </Overlay>
+      {/* Content based on active tab */}
+      {activeTab === "teams" && (
+        <TeamListTab teams={teams} onSelectUser={onSelectUser} />
+      )}
+      {activeTab === "join" && <JoinTeamTab />}
+      {activeTab === "create" && (
+        <CreateTeamTab onTeamCreated={() => setActiveTab("teams")} />
       )}
     </div>
   );

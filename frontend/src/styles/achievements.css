@@ -153,8 +153,8 @@
 
 /* ============ Achievement Icon Display (scopad) ============ */
 .achicons{
-  /* Basstorlek du redan styr */
-  --icon-size: clamp(56px, 7vw, 80px);
+  /* Basstorlek av ikoner */
+  --icon-size: clamp(56px, 7vw, 65px);
 
   /* All spacing från en gemensam bas  så det växer/krymper gemensamt*/
   --cell-pad: clamp(2px, 0.9vw, 8px);

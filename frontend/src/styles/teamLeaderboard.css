@@ -1,0 +1,85 @@
+.join-team-container {
+  padding: 1rem;
+}
+
+.join-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+/* .join-team-header-name {
+  flex: 1;
+}
+
+.join-team-header-members {
+  width: 120px;
+  text-align: center;
+}
+
+.join-team-header-toggle {
+  width: 80px;
+  text-align: center;
+} */
+
+.join-team-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+/* .join-team-item-name {
+  flex: 1;
+}
+
+.join-team-item-members {
+  width: 120px;
+  text-align: center;
+}
+
+.join-team-item-toggle {
+  width: 80px;
+  text-align: center;
+} */
+
+.create-team-container {
+  padding: 1rem;
+}
+
+.create-team-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.create-team-input {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.create-team-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.create-team-button-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+
+.create-team-button-submit {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}

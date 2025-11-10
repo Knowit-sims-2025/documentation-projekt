@@ -1,5 +1,4 @@
-// hooks/useTeams.ts
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { RankedTeam } from "../types/team";
 import { getTeamsUsingExistingAPI } from "../services/teams";
 
@@ -8,31 +7,35 @@ export function useTeams() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const load = async (isInitial = false) => {
-      if (isInitial) setLoading(true);
-      setError(null);
-      try {
-        const teams = await getTeamsUsingExistingAPI(controller.signal);
-        setData(teams);
-      } catch (e) {
-        if ((e as any).name !== "AbortError") {
-          setError(e instanceof Error ? e.message : "Kunde inte hämta team");
-        }
-      } finally {
-        if (isInitial) setLoading(false);
+  const loadTeams = useCallback(async (signal?: AbortSignal) => {
+    setError(null);
+    try {
+      const teams = await getTeamsUsingExistingAPI(signal);
+      setData(teams ?? []); // Ensure data is always an array
+    } catch (e) {
+      if ((e as any).name !== "AbortError") {
+        setError(e instanceof Error ? e.message : "Could not fetch teams");
       }
-    };
-
-    load(true);
-    const id = setInterval(() => load(false), 30000);
-    return () => {
-      controller.abort();
-      clearInterval(id);
-    };
+    }
   }, []);
 
-  return { data, loading, error };
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    loadTeams(controller.signal).finally(() => setLoading(false));
+
+    const intervalId = setInterval(() => loadTeams(), 30000); // Re-fetch every 30s
+
+    return () => {
+      controller.abort();
+      clearInterval(intervalId);
+    };
+  }, [loadTeams]);
+
+  const refetch = useCallback(() => {
+    setLoading(true);
+    loadTeams().finally(() => setLoading(false));
+  }, [loadTeams]);
+
+  return { data, loading, error, refetch };
 }
