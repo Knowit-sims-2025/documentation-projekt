@@ -53,7 +53,7 @@ export function ProfileCard({ user }: { user: User }) {
           value={user.totalPoints}
           max={getNextRankThreshold(user.totalPoints) ?? 1}
           min={getPreviousRankThreshold(user.totalPoints) ?? 1}
-          label={`Next rank: ${getNextRankTier(user.totalPoints)}`}
+          label={`Next tier: ${getNextRankTier(user.totalPoints)}`}
         />
       </div>
     </div>

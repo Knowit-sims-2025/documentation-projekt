@@ -23,7 +23,7 @@ const schemaSQL = `
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) UNIQUE NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
-    );
+    ); 
 
     CREATE TABLE IF NOT EXISTS user_teams (
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

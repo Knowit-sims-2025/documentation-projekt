@@ -16,15 +16,15 @@ func SeedBadges(db *sql.DB) error {
 		{"Beginner documenter", "Awarded for creating your very first document.", "documents0", "total_created_pages", 1},
 		{"Novice documenter", "Awarded for creating your 10th document.", "documents1", "total_created_pages", 10},
 		{"Intermidiate documenter", "Awarded for creating your 50th document.", "documents2", "total_created_pages", 50},
-		{"Proffesional documenter", "Awarded for creating your 100th document.", "documents3", "total_created_pages", 100},
+		{"Professional documenter", "Awarded for creating your 100th document.", "documents3", "total_created_pages", 100},
 		{"Beginner commenter", "Awarded for making your very first comment.", "comments0", "total_comments", 1},
 		{"Novice commenter", "Awarded for making your 10th comment.", "comments1", "total_comments", 10},
 		{"Intermidiate commenter", "Awarded for mmaking your 50th comment.", "comments2", "total_comments", 50},
-		{"Proffesional commenter", "Awarded for making your 100th comment.", "comments3", "total_comments", 100},
+		{"Professional commenter", "Awarded for making your 100th comment.", "comments3", "total_comments", 100},
 		{"Beginner editor", "Awarded for making your very first edit.", "edits0", "total_edits_made", 1},
 		{"Novice editor", "Awarded for making your 10th edit.", "edits1", "total_edits_made", 10},
 		{"Intermidiate editor", "Awarded for making your 50th edit.", "edits2", "total_edits_made", 50},
-		{"Proffesional editor", "Awarded for making your 100th edit.", "edits3", "total_edits_made", 100},
+		{"Professional editor", "Awarded for making your 100th edit.", "edits3", "total_edits_made", 100},
 	}
 
 	tx, err := db.Begin()

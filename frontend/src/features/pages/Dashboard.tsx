@@ -163,7 +163,7 @@ export default function Dashboard() {
     // { i: "competition", title: "Statistik", content: <div>Stats</div> },
     {
       i: "achievements",
-      title: "Achievments",
+      title: "Achievements",
       content: currentUser ? (
         <AchievementIconDisplay
           user={currentUser}
